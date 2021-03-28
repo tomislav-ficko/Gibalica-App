@@ -1,5 +1,3 @@
 package hr.fer.tel.gibalica.di
 
-object AppModule {
-
-}
+object AppModule

@@ -4,6 +4,4 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class GibalicaApp : Application() {
-
-}
+class GibalicaApp : Application()
