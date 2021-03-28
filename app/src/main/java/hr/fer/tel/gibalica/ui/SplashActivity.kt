@@ -34,6 +34,6 @@ class SplashActivity : BaseActivity() {
     }
 
     private fun startIntro() {
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, IntroActivity::class.java))
     }
 }
