@@ -9,5 +9,14 @@
         android:id="@+id/introFragment"
         android:name="hr.fer.tel.gibalica.ui.fragments.IntroFragment"
         android:label="fragment_intro"
-        tools:layout="@layout/fragment_intro" />
+        tools:layout="@layout/fragment_intro" >
+        <action
+            android:id="@+id/action_introFragment_to_guideFragment"
+            app:destination="@id/guideFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/guideFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.GuideFragment"
+        android:label="fragment_guide"
+        tools:layout="@layout/fragment_guide" />
 </navigation>
