@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gibalica</string>
+
+    <string name="tv_intro_title">Pozdrav</string>
+    <string name="tv_intro_body">Dobrodošli u Gibalicu, interaktivno pomagalo za vježbanje orijentacije u zabavnom okruženju.</string>
+    <string name="btn_start_guide">Pokreni vodič</string>
+    <string name="btn_skip">Preskoči</string>
+</resources>
