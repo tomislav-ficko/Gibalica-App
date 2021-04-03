@@ -11,7 +11,7 @@
         android:layout_height="0dp"
         android:layout_margin="@dimen/margin_sides"
         app:cardCornerRadius="@dimen/radius_card_view_guide"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -35,4 +35,16 @@
             app:sliderStartAutoCycle="true"
             tools:background="@color/black" />
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_button"
+        android:layout_marginEnd="@dimen/margin_button"
+        android:layout_marginBottom="@dimen/margin_sides"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/btn_next"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

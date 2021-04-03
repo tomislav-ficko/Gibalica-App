@@ -6,4 +6,5 @@
     <string name="tv_intro_body">Dobrodošli u Gibalicu, interaktivno pomagalo za vježbanje orijentacije u zabavnom okruženju.</string>
     <string name="btn_start_guide">Pokreni vodič</string>
     <string name="btn_skip">Preskoči</string>
+    <string name="btn_next">Dalje</string>
 </resources>

@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.NavHostFragment
 import hr.fer.tel.gibalica.databinding.FragmentIntroBinding
 import hr.fer.tel.gibalica.viewModel.NavigationViewModel
 
-class IntroFragment : Fragment() {
+class IntroFragment : NavHostFragment() {
 
     private val navigationViewModel: NavigationViewModel by activityViewModels()
 

@@ -1,16 +1,27 @@
 package hr.fer.tel.gibalica.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import hr.fer.tel.gibalica.R
+import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityIntroBinding
 
-class IntroActivity : AppCompatActivity() {
+class IntroActivity : BaseActivity() {
 
     private lateinit var binding: ActivityIntroBinding
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
+        setupFragment()
+    }
+
+    private fun setupFragment() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_intro) as NavHostFragment
+        val navController = navHostFragment.navController
     }
 
     private fun inflateLayout() {
