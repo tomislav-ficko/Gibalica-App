@@ -1,6 +1,5 @@
 package hr.fer.tel.gibalica.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.navigation.fragment.NavHostFragment
 import hr.fer.tel.gibalica.R
@@ -11,7 +10,6 @@ class IntroActivity : BaseActivity() {
 
     private lateinit var binding: ActivityIntroBinding
 
-    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
