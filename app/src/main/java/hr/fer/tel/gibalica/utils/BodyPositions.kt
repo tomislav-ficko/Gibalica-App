@@ -13,8 +13,6 @@ enum class BodyPositions {
     NONE;
 
     companion object {
-        private const val X_THRESHOLD = 10f
-        private const val Y_THRESHOLD = 20f
         private const val LEFT_HAND = 0
         private const val RIGHT_HAND = 1
         private const val BOTH_HANDS = 2
@@ -85,25 +83,5 @@ enum class BodyPositions {
 
         private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
             wrist.isHigherThan(elbow) && elbow.sidePositionEqualTo(wrist)
-
-        private fun PoseLandmark.sidePositionEqualTo(other: PoseLandmark): Boolean {
-            val min = other.position.x - X_THRESHOLD
-            val max = other.position.x + X_THRESHOLD
-            Timber.d("Checking side position: Is ${position.x} in [$min..$max]?")
-            return position.x in min..max
-        }
-
-        private fun PoseLandmark.isHigherThan(other: PoseLandmark): Boolean {
-            val max = other.position.y + Y_THRESHOLD
-            Timber.d("Checking height: Is ${position.y} > $max?")
-            return position.y > max
-        }
-
-        private fun PoseLandmark.heightEqualTo(other: PoseLandmark): Boolean {
-            val min = other.position.y - Y_THRESHOLD
-            val max = other.position.y + Y_THRESHOLD
-            Timber.d("Checking height: Is ${position.y} in [$min..$max]?")
-            return position.y in min..max
-        }
     }
 }
