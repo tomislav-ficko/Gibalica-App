@@ -3,10 +3,12 @@ package hr.fer.tel.gibalica.utils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import com.smarteist.autoimageslider.SliderViewAdapter
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.ItemLayoutImageSliderBinding
 import hr.fer.tel.gibalica.viewModel.IntroViewModel
+import timber.log.Timber
 
 class SliderAdapter(
     private val viewModel: IntroViewModel
@@ -28,19 +30,27 @@ class SliderAdapter(
 
     override fun onBindViewHolder(viewHolder: SliderViewHolder?, position: Int) {
         viewHolder?.apply {
+            Timber.d("Binding viewHolder at position $position")
             when (position) {
-                0 -> binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                1 -> binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                2 -> binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                3 -> binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                4 -> binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                5 -> {
-                    binding.ivGuideImage.setImageResource(R.drawable.guide_image)
-                    viewModel.showNextButton()
-                }
+                0 -> setImage(R.drawable.guide_image, binding)
+                1 -> setImage(R.drawable.guide_image, binding)
+                2 -> setImage(R.drawable.guide_image, binding)
+                3 -> setImage(R.drawable.guide_image, binding)
+                4 -> setImage(R.drawable.guide_image, binding)
+                else -> setImage(R.drawable.guide_image, binding, isFinalImage = true)
             }
         }
     }
 
     override fun getCount(): Int = 6
+
+    private fun setImage(
+        @DrawableRes resId: Int,
+        binding: ItemLayoutImageSliderBinding,
+        isFinalImage: Boolean = false
+    ) {
+        binding.ivGuideImage.setImageResource(R.drawable.guide_image)
+        if (isFinalImage) viewModel.showNextButton()
+        else viewModel.hideNextButton()
+    }
 }

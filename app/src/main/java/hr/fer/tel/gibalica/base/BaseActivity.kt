@@ -1,5 +1,5 @@
 package hr.fer.tel.gibalica.base
 
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 
-abstract class BaseActivity : AppCompatActivity()
+open class BaseActivity : ComponentActivity()

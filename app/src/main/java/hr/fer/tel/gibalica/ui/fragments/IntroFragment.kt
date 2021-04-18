@@ -1,17 +1,18 @@
 package hr.fer.tel.gibalica.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentIntroBinding
-import hr.fer.tel.gibalica.viewModel.NavigationViewModel
+import hr.fer.tel.gibalica.ui.MainActivity
+import timber.log.Timber
 
-class IntroFragment : NavHostFragment() {
-
-    private val navigationViewModel: NavigationViewModel by activityViewModels()
+class IntroFragment : Fragment() {
 
     private var _binding: FragmentIntroBinding? = null
     private val binding: FragmentIntroBinding
@@ -31,10 +32,10 @@ class IntroFragment : NavHostFragment() {
 
         binding.apply {
             btnStartGuide.setOnClickListener {
-                navigationViewModel.navigate(IntroFragmentDirections.actionIntroFragmentToGuideFragment())
+                findNavController().navigate(R.id.action_introFragment_to_guideFragment)
             }
             btnSkip.setOnClickListener {
-//                navigationViewModel.navigate(IntroFragmentDirections.actionIntroFragmentToMainActivity())
+                startActivity(Intent(requireContext(), MainActivity::class.java))
             }
         }
     }

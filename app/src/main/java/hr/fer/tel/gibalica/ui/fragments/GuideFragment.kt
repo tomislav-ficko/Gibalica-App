@@ -1,25 +1,25 @@
 package hr.fer.tel.gibalica.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.NavHostFragment
 import hr.fer.tel.gibalica.databinding.FragmentGuideBinding
+import hr.fer.tel.gibalica.ui.MainActivity
 import hr.fer.tel.gibalica.utils.SliderAdapter
 import hr.fer.tel.gibalica.viewModel.IntroViewModel
-import hr.fer.tel.gibalica.viewModel.NavigationViewModel
+import timber.log.Timber
 
-class GuideFragment : NavHostFragment() {
+class GuideFragment : Fragment() {
 
     private var _binding: FragmentGuideBinding? = null
     private val binding: FragmentGuideBinding
         get() = _binding!!
 
-    private val introViewModel: IntroViewModel by viewModels()
-    private val navigationViewModel: NavigationViewModel by activityViewModels()
+    private val viewModel: IntroViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,14 +32,39 @@ class GuideFragment : NavHostFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imageSlider.setSliderAdapter(SliderAdapter(introViewModel))
+
+        setupIllustrations()
+        defineListener()
+    }
+
+    private fun setupIllustrations() {
+        binding.imageSlider.setSliderAdapter(SliderAdapter(viewModel))
         binding.btnNext.setOnClickListener {
-//            navigationViewModel.navigate(IntroFragmentDirections.actionIntroFragmentToMainActivity())
+            startActivity(Intent(requireContext(), MainActivity::class.java))
         }
+    }
+
+    private fun defineListener() {
+        viewModel.nextButtonLiveData.observe(requireActivity(), {
+            it?.let { isButtonVisible ->
+                binding.apply {
+                    if (isButtonVisible) btnNext.visible()
+                    else btnNext.gone()
+                }
+            }
+        })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
 }
