@@ -42,9 +42,10 @@
         android:layout_marginStart="@dimen/margin_button"
         android:layout_marginEnd="@dimen/margin_button"
         android:layout_marginBottom="@dimen/margin_sides"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/btn_next"/>
+        android:text="@string/btn_next" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

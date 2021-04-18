@@ -32,7 +32,7 @@ class SliderAdapter(
         viewHolder?.apply {
             Timber.d("Binding viewHolder at position $position")
             when (position) {
-                0 -> setImage(R.drawable.guide_image, binding)
+                0 -> setImage(R.drawable.illustration_main, binding)
                 1 -> setImage(R.drawable.guide_image, binding)
                 2 -> setImage(R.drawable.guide_image, binding)
                 3 -> setImage(R.drawable.guide_image, binding)
@@ -49,7 +49,7 @@ class SliderAdapter(
         binding: ItemLayoutImageSliderBinding,
         isFinalImage: Boolean = false
     ) {
-        binding.ivGuideImage.setImageResource(R.drawable.guide_image)
+        binding.ivGuideImage.setImageResource(resId)
         if (isFinalImage) viewModel.showNextButton()
         else viewModel.hideNextButton()
     }
