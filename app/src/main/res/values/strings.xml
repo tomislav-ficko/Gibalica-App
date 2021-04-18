@@ -6,4 +6,8 @@
     <string name="btn_start_guide">Start guide</string>
     <string name="btn_skip">Skip</string>
     <string name="btn_next">Next</string>
+
+    <string name="btn_training">Training</string>
+    <string name="btn_competition">Competition</string>
+    <string name="btn_day_night">Day-Night</string>
 </resources>

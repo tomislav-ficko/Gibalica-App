@@ -7,4 +7,8 @@
     <string name="btn_start_guide">Pokreni vodič</string>
     <string name="btn_skip">Preskoči</string>
     <string name="btn_next">Dalje</string>
+
+    <string name="btn_training">Trening</string>
+    <string name="btn_competition">Competition</string>
+    <string name="btn_day_night">Dan-noć</string>
 </resources>
