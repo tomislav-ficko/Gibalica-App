@@ -4,13 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Matrix
+import android.graphics.SurfaceTexture
 import android.os.Bundle
 import android.view.Surface
+import android.view.TextureView
 import android.widget.Toast
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
+import androidx.camera.core.*
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.common.InputImage
@@ -23,12 +23,15 @@ import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
 import hr.fer.tel.gibalica.utils.BodyPositions
 import timber.log.Timber
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 private const val REQUEST_CODE_PERMISSIONS = 42
 
 @AndroidEntryPoint
-class TrainingActivity : BaseActivity() {
+class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
+    private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ActivityTrainingBinding
     private var displayRotation = 0
 
@@ -38,6 +41,11 @@ class TrainingActivity : BaseActivity() {
 
         initializeCamera()
         initializeViewfinder()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -56,7 +64,28 @@ class TrainingActivity : BaseActivity() {
         }
     }
 
+    override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+        if (permissionsGranted()) {
+            binding.txvViewFinder.post { startCamera() }
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+//        binding.txvViewFinder.addOnLayoutChangeListener { updateTransform() }
+    }
+
+    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
+
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean = true
+
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
+
     private fun initializeCamera() {
+        cameraExecutor = Executors.newSingleThreadExecutor()
+
         if (permissionsGranted())
             binding.txvViewFinder.post { startCamera() }
         else
@@ -68,9 +97,34 @@ class TrainingActivity : BaseActivity() {
     }
 
     private fun startCamera() {
-        val preview = Preview.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-            .build()
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener(
+            {
+                val cameraProvider = cameraProviderFuture.get()
+
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                val preview = Preview.Builder()
+                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(binding.txvViewFinder.surfaceProvider)
+                    }
+                val imageAnalyzer = ImageAnalysis.Builder()
+                    .build()
+                    .also {
+                        it.setAnalyzer(cameraExecutor, BodyAnalyzer())
+                    }
+                cameraProvider.unbindAll()
+
+                try {
+                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
+                } catch (e: Exception) {
+                    Timber.d("CameraProvider binding failed: $e")
+                }
+            },
+            ContextCompat.getMainExecutor(this)
+        )
     }
 
     /**
@@ -93,25 +147,20 @@ class TrainingActivity : BaseActivity() {
                 }
 
             matrix.postRotate(-displayRotation.toFloat(), centerX, centerY)
-            setTransform(matrix)
+//            setTransform(matrix)
         }
-    }
-
-    private fun preparePoseDetector(): PoseDetector {
-        val detectionOptions = PoseDetectorOptions.Builder()
-            .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
-            .build()
-        return PoseDetection.getClient(detectionOptions)
     }
 
     private fun inflateLayout() {
         binding = ActivityTrainingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 
     private fun initializeViewfinder() {
-        binding.txvViewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            updateTransform()
+        binding.txvViewFinder.apply {
+//            addOnLayoutChangeListener { updateTransform() }
+//            surfaceTextureListener = this@TrainingActivity
         }
     }
 
@@ -148,6 +197,13 @@ class TrainingActivity : BaseActivity() {
                 BodyPositions.RIGHT_HAND_RAISED -> Timber.d("Right hand raised detected")
                 BodyPositions.BOTH_HANDS_RAISED -> Timber.d("Both hands raised detected")
             }
+        }
+
+        private fun preparePoseDetector(): PoseDetector {
+            val detectionOptions = PoseDetectorOptions.Builder()
+                .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
+                .build()
+            return PoseDetection.getClient(detectionOptions)
         }
     }
 }
