@@ -24,6 +24,7 @@ class IntroFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentIntroBinding.inflate(inflater, container, false)
+        Timber.d("Inflated!")
         return binding.root
     }
 

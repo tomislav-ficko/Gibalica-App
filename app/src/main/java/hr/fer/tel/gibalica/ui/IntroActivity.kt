@@ -17,5 +17,6 @@ class IntroActivity : FragmentActivity() {
     private fun inflateLayout() {
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 }

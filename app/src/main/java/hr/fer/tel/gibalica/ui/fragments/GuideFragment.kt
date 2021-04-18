@@ -27,6 +27,7 @@ class GuideFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGuideBinding.inflate(inflater, container, false)
+        Timber.d("Inflated!")
         return binding.root
     }
 

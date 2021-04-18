@@ -4,6 +4,7 @@ import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityMainBinding
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
@@ -18,5 +19,6 @@ class MainActivity : BaseActivity() {
     private fun inflateLayout() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 }
