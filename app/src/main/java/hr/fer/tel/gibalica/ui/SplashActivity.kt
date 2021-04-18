@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivitySplashBinding
 import hr.fer.tel.gibalica.viewModel.MainViewModel
+import timber.log.Timber
 
 private const val TIMER_VALUE_IN_SECONDS = 3L
 
@@ -27,6 +28,7 @@ class SplashActivity : BaseActivity() {
     private fun inflateLayout() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 
     private fun setupObservable() {

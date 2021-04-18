@@ -1,10 +1,11 @@
 package hr.fer.tel.gibalica.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import hr.fer.tel.gibalica.databinding.ActivityIntroBinding
+import timber.log.Timber
 
-class IntroActivity : AppCompatActivity() {
+class IntroActivity : FragmentActivity() {
 
     private lateinit var binding: ActivityIntroBinding
 
@@ -16,5 +17,6 @@ class IntroActivity : AppCompatActivity() {
     private fun inflateLayout() {
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 }
