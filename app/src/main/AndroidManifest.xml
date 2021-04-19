@@ -16,16 +16,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gibalica">
 
-        <activity android:name=".ui.SplashActivity">
+        <activity
+            android:name=".ui.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.IntroActivity" />
-        <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.TrainingActivity" />
+        <activity
+            android:name=".ui.IntroActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.TrainingActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
