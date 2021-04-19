@@ -1,5 +1,6 @@
 package hr.fer.tel.gibalica.utils
 
+import android.view.View
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
 
@@ -24,4 +25,20 @@ fun PoseLandmark.heightEqualTo(other: PoseLandmark): Boolean {
     val max = other.position.y + Y_THRESHOLD
     Timber.d("Checking height: Is ${position.y} in [$min..$max]?")
     return position.y in min..max
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+fun StringBuilder.appendLandmark(position: String, landmark: PoseLandmark) {
+    val positionString = String.format("%15s", position)
+    val x = String.format("%.2f", landmark.position.x)
+    val y = String.format("%.2f", landmark.position.y)
+    val inFrame = String.format("%.3f", landmark.inFrameLikelihood)
+    append("$positionString = ($x, $y) [inFrame: $inFrame]\n")
 }

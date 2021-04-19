@@ -3,7 +3,6 @@ package hr.fer.tel.gibalica.utils
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
-import java.lang.StringBuilder
 
 enum class BodyPositions {
     LEFT_HAND_RAISED,
@@ -82,7 +81,7 @@ enum class BodyPositions {
 
         private fun logLandmarks(pose: Pose) {
             val builder = StringBuilder()
-            builder.append("\nDetected landmarks:\n")
+            builder.append("Detected landmarks:\n")
             pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
                 ?.let { builder.appendLandmark("LEFT_WRIST", it) }
             pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
@@ -96,10 +95,6 @@ enum class BodyPositions {
             pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
                 ?.let { builder.appendLandmark("RIGHT_SHOULDER", it) }
             Timber.d(builder.toString())
-        }
-
-        private fun StringBuilder.appendLandmark(position: String, landmark: PoseLandmark) {
-            append("$position = (${landmark.position.x}, ${landmark.position.y}) [inFrame: ${landmark.inFrameLikelihood}]\n")
         }
     }
 }

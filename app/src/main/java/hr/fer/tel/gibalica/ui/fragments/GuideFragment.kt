@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import hr.fer.tel.gibalica.databinding.FragmentGuideBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import hr.fer.tel.gibalica.utils.SliderAdapter
+import hr.fer.tel.gibalica.utils.invisible
+import hr.fer.tel.gibalica.utils.visible
 import hr.fer.tel.gibalica.viewModel.IntroViewModel
 import timber.log.Timber
 
@@ -60,12 +62,4 @@ class GuideFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
-
-fun View.visible() {
-    visibility = View.VISIBLE
-}
-
-fun View.invisible() {
-    visibility = View.INVISIBLE
 }
