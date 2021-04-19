@@ -82,18 +82,12 @@ enum class BodyPositions {
         private fun logLandmarks(pose: Pose) {
             val builder = StringBuilder()
             builder.append("Detected landmarks:\n")
-            pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
-                ?.let { builder.appendLandmark("LEFT_WRIST", it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
-                ?.let { builder.appendLandmark("RIGHT_WRIST", it) }
-            pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
-                ?.let { builder.appendLandmark("LEFT_ELBOW", it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
-                ?.let { builder.appendLandmark("RIGHT_ELBOW", it) }
-            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
-                ?.let { builder.appendLandmark("LEFT_SHOULDER", it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
-                ?.let { builder.appendLandmark("RIGHT_SHOULDER", it) }
+            pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)?.let { builder.appendLandmark(it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.let { builder.appendLandmark(it) }
+            pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.let { builder.appendLandmark(it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
+            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
             Timber.d(builder.toString())
         }
     }
