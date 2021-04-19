@@ -27,8 +27,11 @@ class ImageAnalyzer() : ImageAnalysis.Analyzer {
                     }
                 }
                 .addOnFailureListener { Timber.d("Detection failed: $it") }
+                .addOnCompleteListener {
+                    mediaImage.close()
+                    imageProxy.close()
+                }
         }
-        imageProxy.close()
     }
 
     private fun calculateDetectedPose(pose: Pose) {
