@@ -3,6 +3,8 @@ package hr.fer.tel.gibalica.utils
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 enum class BodyPositions {
     LEFT_HAND_RAISED,
@@ -81,13 +83,17 @@ enum class BodyPositions {
 
         private fun logLandmarks(pose: Pose) {
             val builder = StringBuilder()
-            builder.append("Detected landmarks:\n")
-            pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)?.let { builder.appendLandmark(it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.let { builder.appendLandmark(it) }
-            pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.let { builder.appendLandmark(it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
-            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
-            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
+            val dateFormat = SimpleDateFormat.getTimeInstance()
+            val time = dateFormat.format(Date(System.currentTimeMillis()))
+            builder.append("Detected landmarks ($time):\n")
+            with(pose) {
+                getPoseLandmark(PoseLandmark.LEFT_WRIST)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
+            }
             Timber.d(builder.toString())
         }
     }
