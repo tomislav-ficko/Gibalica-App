@@ -37,11 +37,11 @@ enum class BodyPositions {
         }
 
         private fun squatPerformed(pose: Pose): Boolean {
-            return true
+            return false
         }
 
         private fun tPosePerformed(pose: Pose): Boolean {
-            return true
+            return false
         }
 
         private fun handRaised(handDescriptor: Int, pose: Pose): Boolean {
@@ -62,18 +62,12 @@ enum class BodyPositions {
                 Timber.d("Person is not standing upright")
 
             return when (handDescriptor) {
-                LEFT_HAND -> isArmRaised(leftElbow, leftWrist) && isArmLowered(
-                    rightElbow,
-                    rightWrist
-                )
-                RIGHT_HAND -> isArmRaised(rightElbow, rightWrist) && isArmLowered(
-                    leftElbow,
-                    leftWrist
-                )
-                BOTH_HANDS -> isArmRaised(leftElbow, leftWrist) && isArmRaised(
-                    rightElbow,
-                    rightWrist
-                )
+                LEFT_HAND -> isArmRaised(leftElbow, leftWrist)
+                        && isArmLowered(rightElbow, rightWrist)
+                RIGHT_HAND -> isArmRaised(rightElbow, rightWrist)
+                        && isArmLowered(leftElbow, leftWrist)
+                BOTH_HANDS -> isArmRaised(leftElbow, leftWrist)
+                        && isArmRaised(rightElbow, rightWrist)
                 else -> throw java.lang.IllegalArgumentException("Wrong handDescriptor argument sent")
             }
         }
