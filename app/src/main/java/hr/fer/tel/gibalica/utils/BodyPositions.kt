@@ -3,6 +3,7 @@ package hr.fer.tel.gibalica.utils
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
+import java.lang.StringBuilder
 
 enum class BodyPositions {
     LEFT_HAND_RAISED,
@@ -23,6 +24,7 @@ enum class BodyPositions {
                 Timber.d("No person detected")
                 return NONE
             }
+            logLandmarks(pose)
             return when {
                 squatPerformed(pose) -> SQUAT
                 tPosePerformed(pose) -> T_POSE
@@ -77,5 +79,27 @@ enum class BodyPositions {
 
         private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
             wrist.isHigherThan(elbow) && elbow.sidePositionEqualTo(wrist)
+
+        private fun logLandmarks(pose: Pose) {
+            val builder = StringBuilder()
+            builder.append("\nDetected landmarks:\n")
+            pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
+                ?.let { builder.appendLandmark("LEFT_WRIST", it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
+                ?.let { builder.appendLandmark("RIGHT_WRIST", it) }
+            pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
+                ?.let { builder.appendLandmark("LEFT_ELBOW", it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
+                ?.let { builder.appendLandmark("RIGHT_ELBOW", it) }
+            pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
+                ?.let { builder.appendLandmark("LEFT_SHOULDER", it) }
+            pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
+                ?.let { builder.appendLandmark("RIGHT_SHOULDER", it) }
+            Timber.d(builder.toString())
+        }
+
+        private fun StringBuilder.appendLandmark(position: String, landmark: PoseLandmark) {
+            append("$position = (${landmark.position.x}, ${landmark.position.y}) [inFrame: ${landmark.inFrameLikelihood}]\n")
+        }
     }
 }
