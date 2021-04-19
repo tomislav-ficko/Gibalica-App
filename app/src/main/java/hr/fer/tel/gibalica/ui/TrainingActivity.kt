@@ -107,7 +107,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, ImageAnalyzer())
+                        it.setAnalyzer(cameraExecutor, ImageAnalyzer(this))
                     }
                 cameraProvider.unbindAll()
 
