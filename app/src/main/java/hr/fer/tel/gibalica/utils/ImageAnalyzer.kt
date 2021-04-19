@@ -20,12 +20,7 @@ class ImageAnalyzer() : ImageAnalysis.Analyzer {
                 InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
             val poseDetector = preparePoseDetector()
             poseDetector.process(image)
-                .addOnSuccessListener {
-                    it?.let {
-                        Timber.d("Detecting pose...")
-                        calculateDetectedPose(it)
-                    }
-                }
+                .addOnSuccessListener { it?.let { detectPose(it) } }
                 .addOnFailureListener { Timber.d("Detection failed: $it") }
                 .addOnCompleteListener {
                     mediaImage.close()
@@ -34,7 +29,8 @@ class ImageAnalyzer() : ImageAnalysis.Analyzer {
         }
     }
 
-    private fun calculateDetectedPose(pose: Pose) {
+    private fun detectPose(pose: Pose) {
+        Timber.d("Detecting pose...")
         when (BodyPositions.getPose(pose)) {
             BodyPositions.NONE -> Timber.d("Pose could not be detected")
             BodyPositions.SQUAT -> Timber.d("Squat detected")
