@@ -2,6 +2,7 @@ package hr.fer.tel.gibalica.utils
 
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
+import com.google.mlkit.vision.pose.PoseLandmark.*
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,13 +28,16 @@ enum class BodyPositions {
                 Timber.d("No person detected")
                 return NONE
             }
-            logLandmarks(pose)
+            logLandmarkDetails(pose)
+
             return when {
                 squatPerformed(pose) -> SQUAT
                 tPosePerformed(pose) -> T_POSE
                 handRaised(BOTH_HANDS, pose) -> BOTH_HANDS_RAISED
                 handRaised(LEFT_HAND, pose) -> LEFT_HAND_RAISED
                 handRaised(RIGHT_HAND, pose) -> RIGHT_HAND_RAISED
+                startingPose(pose) -> STARTING_POSE
+                allJointsVisible(pose) -> ALL_JOINTS_VISIBLE
                 else -> {
                     Timber.d("No known pose detected")
                     NONE
@@ -50,31 +54,29 @@ enum class BodyPositions {
         }
 
         private fun handRaised(handDescriptor: Int, pose: Pose): Boolean {
-            val leftShoulder = pose.getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
-                ?: throw IllegalArgumentException("Left shoulder landmark not present")
-            val rightShoulder = pose.getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
-                ?: throw IllegalArgumentException("Right shoulder landmark not present")
-            val leftElbow = pose.getPoseLandmark(PoseLandmark.LEFT_ELBOW)
-                ?: throw IllegalArgumentException("Left elbow landmark not present")
-            val rightElbow = pose.getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
-                ?: throw IllegalArgumentException("Right elbow landmark not present")
-            val leftWrist = pose.getPoseLandmark(PoseLandmark.LEFT_WRIST)
-                ?: throw IllegalArgumentException("Left wrist landmark not present")
-            val rightWrist = pose.getPoseLandmark(PoseLandmark.RIGHT_WRIST)
-                ?: throw IllegalArgumentException("Right wrist landmark not present")
-
-            if (!leftShoulder.heightEqualTo(rightShoulder))
-                Timber.d("Person is not standing upright")
-
             return when (handDescriptor) {
-                LEFT_HAND -> isArmRaised(leftElbow, leftWrist)
-                        && isArmLowered(rightElbow, rightWrist)
-                RIGHT_HAND -> isArmRaised(rightElbow, rightWrist)
-                        && isArmLowered(leftElbow, leftWrist)
-                BOTH_HANDS -> isArmRaised(leftElbow, leftWrist)
-                        && isArmRaised(rightElbow, rightWrist)
-                else -> throw java.lang.IllegalArgumentException("Wrong handDescriptor argument sent")
+                LEFT_HAND -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
+                    isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                            && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                }
+                RIGHT_HAND -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
+                    isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                            && isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                }
+                BOTH_HANDS -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
+                    isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                            && isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                }
+                else -> throw IllegalArgumentException("Wrong handDescriptor argument sent")
             }
+        }
+
+        private fun allJointsVisible(pose: Pose): Boolean {
+            return false
+        }
+
+        private fun startingPose(pose: Pose): Boolean {
+            return false
         }
 
         private fun isArmLowered(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
@@ -83,20 +85,52 @@ enum class BodyPositions {
         private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
             wrist.isHigherThan(elbow) && elbow.sidePositionEqualTo(wrist)
 
-        private fun logLandmarks(pose: Pose) {
+        private fun logLandmarkDetails(pose: Pose) {
             val builder = StringBuilder()
             val dateFormat = SimpleDateFormat.getTimeInstance()
             val time = dateFormat.format(Date(System.currentTimeMillis()))
             builder.append("Detected landmarks ($time):\n")
             with(pose) {
-                getPoseLandmark(PoseLandmark.LEFT_WRIST)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(LEFT_WRIST)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(RIGHT_WRIST)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(LEFT_ELBOW)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
+                getPoseLandmark(RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
             }
             Timber.d(builder.toString())
+        }
+
+        private fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark> {
+            val leftShoulder = getPoseLandmark(LEFT_SHOULDER)
+                ?: throw IllegalArgumentException("Left shoulder landmark not present")
+            val rightShoulder = getPoseLandmark(RIGHT_SHOULDER)
+                ?: throw IllegalArgumentException("Right shoulder landmark not present")
+            val leftElbow = getPoseLandmark(LEFT_ELBOW)
+                ?: throw IllegalArgumentException("Left elbow landmark not present")
+            val rightElbow = getPoseLandmark(RIGHT_ELBOW)
+                ?: throw IllegalArgumentException("Right elbow landmark not present")
+            val leftWrist = getPoseLandmark(LEFT_WRIST)
+                ?: throw IllegalArgumentException("Left wrist landmark not present")
+            val rightWrist = getPoseLandmark(RIGHT_WRIST)
+                ?: throw IllegalArgumentException("Right wrist landmark not present")
+
+            return when (position) {
+                LEFT_HAND_RAISED, RIGHT_HAND_RAISED, BOTH_HANDS_RAISED ->
+                    mapOf(
+                        Pair(LEFT_SHOULDER, leftShoulder),
+                        Pair(RIGHT_SHOULDER, rightShoulder),
+                        Pair(LEFT_ELBOW, leftElbow),
+                        Pair(RIGHT_ELBOW, rightElbow),
+                        Pair(LEFT_WRIST, leftWrist),
+                        Pair(RIGHT_WRIST, rightWrist)
+                    )
+                SQUAT -> mapOf()
+                T_POSE -> mapOf()
+                ALL_JOINTS_VISIBLE -> mapOf()
+                STARTING_POSE -> mapOf()
+                NONE -> mapOf()
+            }
         }
     }
 }
