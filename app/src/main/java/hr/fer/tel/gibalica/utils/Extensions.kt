@@ -143,6 +143,10 @@ fun Pose.logLandmarkDetails() {
         getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
         getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
         getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.LEFT_HIP)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.RIGHT_HIP)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.LEFT_KNEE)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.RIGHT_KNEE)?.let { builder.appendLandmark(it) }
     }
     Timber.d(builder.toString())
 }
