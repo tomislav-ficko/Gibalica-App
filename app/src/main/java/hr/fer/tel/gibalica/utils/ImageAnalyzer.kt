@@ -39,7 +39,7 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
         val mediaImage = imageProxy.image!!
         val currentTimestamp = System.currentTimeMillis()
         if (
-            currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(1)
+            currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(2)
         ) {
             val image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
