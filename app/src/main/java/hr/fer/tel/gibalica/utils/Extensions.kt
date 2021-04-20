@@ -85,7 +85,7 @@ fun StringBuilder.appendLandmark(landmark: PoseLandmark) {
     append("$positionString = ($x, $y) [inFrame: $inFrame]\n")
 }
 
-fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark> {
+fun Pose.getLandmarks(): Map<Int, PoseLandmark> {
     val leftShoulder = getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
         ?: throw IllegalArgumentException("Left shoulder landmark not present")
     val rightShoulder = getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
@@ -99,22 +99,33 @@ fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark
     val rightWrist = getPoseLandmark(PoseLandmark.RIGHT_WRIST)
         ?: throw IllegalArgumentException("Right wrist landmark not present")
 
-    return when (position) {
-        BodyPositions.LEFT_HAND_RAISED, BodyPositions.RIGHT_HAND_RAISED, BodyPositions.BOTH_HANDS_RAISED ->
-            mapOf(
-                Pair(PoseLandmark.LEFT_SHOULDER, leftShoulder),
-                Pair(PoseLandmark.RIGHT_SHOULDER, rightShoulder),
-                Pair(PoseLandmark.LEFT_ELBOW, leftElbow),
-                Pair(PoseLandmark.RIGHT_ELBOW, rightElbow),
-                Pair(PoseLandmark.LEFT_WRIST, leftWrist),
-                Pair(PoseLandmark.RIGHT_WRIST, rightWrist)
-            )
-        BodyPositions.SQUAT -> mapOf()
-        BodyPositions.T_POSE -> mapOf()
-        BodyPositions.ALL_JOINTS_VISIBLE -> mapOf()
-        BodyPositions.STARTING_POSE -> mapOf()
-        BodyPositions.NONE -> mapOf()
-    }
+    val leftHip = getPoseLandmark(PoseLandmark.LEFT_HIP)
+        ?: throw IllegalArgumentException("Left hip landmark not present")
+    val rightHip = getPoseLandmark(PoseLandmark.RIGHT_HIP)
+        ?: throw IllegalArgumentException("Right hip landmark not present")
+    val leftKnee = getPoseLandmark(PoseLandmark.LEFT_KNEE)
+        ?: throw IllegalArgumentException("Left knee landmark not present")
+    val rightKnee = getPoseLandmark(PoseLandmark.RIGHT_KNEE)
+        ?: throw IllegalArgumentException("Right knee landmark not present")
+    val leftAnkle = getPoseLandmark(PoseLandmark.LEFT_ANKLE)
+        ?: throw IllegalArgumentException("Left ankle landmark not present")
+    val rightAnkle = getPoseLandmark(PoseLandmark.RIGHT_ANKLE)
+        ?: throw IllegalArgumentException("Right ankle landmark not present")
+
+    return mutableMapOf(
+        Pair(PoseLandmark.LEFT_SHOULDER, leftShoulder),
+        Pair(PoseLandmark.RIGHT_SHOULDER, rightShoulder),
+        Pair(PoseLandmark.LEFT_ELBOW, leftElbow),
+        Pair(PoseLandmark.RIGHT_ELBOW, rightElbow),
+        Pair(PoseLandmark.LEFT_WRIST, leftWrist),
+        Pair(PoseLandmark.RIGHT_WRIST, rightWrist),
+        Pair(PoseLandmark.LEFT_HIP, leftHip),
+        Pair(PoseLandmark.RIGHT_HIP, rightHip),
+        Pair(PoseLandmark.LEFT_KNEE, leftKnee),
+        Pair(PoseLandmark.RIGHT_KNEE, rightKnee),
+        Pair(PoseLandmark.LEFT_ANKLE, leftAnkle),
+        Pair(PoseLandmark.RIGHT_ANKLE, rightAnkle)
+    )
 }
 
 fun Pose.logLandmarkDetails() {
