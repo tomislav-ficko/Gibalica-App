@@ -100,37 +100,5 @@ enum class BodyPositions {
             }
             Timber.d(builder.toString())
         }
-
-        private fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark> {
-            val leftShoulder = getPoseLandmark(LEFT_SHOULDER)
-                ?: throw IllegalArgumentException("Left shoulder landmark not present")
-            val rightShoulder = getPoseLandmark(RIGHT_SHOULDER)
-                ?: throw IllegalArgumentException("Right shoulder landmark not present")
-            val leftElbow = getPoseLandmark(LEFT_ELBOW)
-                ?: throw IllegalArgumentException("Left elbow landmark not present")
-            val rightElbow = getPoseLandmark(RIGHT_ELBOW)
-                ?: throw IllegalArgumentException("Right elbow landmark not present")
-            val leftWrist = getPoseLandmark(LEFT_WRIST)
-                ?: throw IllegalArgumentException("Left wrist landmark not present")
-            val rightWrist = getPoseLandmark(RIGHT_WRIST)
-                ?: throw IllegalArgumentException("Right wrist landmark not present")
-
-            return when (position) {
-                LEFT_HAND_RAISED, RIGHT_HAND_RAISED, BOTH_HANDS_RAISED ->
-                    mapOf(
-                        Pair(LEFT_SHOULDER, leftShoulder),
-                        Pair(RIGHT_SHOULDER, rightShoulder),
-                        Pair(LEFT_ELBOW, leftElbow),
-                        Pair(RIGHT_ELBOW, rightElbow),
-                        Pair(LEFT_WRIST, leftWrist),
-                        Pair(RIGHT_WRIST, rightWrist)
-                    )
-                SQUAT -> mapOf()
-                T_POSE -> mapOf()
-                ALL_JOINTS_VISIBLE -> mapOf()
-                STARTING_POSE -> mapOf()
-                NONE -> mapOf()
-            }
-        }
     }
 }

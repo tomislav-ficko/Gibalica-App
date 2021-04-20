@@ -1,6 +1,7 @@
 package hr.fer.tel.gibalica.utils
 
 import android.view.View
+import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
 
@@ -80,4 +81,36 @@ fun StringBuilder.appendLandmark(landmark: PoseLandmark) {
     val y = String.format("%.2f", landmark.position.y)
     val inFrame = String.format("%.3f", landmark.inFrameLikelihood)
     append("$positionString = ($x, $y) [inFrame: $inFrame]\n")
+}
+
+fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark> {
+    val leftShoulder = getPoseLandmark(PoseLandmark.LEFT_SHOULDER)
+        ?: throw IllegalArgumentException("Left shoulder landmark not present")
+    val rightShoulder = getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)
+        ?: throw IllegalArgumentException("Right shoulder landmark not present")
+    val leftElbow = getPoseLandmark(PoseLandmark.LEFT_ELBOW)
+        ?: throw IllegalArgumentException("Left elbow landmark not present")
+    val rightElbow = getPoseLandmark(PoseLandmark.RIGHT_ELBOW)
+        ?: throw IllegalArgumentException("Right elbow landmark not present")
+    val leftWrist = getPoseLandmark(PoseLandmark.LEFT_WRIST)
+        ?: throw IllegalArgumentException("Left wrist landmark not present")
+    val rightWrist = getPoseLandmark(PoseLandmark.RIGHT_WRIST)
+        ?: throw IllegalArgumentException("Right wrist landmark not present")
+
+    return when (position) {
+        BodyPositions.LEFT_HAND_RAISED, BodyPositions.RIGHT_HAND_RAISED, BodyPositions.BOTH_HANDS_RAISED ->
+            mapOf(
+                Pair(PoseLandmark.LEFT_SHOULDER, leftShoulder),
+                Pair(PoseLandmark.RIGHT_SHOULDER, rightShoulder),
+                Pair(PoseLandmark.LEFT_ELBOW, leftElbow),
+                Pair(PoseLandmark.RIGHT_ELBOW, rightElbow),
+                Pair(PoseLandmark.LEFT_WRIST, leftWrist),
+                Pair(PoseLandmark.RIGHT_WRIST, rightWrist)
+            )
+        BodyPositions.SQUAT -> mapOf()
+        BodyPositions.T_POSE -> mapOf()
+        BodyPositions.ALL_JOINTS_VISIBLE -> mapOf()
+        BodyPositions.STARTING_POSE -> mapOf()
+        BodyPositions.NONE -> mapOf()
+    }
 }
