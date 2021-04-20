@@ -4,8 +4,6 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.pose.PoseLandmark.*
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.*
 
 enum class BodyPositions {
     LEFT_HAND_RAISED,
@@ -28,7 +26,7 @@ enum class BodyPositions {
                 Timber.d("No person detected")
                 return NONE
             }
-            logLandmarkDetails(pose)
+            pose.logLandmarkDetails()
 
             return when {
                 squatPerformed(pose) -> SQUAT
@@ -84,21 +82,5 @@ enum class BodyPositions {
 
         private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
             wrist.isHigherThan(elbow) && elbow.sidePositionEqualTo(wrist)
-
-        private fun logLandmarkDetails(pose: Pose) {
-            val builder = StringBuilder()
-            val dateFormat = SimpleDateFormat.getTimeInstance()
-            val time = dateFormat.format(Date(System.currentTimeMillis()))
-            builder.append("Detected landmarks ($time):\n")
-            with(pose) {
-                getPoseLandmark(LEFT_WRIST)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(RIGHT_WRIST)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(LEFT_ELBOW)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
-                getPoseLandmark(RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
-            }
-            Timber.d(builder.toString())
-        }
     }
 }

@@ -4,6 +4,8 @@ import android.view.View
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 private const val X_THRESHOLD = 10f
 private const val Y_THRESHOLD = 20f
@@ -113,4 +115,20 @@ fun Pose.getRequiredLandmarksFor(position: BodyPositions): Map<Int, PoseLandmark
         BodyPositions.STARTING_POSE -> mapOf()
         BodyPositions.NONE -> mapOf()
     }
+}
+
+fun Pose.logLandmarkDetails() {
+    val builder = StringBuilder()
+    val dateFormat = SimpleDateFormat.getTimeInstance()
+    val time = dateFormat.format(Date(System.currentTimeMillis()))
+    builder.append("Detected landmarks ($time):\n")
+    with(this) {
+        getPoseLandmark(PoseLandmark.LEFT_WRIST)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.RIGHT_WRIST)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.LEFT_ELBOW)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.RIGHT_ELBOW)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.LEFT_SHOULDER)?.let { builder.appendLandmark(it) }
+        getPoseLandmark(PoseLandmark.RIGHT_SHOULDER)?.let { builder.appendLandmark(it) }
+    }
+    Timber.d(builder.toString())
 }
