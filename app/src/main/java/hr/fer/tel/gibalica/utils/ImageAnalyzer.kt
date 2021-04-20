@@ -17,9 +17,11 @@ import hr.fer.tel.gibalica.utils.PoseDetector.Companion.startingPoseDetected
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.tPosePerformed
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
 
+    private var lastAnalyzedTimestamp = 0L
     private lateinit var poseToBeDetected: GibalicaPose
 
     init {
@@ -35,16 +37,26 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
     @SuppressLint("UnsafeExperimentalUsageError")
     private fun analyzeImageUsingPoseDetector(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image!!
-        val image =
-            InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-        val poseDetector = preparePoseDetector()
-        poseDetector.process(image)
-            .addOnSuccessListener { it?.let { detectPose(it) } }
-            .addOnFailureListener { Timber.d("Detection failed: $it") }
-            .addOnCompleteListener {
-                mediaImage.close()
-                imageProxy.close()
-            }
+        val currentTimestamp = System.currentTimeMillis()
+        if (
+            currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(1)
+        ) {
+            val image =
+                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val poseDetector = preparePoseDetector()
+            poseDetector.process(image)
+                .addOnSuccessListener { it?.let { detectPose(it) } }
+                .addOnFailureListener { Timber.d("Detection failed: $it") }
+                .addOnCompleteListener {
+                    mediaImage.close()
+                    imageProxy.close()
+                    lastAnalyzedTimestamp = currentTimestamp
+                }
+        } else {
+            Timber.d("Not analyzing, not enough time passed ($currentTimestamp)")
+            mediaImage.close()
+            imageProxy.close()
+        }
     }
 
     private fun detectPose(pose: Pose) {
