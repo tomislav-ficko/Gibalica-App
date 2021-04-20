@@ -50,6 +50,8 @@ class PoseDetector {
             with(getLandmarks()) {
                 return get(LEFT_SHOULDER)!!.isVisible()
                         && get(RIGHT_SHOULDER)!!.isVisible()
+                        && get(LEFT_WRIST)!!.isVisible()
+                        && get(RIGHT_WRIST)!!.isVisible()
                         && get(LEFT_ELBOW)!!.isVisible()
                         && get(RIGHT_ELBOW)!!.isVisible()
                         && get(LEFT_HIP)!!.isVisible()
