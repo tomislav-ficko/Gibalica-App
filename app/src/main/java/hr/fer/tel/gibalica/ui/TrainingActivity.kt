@@ -18,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
 import hr.fer.tel.gibalica.utils.EventType
+import hr.fer.tel.gibalica.utils.GibalicaPose
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
@@ -32,6 +33,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ActivityTrainingBinding
     private val viewModel by viewModels<MainViewModel>()
+    private var poseToBeDetected = GibalicaPose.ALL_JOINTS_VISIBLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
         initializeAndStartCamera()
         defineObserver()
+        viewModel.poseDetectionLiveData.postValue(poseToBeDetected)
     }
 
     override fun onDestroy() {
@@ -96,33 +99,22 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
     private fun defineObserver() {
         viewModel.notificationLiveData.observe(this, {
             when (it?.eventType) {
-                EventType.DETECTED_LEFT_HAND -> {
-                    Timber.d("Left hand raised")
-                    showToast("Left hand raised")
+                EventType.POSE_DETECTED -> {
+                    val message = "${poseToBeDetected.name} detected"
+                    Timber.d(message)
+                    showToast(message)
+                    poseToBeDetected = when (poseToBeDetected) {
+                        GibalicaPose.ALL_JOINTS_VISIBLE -> GibalicaPose.STARTING_POSE
+                        GibalicaPose.STARTING_POSE -> GibalicaPose.LEFT_HAND_RAISED
+                        GibalicaPose.LEFT_HAND_RAISED -> GibalicaPose.RIGHT_HAND_RAISED
+                        GibalicaPose.RIGHT_HAND_RAISED -> GibalicaPose.BOTH_HANDS_RAISED
+                        else -> GibalicaPose.ALL_JOINTS_VISIBLE
+                    }
                 }
-                EventType.DETECTED_RIGHT_HAND -> {
-                    Timber.d("Right hand raised")
-                    showToast("Right hand raised")
-                }
-                EventType.DETECTED_BOTH_HANDS -> {
-                    Timber.d("Both hands raised")
-                    showToast("Both hands raised")
-                }
-                EventType.DETECTED_SQUAT -> {
-                    Timber.d("Squat detected")
-                    showToast("Squat detected")
-                }
-                EventType.DETECTED_T_POSE -> {
-                    Timber.d("T-pose detected")
-                    showToast("T-pose detected")
-                }
-                EventType.DETECTED_STARTING_POSE -> {
-                    Timber.d("Starting pose detected")
-                    showToast("Starting pose detected")
-                }
-                EventType.DETECTED_ALL_JOINTS_VISIBLE -> {
-                    Timber.d("All joints visible")
-                    showToast("All joints visible")
+                EventType.POSE_NOT_DETECTED -> {
+                    val message = "${poseToBeDetected.name} not detected"
+                    Timber.d(message)
+                    showToast(message)
                 }
                 else -> {
                 }

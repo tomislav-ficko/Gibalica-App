@@ -8,10 +8,23 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.allJointsVisible
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.bothHandsRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.leftHandRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.rightHandRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.squatPerformed
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.startingPoseDetected
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.tPosePerformed
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
 class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
+
+    private lateinit var poseToBeDetected: GibalicaPose
+
+    init {
+        viewModel.poseDetectionLiveData.observeForever { it?.let { poseToBeDetected = it } }
+    }
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(imageProxy: ImageProxy) {
@@ -35,27 +48,21 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
     }
 
     private fun detectPose(pose: Pose) {
-        Timber.d("Detecting pose...")
+        Timber.d("${poseToBeDetected.name} detection in progress.")
         with(viewModel.notificationLiveData) {
-            when (BodyPositions.getPose(pose)) {
-                BodyPositions.SQUAT ->
-                    postValue(NotificationEvent(EventType.DETECTED_SQUAT))
-                BodyPositions.T_POSE ->
-                    postValue(NotificationEvent(EventType.DETECTED_T_POSE))
-                BodyPositions.LEFT_HAND_RAISED ->
-                    postValue(NotificationEvent(EventType.DETECTED_LEFT_HAND))
-                BodyPositions.RIGHT_HAND_RAISED ->
-                    postValue(NotificationEvent(EventType.DETECTED_RIGHT_HAND))
-                BodyPositions.BOTH_HANDS_RAISED ->
-                    postValue(NotificationEvent(EventType.DETECTED_BOTH_HANDS))
-                BodyPositions.STARTING_POSE ->
-                    postValue(NotificationEvent(EventType.DETECTED_STARTING_POSE))
-                BodyPositions.ALL_JOINTS_VISIBLE ->
-                    postValue(NotificationEvent(EventType.DETECTED_ALL_JOINTS_VISIBLE))
-                BodyPositions.NONE -> {
-                    //No pose detected
+            val poseDetected =
+                when (poseToBeDetected) {
+                    GibalicaPose.STARTING_POSE -> pose.startingPoseDetected()
+                    GibalicaPose.ALL_JOINTS_VISIBLE -> pose.allJointsVisible()
+                    GibalicaPose.LEFT_HAND_RAISED -> pose.leftHandRaised()
+                    GibalicaPose.RIGHT_HAND_RAISED -> pose.rightHandRaised()
+                    GibalicaPose.BOTH_HANDS_RAISED -> pose.bothHandsRaised()
+                    GibalicaPose.T_POSE -> pose.tPosePerformed()
+                    GibalicaPose.SQUAT -> pose.squatPerformed()
+                    GibalicaPose.NONE -> false
                 }
-            }
+            if (poseDetected) postValue(NotificationEvent(EventType.POSE_DETECTED))
+            else postValue(NotificationEvent(EventType.POSE_NOT_DETECTED))
         }
     }
 
