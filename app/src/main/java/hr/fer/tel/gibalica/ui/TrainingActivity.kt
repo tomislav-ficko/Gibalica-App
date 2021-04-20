@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
+import hr.fer.tel.gibalica.utils.EventType
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
@@ -94,7 +95,38 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
     private fun defineObserver() {
         viewModel.notificationLiveData.observe(this, {
-            // Action to be done when pose is detected
+            when (it?.eventType) {
+                EventType.DETECTED_LEFT_HAND -> {
+                    Timber.d("Left hand raised")
+                    showToast("Left hand raised")
+                }
+                EventType.DETECTED_RIGHT_HAND -> {
+                    Timber.d("Right hand raised")
+                    showToast("Right hand raised")
+                }
+                EventType.DETECTED_BOTH_HANDS -> {
+                    Timber.d("Both hands raised")
+                    showToast("Both hands raised")
+                }
+                EventType.DETECTED_SQUAT -> {
+                    Timber.d("Squat detected")
+                    showToast("Squat detected")
+                }
+                EventType.DETECTED_T_POSE -> {
+                    Timber.d("T-pose detected")
+                    showToast("T-pose detected")
+                }
+                EventType.DETECTED_STARTING_POSE -> {
+                    Timber.d("Starting pose detected")
+                    showToast("Starting pose detected")
+                }
+                EventType.DETECTED_ALL_JOINTS_VISIBLE -> {
+                    Timber.d("All joints visible")
+                    showToast("All joints visible")
+                }
+                else -> {
+                }
+            }
         })
     }
 
