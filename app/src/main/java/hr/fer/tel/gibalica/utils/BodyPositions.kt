@@ -52,20 +52,16 @@ enum class BodyPositions {
         }
 
         private fun handRaised(handDescriptor: Int, pose: Pose): Boolean {
-            return when (handDescriptor) {
-                LEFT_HAND -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
-                    isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+            with(pose.getLandmarks()) {
+                return when (handDescriptor) {
+                    LEFT_HAND -> isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
                             && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
-                }
-                RIGHT_HAND -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
-                    isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                    RIGHT_HAND -> isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
                             && isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
-                }
-                BOTH_HANDS -> with(pose.getRequiredLandmarksFor(BOTH_HANDS_RAISED)) {
-                    isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                    BOTH_HANDS -> isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
                             && isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                    else -> throw IllegalArgumentException("Wrong handDescriptor argument sent")
                 }
-                else -> throw IllegalArgumentException("Wrong handDescriptor argument sent")
             }
         }
 
