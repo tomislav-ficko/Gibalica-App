@@ -66,11 +66,24 @@ enum class BodyPositions {
         }
 
         private fun allJointsVisible(pose: Pose): Boolean {
-            return false
+            with(pose.getLandmarks()) {
+                return get(LEFT_SHOULDER)!!.isVisible()
+                        && get(RIGHT_SHOULDER)!!.isVisible()
+                        && get(LEFT_ELBOW)!!.isVisible()
+                        && get(RIGHT_ELBOW)!!.isVisible()
+                        && get(LEFT_HIP)!!.isVisible()
+                        && get(RIGHT_HIP)!!.isVisible()
+                        && get(LEFT_KNEE)!!.isVisible()
+                        && get(RIGHT_KNEE)!!.isVisible()
+            }
         }
 
         private fun startingPose(pose: Pose): Boolean {
-            return false
+            with(pose.getLandmarks()) {
+                return isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                        && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                        && isStandingUpright(this)
+            }
         }
 
         private fun isArmLowered(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
@@ -78,5 +91,11 @@ enum class BodyPositions {
 
         private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean =
             wrist.isHigherThan(elbow) && elbow.sidePositionEqualTo(wrist)
+
+        private fun isStandingUpright(landmarks: Map<Int, PoseLandmark>): Boolean =
+            landmarks[LEFT_SHOULDER]!!.isHeightEqualTo(landmarks[RIGHT_SHOULDER]!!)
+                    && landmarks[LEFT_HIP]!!.sidePositionEqualTo(landmarks[LEFT_KNEE]!!)
+                    && landmarks[RIGHT_HIP]!!.sidePositionEqualTo(landmarks[RIGHT_KNEE]!!)
+
     }
 }

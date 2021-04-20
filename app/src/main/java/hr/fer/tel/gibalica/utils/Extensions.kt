@@ -9,6 +9,7 @@ import java.util.*
 
 private const val X_THRESHOLD = 10f
 private const val Y_THRESHOLD = 20f
+private const val IN_FRAME_VISIBILITY_THRESHOLD = 0.8
 
 fun PoseLandmark.sidePositionEqualTo(other: PoseLandmark): Boolean {
     val min = other.position.x - X_THRESHOLD
@@ -23,12 +24,14 @@ fun PoseLandmark.isHigherThan(other: PoseLandmark): Boolean {
     return position.y > max
 }
 
-fun PoseLandmark.heightEqualTo(other: PoseLandmark): Boolean {
+fun PoseLandmark.isHeightEqualTo(other: PoseLandmark): Boolean {
     val min = other.position.y - Y_THRESHOLD
     val max = other.position.y + Y_THRESHOLD
     Timber.d("Checking height: Is ${position.y} (${getLandmarkName()}) in [$min..$max]?")
     return position.y in min..max
 }
+
+fun PoseLandmark.isVisible(): Boolean = inFrameLikelihood >= IN_FRAME_VISIBILITY_THRESHOLD
 
 fun PoseLandmark.getLandmarkName(): String {
     return when (landmarkType) {
