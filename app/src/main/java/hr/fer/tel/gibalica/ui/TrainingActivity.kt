@@ -2,13 +2,15 @@ package hr.fer.tel.gibalica.ui
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.os.Bundle
-import android.view.Surface
 import android.view.TextureView
 import android.widget.Toast
-import androidx.camera.core.*
+import androidx.activity.viewModels
+import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -16,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
+import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -27,12 +30,14 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ActivityTrainingBinding
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
 
-        initializeCamera()
+        initializeAndStartCamera()
+        defineObserver()
     }
 
     override fun onDestroy() {
@@ -74,7 +79,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
 
-    private fun initializeCamera() {
+    private fun initializeAndStartCamera() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (permissionsGranted())
@@ -85,6 +90,12 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_CODE_PERMISSIONS
             )
+    }
+
+    private fun defineObserver() {
+        viewModel.notificationLiveData.observe(this, {
+            // Action to be done when pose is detected
+        })
     }
 
     private fun startCamera() {
@@ -102,7 +113,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, ImageAnalyzer(this))
+                        it.setAnalyzer(cameraExecutor, ImageAnalyzer(viewModel))
                     }
                 cameraProvider.unbindAll()
 

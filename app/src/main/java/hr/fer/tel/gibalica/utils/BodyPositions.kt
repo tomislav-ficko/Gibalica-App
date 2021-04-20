@@ -12,6 +12,8 @@ enum class BodyPositions {
     BOTH_HANDS_RAISED,
     T_POSE,
     SQUAT,
+    STARTING_POSE,
+    ALL_JOINTS_VISIBLE,
     NONE;
 
     companion object {

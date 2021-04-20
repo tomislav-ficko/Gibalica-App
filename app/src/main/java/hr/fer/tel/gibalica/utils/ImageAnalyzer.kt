@@ -1,8 +1,6 @@
 package hr.fer.tel.gibalica.utils
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.Toast
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
@@ -10,40 +8,54 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
+import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
-class ImageAnalyzer(val context: Context) : ImageAnalysis.Analyzer {
+class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(imageProxy: ImageProxy) {
-        val mediaImage = imageProxy.image
-        if (mediaImage != null) {
-            val image =
-                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            val poseDetector = preparePoseDetector()
-            poseDetector.process(image)
-                .addOnSuccessListener { it?.let { detectPose(it) } }
-                .addOnFailureListener { Timber.d("Detection failed: $it") }
-                .addOnCompleteListener {
-                    mediaImage.close()
-                    imageProxy.close()
-                }
-        }
+        if (imageProxy.image != null)
+            analyzeImageUsingPoseDetector(imageProxy)
+    }
+
+    @SuppressLint("UnsafeExperimentalUsageError")
+    private fun analyzeImageUsingPoseDetector(imageProxy: ImageProxy) {
+        val mediaImage = imageProxy.image!!
+        val image =
+            InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        val poseDetector = preparePoseDetector()
+        poseDetector.process(image)
+            .addOnSuccessListener { it?.let { detectPose(it) } }
+            .addOnFailureListener { Timber.d("Detection failed: $it") }
+            .addOnCompleteListener {
+                mediaImage.close()
+                imageProxy.close()
+            }
     }
 
     private fun detectPose(pose: Pose) {
         Timber.d("Detecting pose...")
-        val message = when (BodyPositions.getPose(pose)) {
-            BodyPositions.NONE -> "Pose could not be detected"
-            BodyPositions.SQUAT -> "Squat detected"
-            BodyPositions.T_POSE -> "T pose detected"
-            BodyPositions.LEFT_HAND_RAISED -> "Left hand raised detected"
-            BodyPositions.RIGHT_HAND_RAISED -> "Right hand raised detected"
-            BodyPositions.BOTH_HANDS_RAISED -> "Both hands raised detected"
-        }
-        if (message != "Pose could not be detected") {
-            Timber.d(message)
-            displayToast(message)
+        with(viewModel.notificationLiveData) {
+            when (BodyPositions.getPose(pose)) {
+                BodyPositions.SQUAT ->
+                    postValue(NotificationEvent(EventType.DETECTED_SQUAT))
+                BodyPositions.T_POSE ->
+                    postValue(NotificationEvent(EventType.DETECTED_T_POSE))
+                BodyPositions.LEFT_HAND_RAISED ->
+                    postValue(NotificationEvent(EventType.DETECTED_LEFT_HAND))
+                BodyPositions.RIGHT_HAND_RAISED ->
+                    postValue(NotificationEvent(EventType.DETECTED_RIGHT_HAND))
+                BodyPositions.BOTH_HANDS_RAISED ->
+                    postValue(NotificationEvent(EventType.DETECTED_BOTH_HANDS))
+                BodyPositions.STARTING_POSE ->
+                    postValue(NotificationEvent(EventType.DETECTED_STARTING_POSE))
+                BodyPositions.ALL_JOINTS_VISIBLE ->
+                    postValue(NotificationEvent(EventType.DETECTED_ALL_JOINTS_VISIBLE))
+                BodyPositions.NONE -> {
+                    //No pose detected
+                }
+            }
         }
     }
 
@@ -52,9 +64,5 @@ class ImageAnalyzer(val context: Context) : ImageAnalysis.Analyzer {
             .setDetectorMode(PoseDetectorOptions.STREAM_MODE)
             .build()
         return PoseDetection.getClient(detectionOptions)
-    }
-
-    private fun displayToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
