@@ -27,14 +27,12 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ActivityTrainingBinding
-    private var displayRotation = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
 
         initializeCamera()
-        initializeViewfinder()
     }
 
     override fun onDestroy() {
@@ -68,7 +66,6 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
                 REQUEST_CODE_PERMISSIONS
             )
         }
-//        binding.txvViewFinder.addOnLayoutChangeListener { updateTransform() }
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
@@ -101,9 +98,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
                 val preview = Preview.Builder()
                     .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                     .build()
-                    .also {
-                        it.setSurfaceProvider(binding.txvViewFinder.surfaceProvider)
-                    }
+                    .also { it.setSurfaceProvider(binding.txvViewFinder.surfaceProvider) }
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .build()
                     .also {
@@ -121,41 +116,10 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
         )
     }
 
-    /**
-     * Used for automatically rotating content around the center of the screen, based on the orientation of the phone
-     */
-    private fun updateTransform() {
-        val matrix = Matrix()
-
-        with(binding.txvViewFinder) {
-            val centerX = width / 2f
-            val centerY = height / 2f
-
-            this@TrainingActivity.displayRotation =
-                when (display.rotation) {
-                    Surface.ROTATION_0 -> 0
-                    Surface.ROTATION_90 -> 90
-                    Surface.ROTATION_180 -> 180
-                    Surface.ROTATION_270 -> 270
-                    else -> throw UnsupportedOperationException("Unsupported display rotation")
-                }
-
-            matrix.postRotate(-displayRotation.toFloat(), centerX, centerY)
-//            setTransform(matrix)
-        }
-    }
-
     private fun inflateLayout() {
         binding = ActivityTrainingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Timber.d("Inflated!")
-    }
-
-    private fun initializeViewfinder() {
-        binding.txvViewFinder.apply {
-//            addOnLayoutChangeListener { updateTransform() }
-//            surfaceTextureListener = this@TrainingActivity
-        }
     }
 
     private fun showToast(message: String) =
