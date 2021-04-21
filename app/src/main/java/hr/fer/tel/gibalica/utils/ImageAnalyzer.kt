@@ -61,21 +61,28 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
 
     private fun detectPose(pose: Pose) {
         Timber.d("${poseToBeDetected.name} detection in progress.")
-        with(viewModel.notificationLiveData) {
-            val poseDetected =
-                when (poseToBeDetected) {
-                    GibalicaPose.STARTING_POSE -> pose.startingPoseDetected()
-                    GibalicaPose.ALL_JOINTS_VISIBLE -> pose.allJointsVisible()
-                    GibalicaPose.LEFT_HAND_RAISED -> pose.leftHandRaised()
-                    GibalicaPose.RIGHT_HAND_RAISED -> pose.rightHandRaised()
-                    GibalicaPose.BOTH_HANDS_RAISED -> pose.bothHandsRaised()
-                    GibalicaPose.T_POSE -> pose.tPosePerformed()
-                    GibalicaPose.SQUAT -> pose.squatPerformed()
-                    GibalicaPose.NONE -> false
-                }
-            if (poseDetected) postValue(NotificationEvent(EventType.POSE_DETECTED))
-            else postValue(NotificationEvent(EventType.POSE_NOT_DETECTED))
-        }
+        val poseDetected =
+            when (poseToBeDetected) {
+                GibalicaPose.STARTING_POSE -> pose.startingPoseDetected()
+                GibalicaPose.ALL_JOINTS_VISIBLE -> pose.allJointsVisible()
+                GibalicaPose.LEFT_HAND_RAISED -> pose.leftHandRaised()
+                GibalicaPose.RIGHT_HAND_RAISED -> pose.rightHandRaised()
+                GibalicaPose.BOTH_HANDS_RAISED -> pose.bothHandsRaised()
+                GibalicaPose.T_POSE -> pose.tPosePerformed()
+                GibalicaPose.SQUAT -> pose.squatPerformed()
+                GibalicaPose.NONE -> false
+            }
+        if (poseToBeDetected == GibalicaPose.STARTING_POSE && poseDetected)
+            saveStartingValues(pose)
+
+        if (poseDetected)
+            viewModel.notificationLiveData.postValue(NotificationEvent(EventType.POSE_DETECTED))
+        else
+            viewModel.notificationLiveData.postValue(NotificationEvent(EventType.POSE_NOT_DETECTED))
+    }
+
+    private fun saveStartingValues(pose: Pose) {
+        viewModel.startingPoseLandmarks = pose.getLandmarks()
     }
 
     private fun preparePoseDetector(): PoseDetector {
