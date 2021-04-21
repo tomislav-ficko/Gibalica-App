@@ -10,11 +10,22 @@ class PoseDetector {
     companion object {
 
         fun Pose.squatPerformed(): Boolean {
-            return false
+            if (landmarksNotPresent()) return false
+            logLandmarkDetails()
+            with(getLandmarks()) {
+                return get(LEFT_HIP)!!.isHeightEqualTo(get(LEFT_KNEE)!!)
+                        && get(RIGHT_HIP)!!.isHeightEqualTo(get(RIGHT_KNEE)!!)
+            }
         }
 
         fun Pose.tPosePerformed(): Boolean {
-            return false
+            if (landmarksNotPresent()) return false
+            logLandmarkDetails()
+            with(getLandmarks()) {
+                return get(LEFT_WRIST)!!.isHeightEqualTo(get(RIGHT_WRIST)!!)
+                        && get(LEFT_ELBOW)!!.isHeightEqualTo(get(RIGHT_ELBOW)!!)
+                        && isStandingUpright(this)
+            }
         }
 
         fun Pose.leftHandRaised(): Boolean {
