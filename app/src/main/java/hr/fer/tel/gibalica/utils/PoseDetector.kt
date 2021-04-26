@@ -9,7 +9,7 @@ class PoseDetector {
 
     companion object {
 
-        fun Pose.squatPerformed(): Boolean {
+        fun Pose.isSquatPerformed(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -18,7 +18,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.tPosePerformed(): Boolean {
+        fun Pose.isTPosePerformed(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -28,7 +28,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.leftHandRaised(): Boolean {
+        fun Pose.isLeftHandRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -37,7 +37,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.rightHandRaised(): Boolean {
+        fun Pose.isRightHandRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -46,7 +46,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.bothHandsRaised(): Boolean {
+        fun Pose.areBothHandsRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -55,7 +55,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.allJointsVisible(): Boolean {
+        fun Pose.areAllJointsVisible(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             with(getLandmarks()) {
@@ -72,7 +72,7 @@ class PoseDetector {
             }
         }
 
-        fun Pose.startingPoseDetected(): Boolean {
+        fun Pose.isStartingPoseDetected(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
             return with(getLandmarks()) {
