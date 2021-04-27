@@ -5,5 +5,7 @@ data class NotificationEvent(
 )
 
 enum class EventType {
-    COUNTER_FINISHED
+    COUNTER_FINISHED,
+    POSE_DETECTED,
+    POSE_NOT_DETECTED
 }

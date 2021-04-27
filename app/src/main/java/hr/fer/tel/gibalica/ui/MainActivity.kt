@@ -1,5 +1,6 @@
 package hr.fer.tel.gibalica.ui
 
+import android.content.Intent
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
@@ -14,11 +15,22 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
+        defineActions()
     }
 
     private fun inflateLayout() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         Timber.d("Inflated!")
+    }
+
+    private fun defineActions() {
+        binding.apply {
+            btnTraining.setOnClickListener {
+                startActivity(Intent(this@MainActivity, TrainingActivity::class.java))
+            }
+            btnCompetition.setOnClickListener {} // Mode not yet implemented
+            btnDayNight.setOnClickListener {} // Mode not yet implemented
+        }
     }
 }

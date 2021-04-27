@@ -10,6 +10,8 @@ import androidx.fragment.app.viewModels
 import hr.fer.tel.gibalica.databinding.FragmentGuideBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import hr.fer.tel.gibalica.utils.SliderAdapter
+import hr.fer.tel.gibalica.utils.invisible
+import hr.fer.tel.gibalica.utils.visible
 import hr.fer.tel.gibalica.viewModel.IntroViewModel
 import timber.log.Timber
 
@@ -46,26 +48,21 @@ class GuideFragment : Fragment() {
     }
 
     private fun defineListener() {
-        viewModel.nextButtonLiveData.observe(requireActivity(), {
-            it?.let { isButtonVisible ->
-                binding.apply {
-                    if (isButtonVisible) btnNext.visible()
-                    else btnNext.invisible()
+        viewModel.nextButtonLiveData.observe(
+            requireActivity(),
+            {
+                it?.let { isButtonVisible ->
+                    binding.apply {
+                        if (isButtonVisible) btnNext.visible()
+                        else btnNext.invisible()
+                    }
                 }
             }
-        })
+        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-}
-
-fun View.visible() {
-    visibility = View.VISIBLE
-}
-
-fun View.invisible() {
-    visibility = View.INVISIBLE
 }
