@@ -13,8 +13,10 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return get(LEFT_HIP)!!.isVerticalPositionEqualTo(get(LEFT_KNEE)!!) &&
-                        get(RIGHT_HIP)!!.isVerticalPositionEqualTo(get(RIGHT_KNEE)!!)
+                return get(LEFT_KNEE)!!.isHorizontalPositionHigherThan(get(LEFT_HIP)!!) &&
+                        get(RIGHT_HIP)!!.isHorizontalPositionHigherThan(get(RIGHT_KNEE)!!) &&
+                        get(LEFT_HIP)!!.isVerticalPositionHigherThan(get(LEFT_KNEE)!!) &&
+                        get(RIGHT_HIP)!!.isVerticalPositionHigherThan(get(RIGHT_KNEE)!!)
             }
         }
 
@@ -23,8 +25,7 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return get(LEFT_WRIST)!!.isVerticalPositionEqualTo(get(RIGHT_WRIST)!!) &&
-                        get(LEFT_ELBOW)!!.isVerticalPositionEqualTo(get(RIGHT_ELBOW)!!) &&
+                return armsSpreadOut(this) &&
                         isStandingUpright(this)
             }
         }
@@ -142,14 +143,31 @@ class PoseDetector {
         }
 
         private fun isStandingUpright(landmarks: Map<Int, PoseLandmark>): Boolean {
-            val shouldersInLine =
-                landmarks[LEFT_SHOULDER]!!.isVerticalPositionEqualTo(landmarks[RIGHT_SHOULDER]!!)
-            val leftLegInLine =
-                landmarks[LEFT_HIP]!!.isHorizontalPositionEqualTo(landmarks[LEFT_KNEE]!!)
-            val rightLegInLine =
-                landmarks[RIGHT_HIP]!!.isHorizontalPositionEqualTo(landmarks[RIGHT_KNEE]!!)
-            Timber.d("Checking if standing upright.. $shouldersInLine && $leftLegInLine && $rightLegInLine")
-            return shouldersInLine && leftLegInLine && rightLegInLine
+            with(landmarks) {
+                val shouldersInLine =
+                    get(LEFT_SHOULDER)!!.isVerticalPositionIdenticalTo(get(RIGHT_SHOULDER)!!)
+                val leftLegInLine =
+                    get(LEFT_HIP)!!.isHorizontalPositionIdenticalTo(get(LEFT_KNEE)!!)
+                val rightLegInLine =
+                    get(RIGHT_HIP)!!.isHorizontalPositionIdenticalTo(get(RIGHT_KNEE)!!)
+                val torsoInLine =
+                    get(LEFT_SHOULDER)!!.isHorizontalPositionEqualTo(get(LEFT_HIP)!!) &&
+                            get(RIGHT_SHOULDER)!!.isHorizontalPositionEqualTo(get(RIGHT_HIP)!!)
+                Timber.d("Checking if standing upright.. $shouldersInLine && $leftLegInLine && $rightLegInLine && $torsoInLine")
+                return shouldersInLine && leftLegInLine && rightLegInLine && torsoInLine
+            }
+        }
+
+        private fun armsSpreadOut(landmarks: Map<Int, PoseLandmark>): Boolean {
+            with(landmarks) {
+                val result = get(LEFT_WRIST)!!.isVerticalPositionEqualTo(get(LEFT_ELBOW)!!) &&
+                        get(LEFT_ELBOW)!!.isVerticalPositionEqualTo(get(LEFT_SHOULDER)!!) &&
+                        get(LEFT_SHOULDER)!!.isVerticalPositionEqualTo(get(RIGHT_SHOULDER)!!) &&
+                        get(RIGHT_SHOULDER)!!.isVerticalPositionEqualTo(get(RIGHT_ELBOW)!!) &&
+                        get(RIGHT_ELBOW)!!.isVerticalPositionEqualTo(get(RIGHT_WRIST)!!)
+                Timber.d("Checking if arms are spread out.. $result")
+                return result
+            }
         }
 
         private fun Pose.landmarksNotPresent(): Boolean {

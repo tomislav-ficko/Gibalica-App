@@ -9,6 +9,7 @@ import java.util.Date
 
 private const val X_THRESHOLD = 15f
 private const val Y_THRESHOLD = 15f
+private const val THRESHOLD_IDENTICAL = 5f
 private const val IN_FRAME_VISIBILITY_THRESHOLD = 0.8
 
 fun PoseLandmark.isHorizontalPositionEqualTo(other: PoseLandmark): Boolean {
@@ -18,11 +19,33 @@ fun PoseLandmark.isHorizontalPositionEqualTo(other: PoseLandmark): Boolean {
     return position.x in min..max
 }
 
+fun PoseLandmark.isHorizontalPositionIdenticalTo(other: PoseLandmark): Boolean {
+    val min = other.position.x - THRESHOLD_IDENTICAL
+    val max = other.position.x + THRESHOLD_IDENTICAL
+    val result = position.x in min..max
+    Timber.d("Checking if horizontal position is identical.. $result")
+    return result
+}
+
+fun PoseLandmark.isHorizontalPositionHigherThan(other: PoseLandmark): Boolean {
+    val otherX = other.position.x
+    Timber.d("Checking horizontal position: Is ${position.x} (${getLandmarkName()}) > $otherX (${other.getLandmarkName()})?")
+    return position.x > otherX
+}
+
 fun PoseLandmark.isVerticalPositionEqualTo(other: PoseLandmark): Boolean {
     val min = other.position.y - Y_THRESHOLD
     val max = other.position.y + Y_THRESHOLD
     Timber.d("Checking vertical position: Is ${position.y} (${getLandmarkName()}) in [$min..$max] (${other.getLandmarkName()})?")
     return position.y in min..max
+}
+
+fun PoseLandmark.isVerticalPositionIdenticalTo(other: PoseLandmark): Boolean {
+    val min = other.position.y - THRESHOLD_IDENTICAL
+    val max = other.position.y + THRESHOLD_IDENTICAL
+    val result = position.y in min..max
+    Timber.d("Checking if vertical position is identical.. $result")
+    return result
 }
 
 fun PoseLandmark.isVerticalPositionHigherThan(other: PoseLandmark): Boolean {
