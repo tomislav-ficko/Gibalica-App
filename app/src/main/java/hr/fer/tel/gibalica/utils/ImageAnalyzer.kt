@@ -53,7 +53,7 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
                     lastAnalyzedTimestamp = currentTimestamp
                 }
         } else {
-            Timber.d("Not analyzing, not enough time passed ($currentTimestamp).")
+            Timber.v("Not analyzing, not enough time passed ($currentTimestamp).")
             mediaImage.close()
             imageProxy.close()
         }
