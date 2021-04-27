@@ -34,8 +34,15 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
-                        && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                return isArmRaised(
+                    get(LEFT_SHOULDER)!!,
+                    get(LEFT_ELBOW)!!,
+                    get(LEFT_WRIST)!!
+                ) && isArmLowered(
+                    get(RIGHT_SHOULDER)!!,
+                    get(RIGHT_ELBOW)!!,
+                    get(RIGHT_WRIST)!!
+                )
             }
         }
 
@@ -44,8 +51,15 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
-                        && isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+                return isArmRaised(
+                    get(RIGHT_SHOULDER)!!,
+                    get(RIGHT_ELBOW)!!,
+                    get(RIGHT_WRIST)!!
+                ) && isArmLowered(
+                    get(LEFT_SHOULDER)!!,
+                    get(LEFT_ELBOW)!!,
+                    get(LEFT_WRIST)!!
+                )
             }
         }
 
@@ -54,8 +68,15 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
-                        && isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
+                return isArmRaised(
+                    get(LEFT_SHOULDER)!!,
+                    get(LEFT_ELBOW)!!,
+                    get(LEFT_WRIST)!!
+                ) && isArmRaised(
+                    get(RIGHT_SHOULDER)!!,
+                    get(RIGHT_ELBOW)!!,
+                    get(RIGHT_WRIST)!!
+                )
             }
         }
 
@@ -82,24 +103,42 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
-                        && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
-                        && isStandingUpright(this)
+                return isArmLowered(
+                    get(LEFT_SHOULDER)!!,
+                    get(LEFT_ELBOW)!!,
+                    get(LEFT_WRIST)!!
+                ) && isArmLowered(
+                    get(RIGHT_SHOULDER)!!,
+                    get(RIGHT_ELBOW)!!,
+                    get(RIGHT_WRIST)!!
+                ) && isStandingUpright(this)
             }
         }
 
-        private fun isArmLowered(elbow: PoseLandmark, wrist: PoseLandmark): Boolean {
+        private fun isArmLowered(
+            shoulder: PoseLandmark,
+            elbow: PoseLandmark,
+            wrist: PoseLandmark
+        ): Boolean {
             val elbowValueLower = wrist.isVerticalPositionHigherThan(elbow)
-            val armInLine = elbow.isHorizontalPositionEqualTo(wrist)
-            Timber.d("Checking if arm lowered.. wrist value higher than elbow ($elbowValueLower) && both in line ($armInLine)")
-            return elbowValueLower && armInLine
+            val shoulderValueLower = elbow.isVerticalPositionHigherThan(shoulder)
+            val wristInLine = elbow.isHorizontalPositionEqualTo(wrist)
+            val elbowInLine = shoulder.isHorizontalPositionEqualTo(elbow)
+            Timber.d("Checking if arm lowered.. $elbowValueLower && $shoulderValueLower && $wristInLine && $elbowInLine")
+            return elbowValueLower && shoulderValueLower && wristInLine && elbowInLine
         }
 
-        private fun isArmRaised(elbow: PoseLandmark, wrist: PoseLandmark): Boolean {
+        private fun isArmRaised(
+            shoulder: PoseLandmark,
+            elbow: PoseLandmark,
+            wrist: PoseLandmark
+        ): Boolean {
             val elbowValueHigher = elbow.isVerticalPositionHigherThan(wrist)
-            val armInLine = elbow.isHorizontalPositionEqualTo(wrist)
-            Timber.d("Checking if arm raised.. elbow value higher than wrist ($elbowValueHigher) && both in line ($armInLine)")
-            return elbowValueHigher && armInLine
+            val shoulderValueHigher = shoulder.isVerticalPositionHigherThan(elbow)
+            val wristInLine = elbow.isHorizontalPositionEqualTo(wrist)
+            val elbowInLine = shoulder.isHorizontalPositionEqualTo(elbow)
+            Timber.d("Checking if arm raised.. $elbowValueHigher && $shoulderValueHigher && $wristInLine && $elbowInLine")
+            return elbowValueHigher && shoulderValueHigher && wristInLine && elbowInLine
         }
 
         private fun isStandingUpright(landmarks: Map<Int, PoseLandmark>): Boolean {
