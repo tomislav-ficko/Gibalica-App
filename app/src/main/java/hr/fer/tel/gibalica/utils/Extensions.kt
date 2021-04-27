@@ -7,8 +7,8 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val X_THRESHOLD = 10f
-private const val Y_THRESHOLD = 20f
+private const val X_THRESHOLD = 15f
+private const val Y_THRESHOLD = 15f
 private const val IN_FRAME_VISIBILITY_THRESHOLD = 0.8
 
 fun PoseLandmark.isHorizontalPositionEqualTo(other: PoseLandmark): Boolean {
