@@ -124,9 +124,8 @@ class PoseDetector {
             val elbowValueLower = wrist.isVerticalPositionHigherThan(elbow)
             val shoulderValueLower = elbow.isVerticalPositionHigherThan(shoulder)
             val wristInLine = elbow.isHorizontalPositionEqualTo(wrist)
-            val elbowInLine = shoulder.isHorizontalPositionEqualTo(elbow)
-            Timber.d("Checking if arm lowered.. $elbowValueLower && $shoulderValueLower && $wristInLine && $elbowInLine")
-            return elbowValueLower && shoulderValueLower && wristInLine && elbowInLine
+            Timber.d("Checking if arm lowered.. $elbowValueLower && $shoulderValueLower && $wristInLine")
+            return elbowValueLower && shoulderValueLower && wristInLine
         }
 
         private fun isArmRaised(
@@ -137,9 +136,8 @@ class PoseDetector {
             val elbowValueHigher = elbow.isVerticalPositionHigherThan(wrist)
             val shoulderValueHigher = shoulder.isVerticalPositionHigherThan(elbow)
             val wristInLine = elbow.isHorizontalPositionEqualTo(wrist)
-            val elbowInLine = shoulder.isHorizontalPositionEqualTo(elbow)
-            Timber.d("Checking if arm raised.. $elbowValueHigher && $shoulderValueHigher && $wristInLine && $elbowInLine")
-            return elbowValueHigher && shoulderValueHigher && wristInLine && elbowInLine
+            Timber.d("Checking if arm raised.. $elbowValueHigher && $shoulderValueHigher && $wristInLine")
+            return elbowValueHigher && shoulderValueHigher && wristInLine
         }
 
         private fun isStandingUpright(landmarks: Map<Int, PoseLandmark>): Boolean {
@@ -150,11 +148,9 @@ class PoseDetector {
                     get(LEFT_HIP)!!.isHorizontalPositionIdenticalTo(get(LEFT_KNEE)!!)
                 val rightLegInLine =
                     get(RIGHT_HIP)!!.isHorizontalPositionIdenticalTo(get(RIGHT_KNEE)!!)
-                val torsoInLine =
-                    get(LEFT_SHOULDER)!!.isHorizontalPositionEqualTo(get(LEFT_HIP)!!) &&
-                            get(RIGHT_SHOULDER)!!.isHorizontalPositionEqualTo(get(RIGHT_HIP)!!)
-                Timber.d("Checking if standing upright.. $shouldersInLine && $leftLegInLine && $rightLegInLine && $torsoInLine")
-                return shouldersInLine && leftLegInLine && rightLegInLine && torsoInLine
+
+                Timber.d("Checking if standing upright.. $shouldersInLine && $leftLegInLine && $rightLegInLine")
+                return shouldersInLine && leftLegInLine && rightLegInLine
             }
         }
 
