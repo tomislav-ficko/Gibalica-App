@@ -6,31 +6,33 @@ import com.google.mlkit.vision.pose.PoseLandmark.*
 import timber.log.Timber
 
 class PoseDetector {
-
     companion object {
 
         fun Pose.isSquatPerformed(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
-                return get(LEFT_HIP)!!.isVerticalPositionEqualTo(get(LEFT_KNEE)!!)
-                        && get(RIGHT_HIP)!!.isVerticalPositionEqualTo(get(RIGHT_KNEE)!!)
+                return get(LEFT_HIP)!!.isVerticalPositionEqualTo(get(LEFT_KNEE)!!) &&
+                        get(RIGHT_HIP)!!.isVerticalPositionEqualTo(get(RIGHT_KNEE)!!)
             }
         }
 
         fun Pose.isTPosePerformed(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
-                return get(LEFT_WRIST)!!.isVerticalPositionEqualTo(get(RIGHT_WRIST)!!)
-                        && get(LEFT_ELBOW)!!.isVerticalPositionEqualTo(get(RIGHT_ELBOW)!!)
-                        && isStandingUpright(this)
+                return get(LEFT_WRIST)!!.isVerticalPositionEqualTo(get(RIGHT_WRIST)!!) &&
+                        get(LEFT_ELBOW)!!.isVerticalPositionEqualTo(get(RIGHT_ELBOW)!!) &&
+                        isStandingUpright(this)
             }
         }
 
         fun Pose.isLeftHandRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
                 return isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
                         && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
@@ -40,6 +42,7 @@ class PoseDetector {
         fun Pose.isRightHandRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
                 return isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
                         && isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
@@ -49,6 +52,7 @@ class PoseDetector {
         fun Pose.areBothHandsRaised(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
                 return isArmRaised(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
                         && isArmRaised(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
@@ -58,25 +62,27 @@ class PoseDetector {
         fun Pose.areAllJointsVisible(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
+
             with(getLandmarks()) {
-                return get(LEFT_SHOULDER)!!.isVisible()
-                        && get(RIGHT_SHOULDER)!!.isVisible()
-                        && get(LEFT_WRIST)!!.isVisible()
-                        && get(RIGHT_WRIST)!!.isVisible()
-                        && get(LEFT_ELBOW)!!.isVisible()
-                        && get(RIGHT_ELBOW)!!.isVisible()
-                        && get(LEFT_HIP)!!.isVisible()
-                        && get(RIGHT_HIP)!!.isVisible()
-                        && get(LEFT_KNEE)!!.isVisible()
-                        && get(RIGHT_KNEE)!!.isVisible()
+                return get(LEFT_SHOULDER)!!.isVisible() &&
+                        get(RIGHT_SHOULDER)!!.isVisible() &&
+                        get(LEFT_WRIST)!!.isVisible() &&
+                        get(RIGHT_WRIST)!!.isVisible() &&
+                        get(LEFT_ELBOW)!!.isVisible() &&
+                        get(RIGHT_ELBOW)!!.isVisible() &&
+                        get(LEFT_HIP)!!.isVisible() &&
+                        get(RIGHT_HIP)!!.isVisible() &&
+                        get(LEFT_KNEE)!!.isVisible() &&
+                        get(RIGHT_KNEE)!!.isVisible()
             }
         }
 
         fun Pose.isStartingPoseDetected(): Boolean {
             if (landmarksNotPresent()) return false
             logLandmarkDetails()
-            return with(getLandmarks()) {
-                isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
+
+            with(getLandmarks()) {
+                return isArmLowered(get(LEFT_ELBOW)!!, get(LEFT_WRIST)!!)
                         && isArmLowered(get(RIGHT_ELBOW)!!, get(RIGHT_WRIST)!!)
                         && isStandingUpright(this)
             }
@@ -103,7 +109,7 @@ class PoseDetector {
                 landmarks[LEFT_HIP]!!.isHorizontalPositionEqualTo(landmarks[LEFT_KNEE]!!)
             val rightLegInLine =
                 landmarks[RIGHT_HIP]!!.isHorizontalPositionEqualTo(landmarks[RIGHT_KNEE]!!)
-            Timber.d("Checking if standing upright.. shoulders in line ($shouldersInLine) && hips in line with knees ($leftLegInLine, $rightLegInLine)")
+            Timber.d("Checking if standing upright.. $shouldersInLine && $leftLegInLine && $rightLegInLine")
             return shouldersInLine && leftLegInLine && rightLegInLine
         }
 

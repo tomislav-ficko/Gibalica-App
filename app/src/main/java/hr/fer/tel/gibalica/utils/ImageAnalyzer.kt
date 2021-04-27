@@ -19,7 +19,7 @@ import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
+class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
 
     private var lastAnalyzedTimestamp = 0L
     private lateinit var poseToBeDetected: GibalicaPose
@@ -53,7 +53,7 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
                     lastAnalyzedTimestamp = currentTimestamp
                 }
         } else {
-            Timber.d("Not analyzing, not enough time passed ($currentTimestamp)")
+            Timber.d("Not analyzing, not enough time passed ($currentTimestamp).")
             mediaImage.close()
             imageProxy.close()
         }
@@ -75,10 +75,13 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
         if (poseToBeDetected == GibalicaPose.STARTING_POSE && poseDetected)
             saveStartingValues(pose)
 
-        if (poseDetected)
-            viewModel.notificationLiveData.postValue(NotificationEvent(EventType.POSE_DETECTED))
-        else
-            viewModel.notificationLiveData.postValue(NotificationEvent(EventType.POSE_NOT_DETECTED))
+        if (poseDetected) {
+            Timber.d("Pose detected.")
+            viewModel.notificationLiveData.value = NotificationEvent(EventType.POSE_DETECTED)
+        } else {
+            Timber.d("Pose not detected.")
+            viewModel.notificationLiveData.value = NotificationEvent(EventType.POSE_NOT_DETECTED)
+        }
     }
 
     private fun saveStartingValues(pose: Pose) {

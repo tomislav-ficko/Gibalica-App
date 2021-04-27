@@ -41,7 +41,8 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
 
         initializeAndStartCamera()
         defineObserver()
-        viewModel.poseDetectionLiveData.postValue(poseToBeDetected)
+        Timber.d("Sending first pose to analyzer.")
+        viewModel.poseDetectionLiveData.value = poseToBeDetected
     }
 
     override fun onDestroy() {
@@ -97,29 +98,33 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
     }
 
     private fun defineObserver() {
-        viewModel.notificationLiveData.observe(this, {
-            when (it?.eventType) {
-                EventType.POSE_DETECTED -> {
-                    val message = "${poseToBeDetected.name} detected"
-                    Timber.d(message)
-                    showToast(message)
-                    poseToBeDetected = when (poseToBeDetected) {
-                        GibalicaPose.ALL_JOINTS_VISIBLE -> GibalicaPose.STARTING_POSE
-                        GibalicaPose.STARTING_POSE -> GibalicaPose.LEFT_HAND_RAISED
-                        GibalicaPose.LEFT_HAND_RAISED -> GibalicaPose.RIGHT_HAND_RAISED
-                        GibalicaPose.RIGHT_HAND_RAISED -> GibalicaPose.BOTH_HANDS_RAISED
-                        else -> GibalicaPose.ALL_JOINTS_VISIBLE
+        viewModel.notificationLiveData.observe(
+            this,
+            {
+                when (it?.eventType) {
+                    EventType.POSE_DETECTED -> {
+                        val message = "${poseToBeDetected.name} detected"
+                        Timber.d(message)
+                        showToast(message)
+                        poseToBeDetected = when (poseToBeDetected) {
+                            GibalicaPose.ALL_JOINTS_VISIBLE -> GibalicaPose.STARTING_POSE
+                            GibalicaPose.STARTING_POSE -> GibalicaPose.LEFT_HAND_RAISED
+                            GibalicaPose.LEFT_HAND_RAISED -> GibalicaPose.RIGHT_HAND_RAISED
+                            GibalicaPose.RIGHT_HAND_RAISED -> GibalicaPose.BOTH_HANDS_RAISED
+                            else -> GibalicaPose.ALL_JOINTS_VISIBLE
+                        }
+                        viewModel.poseDetectionLiveData.value = poseToBeDetected
+                    }
+                    EventType.POSE_NOT_DETECTED -> {
+                        val message = "${poseToBeDetected.name} not detected"
+                        Timber.d(message)
+                        showToast(message)
+                    }
+                    else -> {
                     }
                 }
-                EventType.POSE_NOT_DETECTED -> {
-                    val message = "${poseToBeDetected.name} not detected"
-                    Timber.d(message)
-                    showToast(message)
-                }
-                else -> {
-                }
             }
-        })
+        )
     }
 
     private fun startCamera() {

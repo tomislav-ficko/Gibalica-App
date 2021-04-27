@@ -24,8 +24,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
     fun startCounter(value: Long) {
         Completable.timer(value, TimeUnit.SECONDS, Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                notificationLiveData.postValue(NotificationEvent(COUNTER_FINISHED))
-            }
+            .subscribe { notificationLiveData.value = NotificationEvent(COUNTER_FINISHED) }
     }
 }

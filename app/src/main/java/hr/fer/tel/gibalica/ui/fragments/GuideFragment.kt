@@ -48,14 +48,17 @@ class GuideFragment : Fragment() {
     }
 
     private fun defineListener() {
-        viewModel.nextButtonLiveData.observe(requireActivity(), {
-            it?.let { isButtonVisible ->
-                binding.apply {
-                    if (isButtonVisible) btnNext.visible()
-                    else btnNext.invisible()
+        viewModel.nextButtonLiveData.observe(
+            requireActivity(),
+            {
+                it?.let { isButtonVisible ->
+                    binding.apply {
+                        if (isButtonVisible) btnNext.visible()
+                        else btnNext.invisible()
+                    }
                 }
             }
-        })
+        )
     }
 
     override fun onDestroyView() {

@@ -5,7 +5,7 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 private const val X_THRESHOLD = 15f
 private const val Y_THRESHOLD = 15f
