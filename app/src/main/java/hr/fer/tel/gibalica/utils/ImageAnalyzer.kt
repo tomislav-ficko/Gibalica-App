@@ -8,13 +8,13 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetector
 import com.google.mlkit.vision.pose.defaults.PoseDetectorOptions
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.allJointsVisible
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.bothHandsRaised
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.leftHandRaised
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.rightHandRaised
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.squatPerformed
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.startingPoseDetected
-import hr.fer.tel.gibalica.utils.PoseDetector.Companion.tPosePerformed
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.areAllJointsVisible
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.areBothHandsRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isLeftHandRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isRightHandRaised
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isSquatPerformed
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStartingPoseDetected
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isTPosePerformed
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -63,13 +63,13 @@ class ImageAnalyzer(val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
         Timber.d("${poseToBeDetected.name} detection in progress.")
         val poseDetected =
             when (poseToBeDetected) {
-                GibalicaPose.STARTING_POSE -> pose.startingPoseDetected()
-                GibalicaPose.ALL_JOINTS_VISIBLE -> pose.allJointsVisible()
-                GibalicaPose.LEFT_HAND_RAISED -> pose.leftHandRaised()
-                GibalicaPose.RIGHT_HAND_RAISED -> pose.rightHandRaised()
-                GibalicaPose.BOTH_HANDS_RAISED -> pose.bothHandsRaised()
-                GibalicaPose.T_POSE -> pose.tPosePerformed()
-                GibalicaPose.SQUAT -> pose.squatPerformed()
+                GibalicaPose.STARTING_POSE -> pose.isStartingPoseDetected()
+                GibalicaPose.ALL_JOINTS_VISIBLE -> pose.areAllJointsVisible()
+                GibalicaPose.LEFT_HAND_RAISED -> pose.isLeftHandRaised()
+                GibalicaPose.RIGHT_HAND_RAISED -> pose.isRightHandRaised()
+                GibalicaPose.BOTH_HANDS_RAISED -> pose.areBothHandsRaised()
+                GibalicaPose.T_POSE -> pose.isTPosePerformed()
+                GibalicaPose.SQUAT -> pose.isSquatPerformed()
                 GibalicaPose.NONE -> false
             }
         if (poseToBeDetected == GibalicaPose.STARTING_POSE && poseDetected)

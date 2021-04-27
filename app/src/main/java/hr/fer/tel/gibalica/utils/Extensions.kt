@@ -11,24 +11,24 @@ private const val X_THRESHOLD = 10f
 private const val Y_THRESHOLD = 20f
 private const val IN_FRAME_VISIBILITY_THRESHOLD = 0.8
 
-fun PoseLandmark.sidePositionEqualTo(other: PoseLandmark): Boolean {
+fun PoseLandmark.isHorizontalPositionEqualTo(other: PoseLandmark): Boolean {
     val min = other.position.x - X_THRESHOLD
     val max = other.position.x + X_THRESHOLD
-    Timber.d("Checking side position: Is ${position.x} (${getLandmarkName()}) in [$min..$max]?")
+    Timber.d("Checking horizontal position: Is ${position.x} (${getLandmarkName()}) in [$min..$max] (${other.getLandmarkName()})?")
     return position.x in min..max
 }
 
-fun PoseLandmark.isHigherThan(other: PoseLandmark): Boolean {
-    val max = other.position.y + Y_THRESHOLD
-    Timber.d("Checking height: Is ${position.y} (${getLandmarkName()}) > $max?")
-    return position.y > max
-}
-
-fun PoseLandmark.isHeightEqualTo(other: PoseLandmark): Boolean {
+fun PoseLandmark.isVerticalPositionEqualTo(other: PoseLandmark): Boolean {
     val min = other.position.y - Y_THRESHOLD
     val max = other.position.y + Y_THRESHOLD
-    Timber.d("Checking height: Is ${position.y} (${getLandmarkName()}) in [$min..$max]?")
+    Timber.d("Checking vertical position: Is ${position.y} (${getLandmarkName()}) in [$min..$max] (${other.getLandmarkName()})?")
     return position.y in min..max
+}
+
+fun PoseLandmark.isVerticalPositionHigherThan(other: PoseLandmark): Boolean {
+    val otherY = other.position.y
+    Timber.d("Checking vertical position: Is ${position.y} (${getLandmarkName()}) > $otherY (${other.getLandmarkName()})?")
+    return position.y > otherY
 }
 
 fun PoseLandmark.isVisible(): Boolean = inFrameLikelihood >= IN_FRAME_VISIBILITY_THRESHOLD
