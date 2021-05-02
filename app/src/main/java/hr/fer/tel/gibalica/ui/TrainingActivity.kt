@@ -1,36 +1,22 @@
 package hr.fer.tel.gibalica.ui
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.SurfaceTexture
 import android.os.Bundle
-import android.view.TextureView
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.camera.core.AspectRatio
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.R
-import hr.fer.tel.gibalica.base.BaseActivity
+import hr.fer.tel.gibalica.base.BaseDetectionActivity
+import hr.fer.tel.gibalica.base.REQUEST_CODE_PERMISSIONS
 import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
 import hr.fer.tel.gibalica.utils.*
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
-private const val REQUEST_CODE_PERMISSIONS = 42
 
 @AndroidEntryPoint
-class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
+class TrainingActivity : BaseDetectionActivity() {
 
-    private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ActivityTrainingBinding
     private var poseToBeDetected: GibalicaPose
     private var poseToBeDetectedMessage: Int?
@@ -54,17 +40,11 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateLayout()
-
-        initializeAndStartCamera()
+        initializeAndStartCamera(binding.txvViewFinder, viewModel)
         defineObserver()
         setupOverlayViews()
         Timber.d("Sending initial pose to analyzer.")
         viewModel.poseDetectionLiveData.value = currentPose
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        cameraExecutor.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -75,43 +55,22 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (permissionsGranted())
-                binding.txvViewFinder.post { startCamera() }
+                initializeAndStartCamera(binding.txvViewFinder, viewModel)
             else {
-                showToast("Permissions not granted by the user.")
+                showErrorToast()
                 finish()
             }
         }
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        if (permissionsGranted()) {
-            binding.txvViewFinder.post { startCamera() }
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
+        initializeAndStartCamera(binding.txvViewFinder, viewModel)
     }
 
-    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
-
-    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean = true
-
-    override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
-
-    private fun initializeAndStartCamera() {
-        cameraExecutor = Executors.newSingleThreadExecutor()
-
-        if (permissionsGranted())
-            binding.txvViewFinder.post { startCamera() }
-        else
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                REQUEST_CODE_PERMISSIONS
-            )
+    private fun inflateLayout() {
+        binding = ActivityTrainingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        Timber.d("Inflated!")
     }
 
     private fun setupOverlayViews() {
@@ -197,51 +156,7 @@ class TrainingActivity : BaseActivity(), TextureView.SurfaceTextureListener {
         binding.tvMessage.visible()
     }
 
-    private fun hideMessage() {
-        binding.tvMessage.invisible()
+    private fun hideMessage() = binding.apply {
+        tvMessage.invisible()
     }
-
-    private fun startCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener(
-            {
-                val cameraProvider = cameraProviderFuture.get()
-
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
-                val preview = Preview.Builder()
-                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
-                    .build()
-                    .also { it.setSurfaceProvider(binding.txvViewFinder.surfaceProvider) }
-                val imageAnalyzer = ImageAnalysis.Builder()
-                    .build()
-                    .also {
-                        it.setAnalyzer(cameraExecutor, ImageAnalyzer(viewModel))
-                    }
-                cameraProvider.unbindAll()
-
-                try {
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalyzer)
-                } catch (e: Exception) {
-                    Timber.d("CameraProvider binding failed: $e")
-                }
-            },
-            ContextCompat.getMainExecutor(this)
-        )
-    }
-
-    private fun inflateLayout() {
-        binding = ActivityTrainingBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        Timber.d("Inflated!")
-    }
-
-    private fun showToast(message: String) =
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-
-    private fun permissionsGranted(): Boolean =
-        ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
 }
