@@ -25,7 +25,7 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
     private lateinit var poseToBeDetected: GibalicaPose
 
     init {
-        viewModel.poseDetectionLiveData.observeForever { it?.let { poseToBeDetected = it } }
+        viewModel.updatePoseLiveData.observeForever { it?.let { poseToBeDetected = it } }
     }
 
     @SuppressLint("UnsafeExperimentalUsageError")

@@ -13,29 +13,13 @@ import hr.fer.tel.gibalica.utils.*
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
+const val EXTRA_TRAINING_TYPE = "EXTRA_TRAINING_TYPE"
 
 @AndroidEntryPoint
 class TrainingActivity : BaseDetectionActivity() {
 
     private lateinit var binding: ActivityTrainingBinding
-    private var poseToBeDetected: GibalicaPose
-    private var poseToBeDetectedMessage: Int?
     private val viewModel by viewModels<MainViewModel>()
-    private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
-    private var poseProcessed = false
-
-    init {
-        poseToBeDetected = GibalicaPose.LEFT_HAND_RAISED
-        poseToBeDetectedMessage =
-            when (poseToBeDetected) {
-                GibalicaPose.LEFT_HAND_RAISED -> R.string.message_left_hand
-                GibalicaPose.RIGHT_HAND_RAISED -> R.string.message_right_hand
-                GibalicaPose.BOTH_HANDS_RAISED -> R.string.message_both_hands
-                GibalicaPose.SQUAT -> R.string.message_squat
-                GibalicaPose.T_POSE -> R.string.message_t_pose
-                else -> null
-            }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +27,10 @@ class TrainingActivity : BaseDetectionActivity() {
         initializeAndStartCamera(binding.txvViewFinder, viewModel)
         defineObserver()
         setupOverlayViews()
-        Timber.d("Sending initial pose to analyzer.")
-        viewModel.poseDetectionLiveData.value = currentPose
+
+        val trainingType = intent.getSerializableExtra(EXTRA_TRAINING_TYPE) as TrainingType
+        viewModel.initializeTraining(trainingType)
+        viewModel.startTraining()
     }
 
     override fun onRequestPermissionsResult(
@@ -73,9 +59,48 @@ class TrainingActivity : BaseDetectionActivity() {
         Timber.d("Inflated!")
     }
 
+    private fun defineObserver() {
+        viewModel.detectionResultLiveData.observe(
+            this,
+            {
+                it?.let { event ->
+                    when (event) {
+                        PoseDetectionEvent.NOT_DETECTED -> {
+                            hideMessage()
+                            showResponse(R.string.response_negative)
+                        }
+                        PoseDetectionEvent.INITIAL_POSE_DETECTED -> {
+                            showMessage(R.string.message_start)
+                        }
+                        PoseDetectionEvent.STARTING_POSE_DETECTED -> {
+                            viewModel.poseToBeDetectedMessage?.let { resId ->
+                                showMessage(resId)
+                            }
+                        }
+                        PoseDetectionEvent.WANTED_POSE_DETECTED -> {
+                            hideMessage()
+                            showResponse(R.string.response_positive)
+                        }
+                        PoseDetectionEvent.UPDATE_MESSAGE -> {
+                            viewModel.poseToBeDetectedMessage?.let { resId ->
+                                showMessage(resId)
+                            }
+                            hideResponse()
+                        }
+                        PoseDetectionEvent.FINISH_DETECTION -> {
+                            Timber.d("Finishing training.")
+                        }
+                        PoseDetectionEvent.HIDE_RESPONSE -> {
+                            hideResponse()
+                        }
+                    }
+                }
+            }
+        )
+    }
+
     private fun setupOverlayViews() {
-        binding.tvMessage.setText(R.string.message_initial)
-        showMessage()
+        showMessage(R.string.message_initial)
         hideResponse()
         binding.btnClose.setOnClickListener {
             startActivity(
@@ -85,75 +110,18 @@ class TrainingActivity : BaseDetectionActivity() {
         }
     }
 
-    private fun defineObserver() {
-        viewModel.notificationLiveData.observe(
-            this,
-            {
-                when (it?.eventType) {
-                    EventType.POSE_DETECTED -> {
-                        if (!poseProcessed) {
-                            Timber.d("${currentPose.name} detected")
-                            poseProcessed = true
-
-                            when (currentPose) {
-                                GibalicaPose.ALL_JOINTS_VISIBLE -> {
-                                    binding.tvMessage.setText(R.string.message_start)
-                                    startDetectingNewPose(GibalicaPose.STARTING_POSE)
-                                    viewModel.startCounter(1)
-                                }
-                                GibalicaPose.STARTING_POSE -> {
-                                    poseToBeDetectedMessage?.let { binding.tvMessage.setText(it) }
-                                    startDetectingNewPose(poseToBeDetected)
-                                    viewModel.startCounter(3)
-                                }
-                                else -> {
-                                    startDetectingNewPose(poseToBeDetected)
-                                    showResponse(R.string.response_positive, 3)
-                                }
-                            }
-                        }
-                    }
-                    EventType.POSE_NOT_DETECTED -> {
-                        if (!poseProcessed &&
-                            currentPose != GibalicaPose.ALL_JOINTS_VISIBLE &&
-                            currentPose != GibalicaPose.STARTING_POSE
-                        ) {
-                            Timber.d("${poseToBeDetected.name} not detected")
-                            poseProcessed = true
-
-                            hideMessage()
-                            showResponse(R.string.response_negative, 2)
-                        }
-                    }
-                    EventType.COUNTER_FINISHED -> {
-                        showMessage()
-                        hideResponse()
-                        poseProcessed = false
-                    }
-                }
-            }
-        )
+    private fun showResponse(resId: Int) = binding.apply {
+        tvResponse.setText(resId)
+        cvResponse.visible()
     }
 
-    private fun showResponse(resId: Int, timeSeconds: Long) {
-        binding.apply {
-            tvResponse.setText(resId)
-            cvResponse.visible()
-            viewModel.startCounter(timeSeconds)
-        }
+    private fun hideResponse() = binding.apply {
+        cvResponse.invisible()
     }
 
-    private fun startDetectingNewPose(pose: GibalicaPose) {
-        currentPose = pose
-        viewModel.poseDetectionLiveData.value = currentPose
-    }
-
-    private fun hideResponse() {
-        binding.cvResponse.invisible()
-    }
-
-    private fun showMessage() {
-        binding.tvMessage.visible()
+    private fun showMessage(resId: Int) = binding.apply {
+        tvMessage.setText(resId)
+        tvMessage.visible()
     }
 
     private fun hideMessage() = binding.apply {

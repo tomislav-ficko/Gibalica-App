@@ -5,6 +5,7 @@ import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityMainBinding
+import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -27,7 +28,10 @@ class MainActivity : BaseActivity() {
     private fun defineActions() {
         binding.apply {
             btnTraining.setOnClickListener {
-                startActivity(Intent(this@MainActivity, TrainingActivity::class.java))
+                startActivity(
+                    Intent(this@MainActivity, TrainingActivity::class.java)
+                        .putExtra(EXTRA_TRAINING_TYPE, TrainingType.LEFT_HAND)
+                )
             }
             btnCompetition.setOnClickListener {} // Mode not yet implemented
             btnDayNight.setOnClickListener {} // Mode not yet implemented
