@@ -21,8 +21,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
     var startingPoseLandmarks = mapOf<Int, PoseLandmark>()
 
-    fun startCounter(value: Long) {
-        Completable.timer(value, TimeUnit.SECONDS, Schedulers.computation())
+    fun startCounter(valueSeconds: Long) {
+        Completable.timer(valueSeconds, TimeUnit.SECONDS, Schedulers.computation())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe { notificationLiveData.value = NotificationEvent(COUNTER_FINISHED) }
     }
