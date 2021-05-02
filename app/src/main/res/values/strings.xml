@@ -11,13 +11,14 @@
     <string name="btn_competition">Competition</string>
     <string name="btn_day_night">Day-Night</string>
 
-    <string name="message_initial">Postavi mobitel uspravno na čvrstu podlogu i odmakni se s raširenim rukama dok se cijela/i ne vidiš na ekranu.</string>
-    <string name="message_start">Za početak treninga spusti ruke ravno uz tijelo!</string>
-    <string name="message_left_hand">Podigni lijevu ruku!</string>
-    <string name="message_right_hand">Podigni desnu ruku!</string>
-    <string name="message_both_hands">Podigni obje ruke!</string>
-    <string name="message_squat">Spusti se u čučanj!</string>
+    <string name="message_initial">Place your phone upright on a still surface and back away with your arms spread until you fit on the screen.</string>
+    <string name="message_start">To start the training, lower your arms to your side!</string>
+    <string name="message_left_hand">Raise your left hand!</string>
+    <string name="message_right_hand">Raise your right hand!</string>
+    <string name="message_both_hands">Raise both hands!</string>
+    <string name="message_squat">Do a squat!</string>
     <string name="message_t_pose">Napravi T pozu!</string>
-    <string name="response_positive">Bravo!</string>
-    <string name="response_negative">Pokušaj opet!</string>
+    <string name="response_positive">Well done!</string>
+    <string name="response_negative">Try again!</string>
+    <string name="message_permissions_not_granted">Camera permission not granted.</string>
 </resources>
