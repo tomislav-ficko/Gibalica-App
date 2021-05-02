@@ -15,4 +15,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_message"
+        style="@style/Message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/btn_close"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/message_initial"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="@dimen/size_btn_close"
+        android:layout_height="@dimen/size_btn_close"
+        android:layout_marginTop="@dimen/padding_btn_close"
+        android:layout_marginEnd="@dimen/margin_btn_close"
+        android:padding="4dp"
+        android:src="@drawable/ic_baseline_close_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@android:color/white" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_response"
+        style="@style/GibalicaCardView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible">
+
+        <TextView
+            android:id="@+id/tv_response"
+            style="@style/Response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/response_negative" />
+
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,4 +10,14 @@
     <string name="btn_training">Training</string>
     <string name="btn_competition">Competition</string>
     <string name="btn_day_night">Day-Night</string>
+
+    <string name="message_initial">Postavi mobitel uspravno na čvrstu podlogu i odmakni se s raširenim rukama dok se cijela/i ne vidiš na ekranu.</string>
+    <string name="message_start">Za početak treninga spusti ruke ravno uz tijelo!</string>
+    <string name="message_left_hand">Podigni lijevu ruku!</string>
+    <string name="message_right_hand">Podigni desnu ruku!</string>
+    <string name="message_both_hands">Podigni obje ruke!</string>
+    <string name="message_squat">Spusti se u čučanj!</string>
+    <string name="message_t_pose">Napravi T pozu!</string>
+    <string name="response_positive">Bravo!</string>
+    <string name="response_negative">Pokušaj opet!</string>
 </resources>
