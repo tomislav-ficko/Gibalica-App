@@ -3,7 +3,6 @@ package hr.fer.tel.gibalica.base
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.SurfaceTexture
-import android.os.Bundle
 import android.view.TextureView
 import android.widget.Toast
 import androidx.camera.core.AspectRatio
@@ -14,6 +13,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
 import hr.fer.tel.gibalica.viewModel.MainViewModel
@@ -23,13 +23,9 @@ import java.util.concurrent.Executors
 
 const val REQUEST_CODE_PERMISSIONS = 42
 
-open class BaseDetectionActivity : BaseActivity(), TextureView.SurfaceTextureListener {
+open class BaseDetectionFragment : Fragment(), TextureView.SurfaceTextureListener {
 
     private lateinit var cameraExecutor: ExecutorService
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -51,7 +47,7 @@ open class BaseDetectionActivity : BaseActivity(), TextureView.SurfaceTextureLis
             previewView.post { startCamera(previewView, viewModel) }
         else
             ActivityCompat.requestPermissions(
-                this,
+                requireActivity(),
                 arrayOf(Manifest.permission.CAMERA),
                 REQUEST_CODE_PERMISSIONS
             )
@@ -59,19 +55,19 @@ open class BaseDetectionActivity : BaseActivity(), TextureView.SurfaceTextureLis
 
     protected fun permissionsGranted(): Boolean =
         ContextCompat.checkSelfPermission(
-            this,
+            requireContext(),
             Manifest.permission.CAMERA
         ) == PackageManager.PERMISSION_GRANTED
 
     protected fun showErrorToast() =
         Toast.makeText(
-            this,
+            requireContext(),
             getString(R.string.message_permissions_not_granted),
             Toast.LENGTH_SHORT
         ).show()
 
     private fun startCamera(previewView: PreviewView, viewModel: MainViewModel) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(
             {
                 val cameraProvider = cameraProviderFuture.get()
@@ -94,7 +90,7 @@ open class BaseDetectionActivity : BaseActivity(), TextureView.SurfaceTextureLis
                     Timber.d("CameraProvider binding failed: $e")
                 }
             },
-            ContextCompat.getMainExecutor(this)
+            ContextCompat.getMainExecutor(requireContext())
         )
     }
 }

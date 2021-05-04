@@ -1,36 +1,55 @@
-package hr.fer.tel.gibalica.ui
+package hr.fer.tel.gibalica.ui.fragments
 
-import android.content.Intent
 import android.graphics.SurfaceTexture
 import android.os.Bundle
-import androidx.activity.viewModels
-import dagger.hilt.android.AndroidEntryPoint
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.R
-import hr.fer.tel.gibalica.base.BaseDetectionActivity
+import hr.fer.tel.gibalica.base.BaseDetectionFragment
 import hr.fer.tel.gibalica.base.REQUEST_CODE_PERMISSIONS
-import hr.fer.tel.gibalica.databinding.ActivityTrainingBinding
-import hr.fer.tel.gibalica.utils.*
+import hr.fer.tel.gibalica.databinding.FragmentTrainingBinding
+import hr.fer.tel.gibalica.utils.PoseDetectionEvent
+import hr.fer.tel.gibalica.utils.TrainingType
+import hr.fer.tel.gibalica.utils.invisible
+import hr.fer.tel.gibalica.utils.visible
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
-const val EXTRA_TRAINING_TYPE = "EXTRA_TRAINING_TYPE"
+class TrainingFragment : BaseDetectionFragment() {
 
-@AndroidEntryPoint
-class TrainingActivity : BaseDetectionActivity() {
-
-    private lateinit var binding: ActivityTrainingBinding
+    private var _binding: FragmentTrainingBinding? = null
+    private val binding: FragmentTrainingBinding
+        get() = _binding!!
     private val viewModel by viewModels<MainViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        inflateLayout()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentTrainingBinding.inflate(inflater, container, false)
+        Timber.d("Inflated!")
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         initializeAndStartCamera(binding.txvViewFinder, viewModel)
         defineObserver()
         setupOverlayViews()
 
-        val trainingType = intent.getSerializableExtra(EXTRA_TRAINING_TYPE) as TrainingType
-        viewModel.initializeTraining(trainingType)
+        // Receive TrainingType from SelectorFragment
+        viewModel.initializeTraining(TrainingType.LEFT_HAND)
         viewModel.startTraining()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onRequestPermissionsResult(
@@ -44,7 +63,7 @@ class TrainingActivity : BaseDetectionActivity() {
                 initializeAndStartCamera(binding.txvViewFinder, viewModel)
             else {
                 showErrorToast()
-                finish()
+                returnToMainFragment()
             }
         }
     }
@@ -53,15 +72,9 @@ class TrainingActivity : BaseDetectionActivity() {
         initializeAndStartCamera(binding.txvViewFinder, viewModel)
     }
 
-    private fun inflateLayout() {
-        binding = ActivityTrainingBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        Timber.d("Inflated!")
-    }
-
     private fun defineObserver() {
         viewModel.detectionResultLiveData.observe(
-            this,
+            requireActivity(),
             {
                 it?.let { event ->
                     when (event) {
@@ -102,12 +115,11 @@ class TrainingActivity : BaseDetectionActivity() {
     private fun setupOverlayViews() {
         showMessage(R.string.message_initial)
         hideResponse()
-        binding.btnClose.setOnClickListener {
-            startActivity(
-                Intent(this@TrainingActivity, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            )
-        }
+        binding.btnClose.setOnClickListener { returnToMainFragment() }
+    }
+
+    private fun returnToMainFragment() {
+        findNavController().navigate(R.id.action_trainingFragment_to_mainFragment)
     }
 
     private fun showResponse(resId: Int) = binding.apply {
