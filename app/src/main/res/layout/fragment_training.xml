@@ -30,15 +30,11 @@
 
     <ImageView
         android:id="@+id/btn_close"
-        android:layout_width="@dimen/size_btn_close"
-        android:layout_height="@dimen/size_btn_close"
-        android:layout_marginTop="@dimen/padding_btn_close"
-        android:layout_marginEnd="@dimen/margin_btn_close"
-        android:padding="4dp"
+        style="@style/ImageButton"
+        android:layout_marginEnd="@dimen/margin_img_btn"
         android:src="@drawable/ic_baseline_close_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@android:color/white" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_response"

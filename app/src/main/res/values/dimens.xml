@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin_sides">24dp</dimen>
-    <dimen name="margin_button">64dp</dimen>
-    <dimen name="margin_slider_indicator">15dp</dimen>
-    <dimen name="margin_side_cv_response">16dp</dimen>
-    <dimen name="margin_bottom_cv_response">24dp</dimen>
-
-    <dimen name="padding_slider_indicator">3dp</dimen>
-    <dimen name="padding_btn_close">4dp</dimen>
-    <dimen name="padding_message">12dp</dimen>
-    <dimen name="padding_response">8dp</dimen>
-
     <dimen name="size_title">32sp</dimen>
     <dimen name="size_body">18sp</dimen>
-    <dimen name="size_button">16sp</dimen>
-    <dimen name="size_btn_close">48dp</dimen>
-    <dimen name="margin_btn_close">4dp</dimen>
-    <dimen name="size_text_message">36sp</dimen>
-    <dimen name="size_text_response">36sp</dimen>
 
+    <dimen name="margin_button">64dp</dimen>
+    <dimen name="size_button">16sp</dimen>
     <dimen name="radius_btn">32dp</dimen>
-    <dimen name="radius_card_view_guide">8dp</dimen>
+
+    <dimen name="margin_slider_indicator">15dp</dimen>
+    <dimen name="padding_slider_indicator">3dp</dimen>
     <dimen name="radius_slider_indicator">2dp</dimen>
+
+    <dimen name="margin_side_cv_response">16dp</dimen>
+    <dimen name="margin_bottom_cv_response">24dp</dimen>
     <dimen name="radius_cv_response">16dp</dimen>
+
+    <dimen name="margin_img_btn">4dp</dimen>
+    <dimen name="padding_img_btn">4dp</dimen>
+    <dimen name="size_img_btn">48dp</dimen>
+
+    <dimen name="size_text_message">36sp</dimen>
+    <dimen name="padding_message">12dp</dimen>
+    <dimen name="size_text_response">36sp</dimen>
+    <dimen name="padding_response">8dp</dimen>
+
+    <dimen name="radius_card_view_guide">8dp</dimen>
+    <dimen name="margin_btn_training_selection">32dp</dimen>
 </resources>
