@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentTrainingSelectionBinding
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
@@ -31,15 +30,13 @@ class TrainingSelectionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            ivBack.setOnClickListener {
-                findNavController().navigate(R.id.action_trainingSelectionFragment_to_mainFragment)
-            }
-            btnLeftHand.setOnClickListener { navigateToTrainingFragment(TrainingType.LEFT_HAND) }
-            btnRightHand.setOnClickListener { navigateToTrainingFragment(TrainingType.RIGHT_HAND) }
-            btnBothHands.setOnClickListener { navigateToTrainingFragment(TrainingType.BOTH_HANDS) }
-            btnTPose.setOnClickListener { navigateToTrainingFragment(TrainingType.T_POSE) }
-            btnSquat.setOnClickListener { navigateToTrainingFragment(TrainingType.SQUAT) }
-            btnRandom.setOnClickListener { navigateToTrainingFragment(TrainingType.RANDOM) }
+            ivBack.setOnClickListener { returnToMainFragment() }
+            btnLeftHand.setOnClickListener { navigateToIllustrationFragment(TrainingType.LEFT_HAND) }
+            btnRightHand.setOnClickListener { navigateToIllustrationFragment(TrainingType.RIGHT_HAND) }
+            btnBothHands.setOnClickListener { navigateToIllustrationFragment(TrainingType.BOTH_HANDS) }
+            btnTPose.setOnClickListener { navigateToIllustrationFragment(TrainingType.T_POSE) }
+            btnSquat.setOnClickListener { navigateToIllustrationFragment(TrainingType.SQUAT) }
+            btnRandom.setOnClickListener { navigateToTrainingFragment() }
         }
     }
 
@@ -48,10 +45,23 @@ class TrainingSelectionFragment : Fragment() {
         _binding = null
     }
 
-    private fun navigateToTrainingFragment(trainingType: TrainingType) {
+    private fun returnToMainFragment() {
+        findNavController().navigate(
+            TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToMainFragment()
+        )
+    }
+
+    private fun navigateToIllustrationFragment(trainingType: TrainingType) {
         findNavController().navigate(
             TrainingSelectionFragmentDirections
-                .actionTrainingSelectionFragmentToTrainingFragment(trainingType)
+                .actionTrainingSelectionFragmentToIllustrationFragment(trainingType)
+        )
+    }
+
+    private fun navigateToTrainingFragment() {
+        findNavController().navigate(
+            TrainingSelectionFragmentDirections
+                .actionTrainingSelectionFragmentToTrainingFragment(TrainingType.RANDOM)
         )
     }
 }

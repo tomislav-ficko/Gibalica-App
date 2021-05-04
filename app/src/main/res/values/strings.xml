@@ -32,6 +32,8 @@
     <string name="btn_squat">Squat</string>
     <string name="btn_random">Random</string>
 
+    <string name="illustration_button">Start</string>
+
     <string name="finish_description">Thank you for training!</string>
     <string name="finish_title">Bravo</string>
     <string name="finish_button">Back to main screen</string>

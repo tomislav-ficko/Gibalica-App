@@ -35,11 +35,14 @@
         android:label="fragment_training_selection"
         tools:layout="@layout/fragment_training_selection">
         <action
-            android:id="@+id/action_trainingSelectionFragment_to_trainingFragment"
-            app:destination="@id/trainingFragment" />
-        <action
             android:id="@+id/action_trainingSelectionFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_illustrationFragment"
+            app:destination="@id/illustrationFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment" />
     </fragment>
     <fragment
         android:id="@+id/finishFragment"
@@ -49,5 +52,20 @@
         <action
             android:id="@+id/action_finishFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/illustrationFragment"
+        android:name="hr.fer.tel.gibalica.viewModel.IllustrationFragment"
+        android:label="fragment_illustration"
+        tools:layout="@layout/fragment_illustration" >
+        <action
+            android:id="@+id/action_illustrationFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <action
+            android:id="@+id/action_illustrationFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
     </fragment>
 </navigation>
