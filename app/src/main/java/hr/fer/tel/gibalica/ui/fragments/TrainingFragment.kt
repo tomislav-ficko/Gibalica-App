@@ -104,6 +104,7 @@ class TrainingFragment : BaseDetectionFragment() {
                         }
                         PoseDetectionEvent.FINISH_DETECTION -> {
                             Timber.d("Finishing training.")
+                            findNavController().navigate(R.id.action_trainingFragment_to_finishFragment)
                         }
                         PoseDetectionEvent.HIDE_RESPONSE -> {
                             hideResponse()

@@ -31,4 +31,8 @@
     <string name="btn_t_pose">T poza</string>
     <string name="btn_squat">Čučanj</string>
     <string name="btn_random">Razno</string>
+
+    <string name="finish_description">Hvala ti na treniranju!</string>
+    <string name="finish_title">Bravo</string>
+    <string name="finish_button">Natrag na početni zaslon</string>
 </resources>

@@ -25,6 +25,9 @@
         <argument
             android:name="trainingType"
             app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <action
+            android:id="@+id/action_trainingFragment_to_finishFragment"
+            app:destination="@id/finishFragment" />
     </fragment>
     <fragment
         android:id="@+id/trainingSelectionFragment"
@@ -36,6 +39,15 @@
             app:destination="@id/trainingFragment" />
         <action
             android:id="@+id/action_trainingSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.FinishFragment"
+        android:label="fragment_finish"
+        tools:layout="@layout/fragment_finish">
+        <action
+            android:id="@+id/action_finishFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
 </navigation>
