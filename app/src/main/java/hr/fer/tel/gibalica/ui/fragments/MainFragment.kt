@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
 import timber.log.Timber
 
@@ -30,10 +29,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            btnTraining.setOnClickListener {
-                Timber.d("Navigating to TrainingFragment")
-                findNavController().navigate(R.id.action_mainFragment_to_trainingSelectionFragment)
-            }
+            btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
             btnCompetition.setOnClickListener {} // Mode not yet implemented
             btnDayNight.setOnClickListener {} // Mode not yet implemented
         }
@@ -42,5 +38,12 @@ class MainFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun navigateToTrainingSelectionFragment() {
+        Timber.d("Navigating to TrainingSelectionFragment")
+        findNavController().navigate(
+            MainFragmentDirections.actionMainFragmentToTrainingSelectionFragment()
+        )
     }
 }

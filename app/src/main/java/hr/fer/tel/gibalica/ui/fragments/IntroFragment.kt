@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentIntroBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import timber.log.Timber
@@ -32,13 +31,17 @@ class IntroFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            btnStartGuide.setOnClickListener {
-                findNavController().navigate(R.id.action_introFragment_to_guideFragment)
-            }
+            btnStartGuide.setOnClickListener { navigateToGuideFragment() }
             btnSkip.setOnClickListener {
                 startActivity(Intent(requireContext(), MainActivity::class.java))
             }
         }
+    }
+
+    private fun navigateToGuideFragment() {
+        findNavController().navigate(
+            IntroFragmentDirections.actionIntroFragmentToGuideFragment()
+        )
     }
 
     override fun onDestroyView() {

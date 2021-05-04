@@ -9,8 +9,6 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="background_app">#FFFFFF</color>
-    <color name="background_splash">#FFFFFF</color>
-    <color name="background_intro">#FFFFFF</color>
 
     <color name="background_button">@color/teal_200</color>
     <color name="background_button_pressed">@color/teal_700</color>

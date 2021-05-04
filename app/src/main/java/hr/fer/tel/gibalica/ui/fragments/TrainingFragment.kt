@@ -102,13 +102,8 @@ class TrainingFragment : BaseDetectionFragment() {
                             }
                             hideResponse()
                         }
-                        PoseDetectionEvent.FINISH_DETECTION -> {
-                            Timber.d("Finishing training.")
-                            findNavController().navigate(R.id.action_trainingFragment_to_finishFragment)
-                        }
-                        PoseDetectionEvent.HIDE_RESPONSE -> {
-                            hideResponse()
-                        }
+                        PoseDetectionEvent.FINISH_DETECTION -> navigateToFinishFragment()
+                        PoseDetectionEvent.HIDE_RESPONSE -> hideResponse()
                     }
                 }
             }
@@ -122,7 +117,16 @@ class TrainingFragment : BaseDetectionFragment() {
     }
 
     private fun returnToMainFragment() {
-        findNavController().navigate(R.id.action_trainingFragment_to_mainFragment)
+        findNavController().navigate(
+            TrainingFragmentDirections.actionTrainingFragmentToMainFragment()
+        )
+    }
+
+    private fun navigateToFinishFragment() {
+        Timber.d("Finishing training.")
+        findNavController().navigate(
+            TrainingFragmentDirections.actionTrainingFragmentToFinishFragment()
+        )
     }
 
     private fun showResponse(resId: Int) = binding.apply {

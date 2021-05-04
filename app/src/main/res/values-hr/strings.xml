@@ -18,7 +18,7 @@
     <string name="message_right_hand">Podigni desnu ruku!</string>
     <string name="message_both_hands">Podigni obje ruke!</string>
     <string name="message_squat">Spusti se u čučanj!</string>
-    <string name="message_t_pose">Make T pose!</string>
+    <string name="message_t_pose">Napravi T pozu!</string>
     <string name="response_positive">Bravo!</string>
     <string name="response_negative">Pokušaj opet!</string>
     <string name="message_permissions_not_granted">Dopuštenje za korištenje kamere nije dobiveno.</string>

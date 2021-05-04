@@ -63,14 +63,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
 
                         when (currentPose) {
                             GibalicaPose.ALL_JOINTS_VISIBLE -> {
-                                notifyActivityAboutEvent(PoseDetectionEvent.INITIAL_POSE_DETECTED)
+                                notifyViewAboutEvent(PoseDetectionEvent.INITIAL_POSE_DETECTED)
                                 currentPose = GibalicaPose.STARTING_POSE
                                 startDetectingCurrentPose()
                                 currentCounterCause = CounterCause.DO_NOT_DETECT
                                 startCounter(1)
                             }
                             GibalicaPose.STARTING_POSE -> {
-                                notifyActivityAboutEvent(PoseDetectionEvent.STARTING_POSE_DETECTED)
+                                notifyViewAboutEvent(PoseDetectionEvent.STARTING_POSE_DETECTED)
                                 currentPose = poseToBeDetected
                                 startDetectingCurrentPose()
                                 currentCounterCause = CounterCause.DO_NOT_DETECT
@@ -78,11 +78,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                             }
                             else -> {
                                 if (!randomTraining) {
-                                    notifyActivityAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
+                                    notifyViewAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
                                     currentCounterCause = CounterCause.FINISH_DETECTION
                                     startCounter(3)
                                 } else {
-                                    notifyActivityAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
+                                    notifyViewAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
                                     currentPose = getRandomPose()
                                     currentCounterCause = CounterCause.SWITCHING_TO_NEW_POSE
                                     startCounter(3)
@@ -100,7 +100,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
                         Timber.d("${poseToBeDetected.name} not detected")
                         processingPose = true
 
-                        notifyActivityAboutEvent(PoseDetectionEvent.NOT_DETECTED)
+                        notifyViewAboutEvent(PoseDetectionEvent.NOT_DETECTED)
                         currentCounterCause = CounterCause.HIDE_NEGATIVE_RESULT
                         startCounter(2)
                     }
@@ -108,11 +108,11 @@ class MainViewModel @Inject constructor() : ViewModel() {
                 EventType.COUNTER_FINISHED -> {
                     when (currentCounterCause) {
                         CounterCause.FINISH_DETECTION ->
-                            notifyActivityAboutEvent(PoseDetectionEvent.FINISH_DETECTION)
+                            notifyViewAboutEvent(PoseDetectionEvent.FINISH_DETECTION)
                         CounterCause.SWITCHING_TO_NEW_POSE ->
-                            notifyActivityAboutEvent(PoseDetectionEvent.UPDATE_MESSAGE)
+                            notifyViewAboutEvent(PoseDetectionEvent.UPDATE_MESSAGE)
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
-                            notifyActivityAboutEvent(PoseDetectionEvent.HIDE_RESPONSE)
+                            notifyViewAboutEvent(PoseDetectionEvent.HIDE_RESPONSE)
                             processingPose = false
                             // In order to prevent multiple negative messages from appearing one
                             // after the other, I would have to introduce another semaphore which would
@@ -139,7 +139,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         updatePoseLiveData.value = currentPose
     }
 
-    private fun notifyActivityAboutEvent(detectionEvent: PoseDetectionEvent) {
+    private fun notifyViewAboutEvent(detectionEvent: PoseDetectionEvent) {
         detectionResultLiveData.value = detectionEvent
     }
 
