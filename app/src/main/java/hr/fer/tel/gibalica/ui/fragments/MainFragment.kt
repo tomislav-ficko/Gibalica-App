@@ -32,7 +32,7 @@ class MainFragment : Fragment() {
         binding.apply {
             btnTraining.setOnClickListener {
                 Timber.d("Navigating to TrainingFragment")
-                findNavController().navigate(R.id.action_mainFragment_to_trainingFragment)
+                findNavController().navigate(R.id.action_mainFragment_to_trainingSelectionFragment)
             }
             btnCompetition.setOnClickListener {} // Mode not yet implemented
             btnDayNight.setOnClickListener {} // Mode not yet implemented

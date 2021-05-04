@@ -1,5 +1,7 @@
 package hr.fer.tel.gibalica.utils
 
+import java.io.Serializable
+
 enum class GibalicaPose {
     LEFT_HAND_RAISED,
     RIGHT_HAND_RAISED,
@@ -11,7 +13,7 @@ enum class GibalicaPose {
     NONE
 }
 
-enum class TrainingType {
+enum class TrainingType : Serializable {
     LEFT_HAND,
     RIGHT_HAND,
     BOTH_HANDS,

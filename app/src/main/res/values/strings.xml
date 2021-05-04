@@ -22,4 +22,13 @@
     <string name="response_positive">Well done!</string>
     <string name="response_negative">Try again!</string>
     <string name="message_permissions_not_granted">Camera permission not granted.</string>
+
+    <string name="training_selection_title">Choose a position</string>
+    <string name="training_selection_description">Which position do you want to practice?</string>
+    <string name="btn_left_hand">Left hand</string>
+    <string name="btn_right_hand">Right hand</string>
+    <string name="btn_both_hands">Both hands</string>
+    <string name="btn_t_pose">T pose</string>
+    <string name="btn_squat">Squat</string>
+    <string name="btn_random">Random</string>
 </resources>

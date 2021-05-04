@@ -7,12 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.base.BaseDetectionFragment
 import hr.fer.tel.gibalica.base.REQUEST_CODE_PERMISSIONS
 import hr.fer.tel.gibalica.databinding.FragmentTrainingBinding
 import hr.fer.tel.gibalica.utils.PoseDetectionEvent
-import hr.fer.tel.gibalica.utils.TrainingType
 import hr.fer.tel.gibalica.utils.invisible
 import hr.fer.tel.gibalica.utils.visible
 import hr.fer.tel.gibalica.viewModel.MainViewModel
@@ -23,6 +23,7 @@ class TrainingFragment : BaseDetectionFragment() {
     private var _binding: FragmentTrainingBinding? = null
     private val binding: FragmentTrainingBinding
         get() = _binding!!
+    private val args: TrainingFragmentArgs by navArgs()
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreateView(
@@ -42,8 +43,9 @@ class TrainingFragment : BaseDetectionFragment() {
         defineObserver()
         setupOverlayViews()
 
-        // Receive TrainingType from SelectorFragment
-        viewModel.initializeTraining(TrainingType.LEFT_HAND)
+        val trainingType = args.trainingType
+        Timber.d("Starting training for type ${trainingType.name}")
+        viewModel.initializeTraining(trainingType)
         viewModel.startTraining()
     }
 

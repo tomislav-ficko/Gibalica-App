@@ -22,4 +22,13 @@
     <string name="response_positive">Bravo!</string>
     <string name="response_negative">Pokušaj opet!</string>
     <string name="message_permissions_not_granted">Dopuštenje za korištenje kamere nije dobiveno.</string>
+
+    <string name="training_selection_title">Odaberi položaj</string>
+    <string name="training_selection_description">Koji položaj želiš vježbati?</string>
+    <string name="btn_left_hand">Lijeva ruka</string>
+    <string name="btn_right_hand">Desna ruka</string>
+    <string name="btn_both_hands">Obje ruke</string>
+    <string name="btn_t_pose">T poza</string>
+    <string name="btn_squat">Čučanj</string>
+    <string name="btn_random">Razno</string>
 </resources>
