@@ -12,6 +12,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
@@ -144,7 +145,14 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun getRandomPose(): GibalicaPose {
-        TODO("Not yet implemented")
+        val numberOfPoses = TrainingType.values().size
+        return when (Random.nextInt(numberOfPoses)) {
+            0 -> GibalicaPose.LEFT_HAND_RAISED
+            1 -> GibalicaPose.RIGHT_HAND_RAISED
+            2 -> GibalicaPose.BOTH_HANDS_RAISED
+            3 -> GibalicaPose.SQUAT
+            else -> GibalicaPose.T_POSE
+        }
     }
 
     private fun getPoseMessage(pose: GibalicaPose): Int? {
