@@ -1,5 +1,6 @@
 package hr.fer.tel.gibalica.utils
 
+import timber.log.Timber
 import java.io.Serializable
 
 enum class GibalicaPose {
@@ -38,4 +39,13 @@ enum class CounterCause {
     HIDE_NEGATIVE_RESULT,
     DO_NOT_DETECT,
     NO_EVENT
+}
+
+enum class Language {
+    HR,
+    EN;
+
+    companion object {
+        const val LANGUAGE_BUTTON_ID = "language_button_id"
+    }
 }

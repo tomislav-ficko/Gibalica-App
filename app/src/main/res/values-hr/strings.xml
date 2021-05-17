@@ -37,4 +37,14 @@
     <string name="finish_description">Hvala ti na treniranju!</string>
     <string name="finish_title">Bravo</string>
     <string name="finish_button">Natrag na početni zaslon</string>
+
+    <string name="settings_title">Postavke</string>
+    <string name="settings_language">Jezik</string>
+    <string name="settings_sound">Zvuk</string>
+    <string name="settings_voice_control">Upravljanje govorom</string>
+    <string name="settings_accessibility">Pristupačnost</string>
+    <string name="settings_language_english">Engleski</string>
+    <string name="settings_language_croatian">Hrvatski</string>
+    <string name="settings_off">Isključeno</string>
+    <string name="settings_on">Uključeno</string>
 </resources>

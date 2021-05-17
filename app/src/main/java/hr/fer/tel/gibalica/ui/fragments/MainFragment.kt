@@ -27,17 +27,28 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        defineActions()
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun defineActions() {
         binding.apply {
+            ivLogo.setOnClickListener { navigateToSettingsFragment() }
             btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
             btnCompetition.setOnClickListener {} // Mode not yet implemented
             btnDayNight.setOnClickListener {} // Mode not yet implemented
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun navigateToSettingsFragment() {
+        Timber.d("Navigating to SettingsFragment.")
+        findNavController().navigate(
+            MainFragmentDirections.actionMainFragmentToSettingsFragment()
+        )
     }
 
     private fun navigateToTrainingSelectionFragment() {

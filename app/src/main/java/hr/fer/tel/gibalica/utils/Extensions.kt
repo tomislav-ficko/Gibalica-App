@@ -173,3 +173,8 @@ fun Pose.logLandmarkDetails() {
     }
     Timber.d(builder.toString())
 }
+
+inline fun <reified T> Any?.tryCast(block: T.() -> Unit) {
+    if (this is T)
+        block()
+}

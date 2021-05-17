@@ -37,4 +37,14 @@
     <string name="finish_description">Thank you for training!</string>
     <string name="finish_title">Bravo</string>
     <string name="finish_button">Back to main screen</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_voice_control">Voice control</string>
+    <string name="settings_accessibility">Accessibility</string>
+    <string name="settings_language_croatian">Croatian</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_off">Off</string>
+    <string name="settings_on">On</string>
 </resources>
