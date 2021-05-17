@@ -38,9 +38,7 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
     private fun analyzeImageUsingPoseDetector(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image!!
         val currentTimestamp = System.currentTimeMillis()
-        if (
-            currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(2)
-        ) {
+        if (enoughTimePassed(currentTimestamp)) {
             val image =
                 InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
             val poseDetector = preparePoseDetector()
@@ -58,6 +56,9 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
             imageProxy.close()
         }
     }
+
+    private fun enoughTimePassed(currentTimestamp: Long) =
+        currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(viewModel.detectionThresholdInSeconds)
 
     private fun detectPose(pose: Pose) {
         Timber.d("${poseToBeDetected.name} detection in progress.")

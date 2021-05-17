@@ -17,10 +17,15 @@ import kotlin.random.Random
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
 
+    companion object {
+        private const val DEFAULT_DETECTION_THRESHOLD_IN_SECONDS = 2L
+    }
+
     val notificationLiveData = MutableLiveData<NotificationEvent>()
     val updatePoseLiveData = MutableLiveData<GibalicaPose>()
     val detectionResultLiveData = MutableLiveData<PoseDetectionEvent>()
 
+    var detectionThresholdInSeconds: Long = DEFAULT_DETECTION_THRESHOLD_IN_SECONDS
     var startingPoseLandmarks = mapOf<Int, PoseLandmark>()
     var poseToBeDetectedMessage: Int? = null
     private lateinit var poseToBeDetected: GibalicaPose
