@@ -81,7 +81,6 @@ class TrainingFragment : BaseDetectionFragment() {
                 it?.let { event ->
                     when (event) {
                         PoseDetectionEvent.NOT_DETECTED -> {
-                            hideMessage()
                             showResponse(R.string.response_negative)
                         }
                         PoseDetectionEvent.INITIAL_POSE_DETECTED -> {
@@ -103,7 +102,12 @@ class TrainingFragment : BaseDetectionFragment() {
                             hideResponse()
                         }
                         PoseDetectionEvent.FINISH_DETECTION -> navigateToFinishFragment()
-                        PoseDetectionEvent.HIDE_RESPONSE -> hideResponse()
+                        PoseDetectionEvent.HIDE_RESPONSE -> {
+                            viewModel.poseToBeDetectedMessage?.let { resId ->
+                                showMessage(resId)
+                            }
+                            hideResponse()
+                        }
                     }
                 }
             }

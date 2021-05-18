@@ -30,7 +30,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
     var poseToBeDetectedMessage: Int? = null
     private lateinit var poseToBeDetected: GibalicaPose
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
-    private var processingPose = false
+    private var detectionInProgress = true
     private var randomTraining: Boolean = false
     private var currentCounterCause = CounterCause.NO_EVENT
 
@@ -58,27 +58,32 @@ class MainViewModel @Inject constructor() : ViewModel() {
         setupDetectionLogic()
     }
 
+    fun startTraining() {
+        Timber.d("Sending initial pose to analyzer.")
+        updateDetectionOfPose()
+    }
+
     private fun setupDetectionLogic() {
         notificationLiveData.observeForever { event ->
 
             when (event?.eventType) {
                 EventType.POSE_DETECTED -> {
-                    if (!processingPose) {
+                    if (detectionInProgress) {
                         Timber.d("${currentPose.name} detected")
-                        processingPose = true
+                        detectionInProgress = false
 
                         when (currentPose) {
                             GibalicaPose.ALL_JOINTS_VISIBLE -> {
                                 notifyViewAboutEvent(PoseDetectionEvent.INITIAL_POSE_DETECTED)
                                 currentPose = GibalicaPose.STARTING_POSE
-                                startDetectingCurrentPose()
+                                updateDetectionOfPose()
                                 currentCounterCause = CounterCause.DO_NOT_DETECT
                                 startCounter(1)
                             }
                             GibalicaPose.STARTING_POSE -> {
                                 notifyViewAboutEvent(PoseDetectionEvent.STARTING_POSE_DETECTED)
                                 currentPose = poseToBeDetected
-                                startDetectingCurrentPose()
+                                updateDetectionOfPose()
                                 currentCounterCause = CounterCause.DO_NOT_DETECT
                                 startCounter(3)
                             }
@@ -86,25 +91,26 @@ class MainViewModel @Inject constructor() : ViewModel() {
                                 if (!randomTraining) {
                                     notifyViewAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
                                     currentCounterCause = CounterCause.FINISH_DETECTION
-                                    startCounter(3)
+                                    startCounter(2)
                                 } else {
                                     notifyViewAboutEvent(PoseDetectionEvent.WANTED_POSE_DETECTED)
                                     currentPose = getRandomPose()
+                                    poseToBeDetectedMessage = getPoseMessage(currentPose)
+                                    updateDetectionOfPose()
                                     currentCounterCause = CounterCause.SWITCHING_TO_NEW_POSE
                                     startCounter(3)
-                                    startDetectingCurrentPose()
                                 }
                             }
                         }
                     }
                 }
                 EventType.POSE_NOT_DETECTED -> {
-                    if (!processingPose &&
+                    if (detectionInProgress &&
                         currentPose != GibalicaPose.ALL_JOINTS_VISIBLE &&
                         currentPose != GibalicaPose.STARTING_POSE
                     ) {
                         Timber.d("${poseToBeDetected.name} not detected")
-                        processingPose = true
+                        detectionInProgress = false
 
                         notifyViewAboutEvent(PoseDetectionEvent.NOT_DETECTED)
                         currentCounterCause = CounterCause.HIDE_NEGATIVE_RESULT
@@ -115,19 +121,15 @@ class MainViewModel @Inject constructor() : ViewModel() {
                     when (currentCounterCause) {
                         CounterCause.FINISH_DETECTION ->
                             notifyViewAboutEvent(PoseDetectionEvent.FINISH_DETECTION)
-                        CounterCause.SWITCHING_TO_NEW_POSE ->
+                        CounterCause.SWITCHING_TO_NEW_POSE -> {
                             notifyViewAboutEvent(PoseDetectionEvent.UPDATE_MESSAGE)
+                            detectionInProgress = true
+                        }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
                             notifyViewAboutEvent(PoseDetectionEvent.HIDE_RESPONSE)
-                            processingPose = false
-                            // In order to prevent multiple negative messages from appearing one
-                            // after the other, I would have to introduce another semaphore which would
-                            // be set to true here, but the original one would be set to true because
-                            // we want to allow the right pose to be detected
-                            // The problem is that this EventType LiveData cannot be used for this
-                            // second semaphore
+                            detectionInProgress = true
                         }
-                        CounterCause.DO_NOT_DETECT -> processingPose = false
+                        CounterCause.DO_NOT_DETECT -> detectionInProgress = true
                         CounterCause.NO_EVENT -> {
                         }
                     }
@@ -136,12 +138,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    fun startTraining() {
-        Timber.d("Sending initial pose to analyzer.")
-        startDetectingCurrentPose()
-    }
-
-    private fun startDetectingCurrentPose() {
+    private fun updateDetectionOfPose() {
         updatePoseLiveData.value = currentPose
     }
 
