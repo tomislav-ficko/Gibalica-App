@@ -23,7 +23,7 @@ fun PoseLandmark.isHorizontalPositionIdenticalTo(other: PoseLandmark): Boolean {
     val min = other.position.x - THRESHOLD_IDENTICAL
     val max = other.position.x + THRESHOLD_IDENTICAL
     val result = position.x in min..max
-    Timber.d("Checking if horizontal position is identical.. $result")
+    Timber.d("Checking horizontal position identical. Is ${position.x} (${getLandmarkName()}) in [$min..$max] (${other.getLandmarkName()})?")
     return result
 }
 
