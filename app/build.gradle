@@ -103,4 +103,7 @@ dependencies {
 
     // Custom logging
     implementation "com.jakewharton.timber:timber:$timber_version"
+
+    // AndroidX Preference Library
+    implementation "androidx.preference:preference:1.1.0"
 }

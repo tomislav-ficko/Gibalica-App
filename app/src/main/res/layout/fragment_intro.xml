@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_intro"
+    android:background="@color/background_app"
     tools:context=".ui.fragments.IntroFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -27,13 +27,9 @@
 
     <TextView
         android:id="@+id/tv_intro_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Title"
         android:layout_marginBottom="40dp"
-        android:fontFamily="@font/montserrat_bold"
         android:text="@string/tv_intro_title"
-        android:textAllCaps="true"
-        android:textSize="@dimen/size_title"
         app:layout_constraintBottom_toTopOf="@id/tv_intro_body"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
@@ -42,12 +38,9 @@
 
     <TextView
         android:id="@+id/tv_intro_body"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Subtitle"
         android:layout_marginBottom="80dp"
-        android:fontFamily="@font/montserrat_medium"
         android:text="@string/tv_intro_body"
-        android:textSize="@dimen/size_body"
         app:layout_constraintBottom_toTopOf="@id/btn_start_guide"
         app:layout_constraintEnd_toStartOf="@+id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
@@ -55,15 +48,11 @@
 
     <Button
         android:id="@+id/btn_start_guide"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Button"
         android:layout_marginStart="@dimen/margin_button"
         android:layout_marginEnd="@dimen/margin_button"
         android:layout_marginBottom="32dp"
-        android:background="@drawable/btn_background"
-        android:fontFamily="@font/montserrat_medium"
         android:text="@string/btn_start_guide"
-        android:textSize="@dimen/size_button"
         app:layout_constraintBottom_toTopOf="@id/btn_skip"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
@@ -71,14 +60,10 @@
 
     <Button
         android:id="@+id/btn_skip"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/Button"
         android:layout_marginStart="@dimen/margin_button"
         android:layout_marginEnd="@dimen/margin_button"
-        android:background="@drawable/btn_background"
-        android:fontFamily="@font/montserrat_medium"
         android:text="@string/btn_skip"
-        android:textSize="@dimen/size_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"

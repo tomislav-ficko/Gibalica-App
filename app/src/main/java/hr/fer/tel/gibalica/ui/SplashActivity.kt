@@ -2,9 +2,9 @@ package hr.fer.tel.gibalica.ui
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivitySplashBinding
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
@@ -12,7 +12,7 @@ import timber.log.Timber
 private const val TIMER_VALUE_IN_SECONDS = 3L
 
 @AndroidEntryPoint
-class SplashActivity : BaseActivity() {
+class SplashActivity : ComponentActivity() {
 
     private lateinit var binding: ActivitySplashBinding
     private val viewModel by viewModels<MainViewModel>()
@@ -37,5 +37,6 @@ class SplashActivity : BaseActivity() {
 
     private fun startIntro() {
         startActivity(Intent(this, IntroActivity::class.java))
+        finish()
     }
 }

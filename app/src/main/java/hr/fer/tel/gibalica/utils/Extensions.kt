@@ -3,13 +3,14 @@ package hr.fer.tel.gibalica.utils
 import android.view.View
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseLandmark
+import hr.fer.tel.gibalica.R
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
-private const val X_THRESHOLD = 15f
-private const val Y_THRESHOLD = 15f
-private const val THRESHOLD_IDENTICAL = 10f
+private const val X_THRESHOLD = 20f
+private const val Y_THRESHOLD = 20f
+private const val THRESHOLD_IDENTICAL = 15f
 private const val IN_FRAME_VISIBILITY_THRESHOLD = 0.8
 
 fun PoseLandmark.isHorizontalPositionEqualTo(other: PoseLandmark): Boolean {
@@ -23,7 +24,7 @@ fun PoseLandmark.isHorizontalPositionIdenticalTo(other: PoseLandmark): Boolean {
     val min = other.position.x - THRESHOLD_IDENTICAL
     val max = other.position.x + THRESHOLD_IDENTICAL
     val result = position.x in min..max
-    Timber.d("Checking if horizontal position is identical.. $result")
+    Timber.d("Checking horizontal position identical. Is ${position.x} (${getLandmarkName()}) in [$min..$max] (${other.getLandmarkName()})?")
     return result
 }
 
@@ -172,4 +173,22 @@ fun Pose.logLandmarkDetails() {
         getPoseLandmark(PoseLandmark.RIGHT_KNEE)?.let { builder.appendLandmark(it) }
     }
     Timber.d(builder.toString())
+}
+
+fun GibalicaPose.getPoseMessage(): Int? {
+    return when (this) {
+        GibalicaPose.LEFT_HAND_RAISED -> R.string.message_left_hand
+        GibalicaPose.RIGHT_HAND_RAISED -> R.string.message_right_hand
+        GibalicaPose.BOTH_HANDS_RAISED -> R.string.message_both_hands
+        GibalicaPose.T_POSE -> R.string.message_t_pose
+        GibalicaPose.SQUAT -> R.string.message_squat
+        GibalicaPose.STARTING_POSE -> R.string.message_start
+        GibalicaPose.ALL_JOINTS_VISIBLE -> R.string.message_initial
+        GibalicaPose.NONE -> null
+    }
+}
+
+inline fun <reified T> Any?.tryCast(block: T.() -> Unit) {
+    if (this is T)
+        block()
 }

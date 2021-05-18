@@ -19,4 +19,9 @@ class IntroActivity : FragmentActivity() {
         setContentView(binding.root)
         Timber.d("Inflated!")
     }
+
+    override fun onPause() {
+        super.onPause()
+        finish()
+    }
 }

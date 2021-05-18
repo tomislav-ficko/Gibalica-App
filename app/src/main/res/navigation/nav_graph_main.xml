@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trainingFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.TrainingFragment"
+        android:label="fragment_training"
+        tools:layout="@layout/fragment_training">
+        <action
+            android:id="@+id/action_trainingFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <action
+            android:id="@+id/action_trainingFragment_to_finishFragment"
+            app:destination="@id/finishFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trainingSelectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.TrainingSelectionFragment"
+        android:label="fragment_training_selection"
+        tools:layout="@layout/fragment_training_selection">
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_illustrationFragment"
+            app:destination="@id/illustrationFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.FinishFragment"
+        android:label="fragment_finish"
+        tools:layout="@layout/fragment_finish">
+        <action
+            android:id="@+id/action_finishFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/illustrationFragment"
+        android:name="hr.fer.tel.gibalica.viewModel.IllustrationFragment"
+        android:label="fragment_illustration"
+        tools:layout="@layout/fragment_illustration" >
+        <action
+            android:id="@+id/action_illustrationFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <action
+            android:id="@+id/action_illustrationFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+</navigation>
