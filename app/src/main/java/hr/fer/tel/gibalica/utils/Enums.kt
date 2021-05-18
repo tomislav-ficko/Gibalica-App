@@ -1,6 +1,5 @@
 package hr.fer.tel.gibalica.utils
 
-import timber.log.Timber
 import java.io.Serializable
 
 enum class GibalicaPose {
@@ -21,16 +20,6 @@ enum class TrainingType : Serializable {
     T_POSE,
     SQUAT,
     RANDOM
-}
-
-enum class PoseDetectionEvent {
-    INITIAL_POSE_DETECTED,
-    STARTING_POSE_DETECTED,
-    WANTED_POSE_DETECTED,
-    NOT_DETECTED,
-    UPDATE_MESSAGE,
-    FINISH_DETECTION,
-    HIDE_RESPONSE
 }
 
 enum class CounterCause {

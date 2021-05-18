@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
-import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -40,11 +39,11 @@ open class BaseDetectionFragment : Fragment(), TextureView.SurfaceTextureListene
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
 
-    protected fun initializeAndStartCamera(previewView: PreviewView, viewModel: MainViewModel) {
+    protected fun initializeAndStartCamera(previewView: PreviewView, analyzer: ImageAnalyzer) {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         if (permissionsGranted())
-            previewView.post { startCamera(previewView, viewModel) }
+            previewView.post { startCamera(previewView, analyzer) }
         else
             ActivityCompat.requestPermissions(
                 requireActivity(),
@@ -66,7 +65,7 @@ open class BaseDetectionFragment : Fragment(), TextureView.SurfaceTextureListene
             Toast.LENGTH_SHORT
         ).show()
 
-    private fun startCamera(previewView: PreviewView, viewModel: MainViewModel) {
+    private fun startCamera(previewView: PreviewView, analyzer: ImageAnalyzer) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener(
             {
@@ -80,7 +79,7 @@ open class BaseDetectionFragment : Fragment(), TextureView.SurfaceTextureListene
                 val imageAnalyzer = ImageAnalysis.Builder()
                     .build()
                     .also {
-                        it.setAnalyzer(cameraExecutor, ImageAnalyzer(viewModel))
+                        it.setAnalyzer(cameraExecutor, analyzer)
                     }
                 cameraProvider.unbindAll()
 

@@ -15,23 +15,32 @@ import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isRightHandRaised
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isSquatPerformed
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStartingPoseDetected
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isTPosePerformed
-import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyzer {
+class ImageAnalyzer(private val analysisTimeout: Long) : ImageAnalysis.Analyzer {
+
+    interface AnalyzerListener {
+        fun onPoseDetected(detectedPose: GibalicaPose)
+        fun onPoseNotDetected(detectedPose: GibalicaPose)
+    }
 
     private var lastAnalyzedTimestamp = 0L
+    private var listener: AnalyzerListener? = null
     private lateinit var poseToBeDetected: GibalicaPose
-
-    init {
-        viewModel.updatePoseLiveData.observeForever { it?.let { poseToBeDetected = it } }
-    }
 
     @SuppressLint("UnsafeExperimentalUsageError")
     override fun analyze(imageProxy: ImageProxy) {
         if (imageProxy.image != null)
             analyzeImageUsingPoseDetector(imageProxy)
+    }
+
+    fun setListener(listener: AnalyzerListener) {
+        this.listener = listener
+    }
+
+    fun updatePose(newPose: GibalicaPose) {
+        poseToBeDetected = newPose
     }
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -58,7 +67,7 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
     }
 
     private fun enoughTimePassed(currentTimestamp: Long) =
-        currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(viewModel.detectionThresholdInSeconds)
+        currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(analysisTimeout)
 
     private fun detectPose(pose: Pose) {
         Timber.d("${poseToBeDetected.name} detection in progress.")
@@ -73,20 +82,14 @@ class ImageAnalyzer(private val viewModel: MainViewModel) : ImageAnalysis.Analyz
                 GibalicaPose.SQUAT -> pose.isSquatPerformed()
                 GibalicaPose.NONE -> false
             }
-        if (poseToBeDetected == GibalicaPose.STARTING_POSE && poseDetected)
-            saveStartingValues(pose)
 
         if (poseDetected) {
             Timber.d("Pose detected.")
-            viewModel.notificationLiveData.value = NotificationEvent(EventType.POSE_DETECTED)
+            listener?.onPoseDetected(poseToBeDetected)
         } else {
             Timber.d("Pose not detected.")
-            viewModel.notificationLiveData.value = NotificationEvent(EventType.POSE_NOT_DETECTED)
+            listener?.onPoseNotDetected(poseToBeDetected)
         }
-    }
-
-    private fun saveStartingValues(pose: Pose) {
-        viewModel.startingPoseLandmarks = pose.getLandmarks()
     }
 
     private fun preparePoseDetector(): PoseDetector {
