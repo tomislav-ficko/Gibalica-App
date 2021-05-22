@@ -11,23 +11,29 @@ import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.base.BaseDetectionFragment
 import hr.fer.tel.gibalica.base.REQUEST_CODE_PERMISSIONS
-import hr.fer.tel.gibalica.databinding.FragmentTrainingBinding
+import hr.fer.tel.gibalica.databinding.FragmentDetectionBinding
 import hr.fer.tel.gibalica.utils.*
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_EASY
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_HARD
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_MEDIUM
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_DEFAULT
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_EASY
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_HARD
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_MEDIUM
 import hr.fer.tel.gibalica.viewModel.MainViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Flowable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
-class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener {
+class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener {
 
-    companion object {
-        private const val DEFAULT_DETECTION_TIMEOUT_SECONDS = 2L
-    }
-
-    var _binding: FragmentTrainingBinding? = null
-    private val binding: FragmentTrainingBinding
+    var _binding: FragmentDetectionBinding? = null
+    private val binding: FragmentDetectionBinding
         get() = _binding!!
 
-    private val args: TrainingFragmentArgs by navArgs()
+    private val args: DetectionFragmentArgs by navArgs()
     private val viewModel by viewModels<MainViewModel>()
 
     private lateinit var analyzer: ImageAnalyzer
@@ -38,26 +44,59 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
     private var randomTraining = false
     private var currentCounterCause = CounterCause.NO_EVENT
 
+    // -- Variables for competition --
+
+    // Once the interval runs out, detector moves to the next pose
+    private var detectionIntervalCompetition: Long? = null
+
+    // When the competition is done, these will be used to calculate statistics and assign a score
+    private var correctPoses = 0
+    private var totalNoOfPoses = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentTrainingBinding.inflate(inflater, container, false)
+        _binding = FragmentDetectionBinding.inflate(inflater, container, false)
         Timber.d("Inflated!")
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupImageAnalyzer(DEFAULT_DETECTION_TIMEOUT_SECONDS)
+
+        when (args.detectionUseCase) {
+            DetectionUseCase.TRAINING -> {
+                val trainingType = args.trainingType
+                Timber.d("Starting training for type ${trainingType.name}")
+                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
+                initializeDetection(trainingType)
+            }
+            DetectionUseCase.COMPETITION -> {
+                when (args.competitionDifficulty) {
+                    CompetitionDifficulty.EASY -> {
+                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
+                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_EASY
+                    }
+                    CompetitionDifficulty.MEDIUM -> {
+                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
+                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_MEDIUM
+                    }
+                    CompetitionDifficulty.HARD -> {
+                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
+                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_HARD
+                    }
+                    CompetitionDifficulty.NONE ->
+                        Timber.e("Competition was started without difficulty value.")
+                }
+                startScreenTimer(args.competitionLengthSeconds)
+                initializeDetection(TrainingType.RANDOM)
+            }
+        }
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
         setupOverlayViews()
-
-        val trainingType = args.trainingType
-        Timber.d("Starting training for type ${trainingType.name}")
-        initializeTraining(trainingType)
-        startTraining()
+        startDetection()
     }
 
     override fun onDestroyView() {
@@ -137,8 +176,8 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
         }
     }
 
-    private fun setupImageAnalyzer(analysisTimeout: Long) {
-        analyzer = ImageAnalyzer(analysisTimeout)
+    private fun setupImageAnalyzer(detectionTimeoutMillis: Long) {
+        analyzer = ImageAnalyzer(detectionTimeoutMillis)
         analyzer.setListener(this)
     }
 
@@ -148,7 +187,7 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
         binding.btnClose.setOnClickListener { returnToMainFragment() }
     }
 
-    private fun initializeTraining(trainingType: TrainingType) {
+    private fun initializeDetection(trainingType: TrainingType) {
         when (trainingType) {
             TrainingType.LEFT_HAND -> poseToBeDetected = GibalicaPose.LEFT_HAND_RAISED
             TrainingType.RIGHT_HAND -> poseToBeDetected = GibalicaPose.RIGHT_HAND_RAISED
@@ -164,7 +203,7 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
         setupDetectionLogic()
     }
 
-    private fun startTraining() {
+    private fun startDetection() {
         Timber.d("Sending initial pose to analyzer.")
         updateDetectionOfPose()
     }
@@ -208,6 +247,28 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
         }
     }
 
+    private fun startScreenTimer(valueSeconds: Long) {
+        Flowable.interval(1, 1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                Timber.d("Starting timer for $valueSeconds seconds.")
+                binding.tvTimer.visibility = View.VISIBLE
+            }
+            .subscribe(
+                { tick ->
+                    if (tick == valueSeconds) {
+                        navigateToFinishFragment()
+                    } else {
+                        val remainingSeconds = valueSeconds - tick
+                        val minutes = TimeUnit.SECONDS.toMinutes(remainingSeconds)
+                        val seconds = remainingSeconds - TimeUnit.MINUTES.toSeconds(minutes)
+                        binding.tvTimer.text = String.format("%02d:%02d", minutes, seconds)
+                    }
+                },
+                {}
+            )
+    }
+
     private fun endDetection() = navigateToFinishFragment()
 
     private fun updateMessage() {
@@ -234,14 +295,14 @@ class TrainingFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener
 
     private fun returnToMainFragment() {
         findNavController().navigate(
-            TrainingFragmentDirections.actionTrainingFragmentToMainFragment()
+            DetectionFragmentDirections.actionTrainingFragmentToMainFragment()
         )
     }
 
     private fun navigateToFinishFragment() {
         Timber.d("Finishing training.")
         findNavController().navigate(
-            TrainingFragmentDirections.actionTrainingFragmentToFinishFragment()
+            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment()
         )
     }
 

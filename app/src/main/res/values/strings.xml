@@ -47,4 +47,16 @@
     <string name="settings_language_english">English</string>
     <string name="settings_off">Off</string>
     <string name="settings_on">On</string>
+
+    <string name="comp_selection_title">Select your settings</string>
+    <string name="comp_selection_description">How much time do you want per position?</string>
+    <string name="comp_btn_easy">Easy</string>
+    <string name="comp_btn_easy_value">8 seconds</string>
+    <string name="comp_btn_medium">Medium</string>
+    <string name="comp_btn_medium_value">5 seconds</string>
+    <string name="comp_btn_hard">Hard</string>
+    <string name="comp_btn_hard_value">2 seconds</string>
+    <string name="comp_selection_length">Competition length</string>
+    <string name="comp_length">Competition length</string>
+    <string name="comp_btn_format_specifier" translatable="false">%1$s\n%2$s</string>
 </resources>

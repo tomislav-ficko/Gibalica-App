@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentTrainingSelectionBinding
+import hr.fer.tel.gibalica.utils.CompetitionDifficulty
+import hr.fer.tel.gibalica.utils.DetectionUseCase
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
@@ -36,7 +38,7 @@ class TrainingSelectionFragment : Fragment() {
             btnBothHands.setOnClickListener { navigateToIllustrationFragment(TrainingType.BOTH_HANDS) }
             btnTPose.setOnClickListener { navigateToIllustrationFragment(TrainingType.T_POSE) }
             btnSquat.setOnClickListener { navigateToIllustrationFragment(TrainingType.SQUAT) }
-            btnRandom.setOnClickListener { navigateToTrainingFragment() }
+            btnRandom.setOnClickListener { navigateToDetectionFragment() }
         }
     }
 
@@ -58,10 +60,14 @@ class TrainingSelectionFragment : Fragment() {
         )
     }
 
-    private fun navigateToTrainingFragment() {
+    private fun navigateToDetectionFragment() {
         findNavController().navigate(
-            TrainingSelectionFragmentDirections
-                .actionTrainingSelectionFragmentToTrainingFragment(TrainingType.RANDOM)
+            TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToTrainingFragment(
+                detectionUseCase = DetectionUseCase.TRAINING,
+                trainingType = TrainingType.RANDOM,
+                competitionDifficulty = CompetitionDifficulty.NONE,
+                competitionLengthSeconds = 0
+            )
         )
     }
 }

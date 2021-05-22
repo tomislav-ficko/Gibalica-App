@@ -16,21 +16,33 @@
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_competitionSelectionFragment"
+            app:destination="@id/competitionSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/trainingFragment"
-        android:name="hr.fer.tel.gibalica.ui.fragments.TrainingFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.DetectionFragment"
         android:label="fragment_training"
-        tools:layout="@layout/fragment_training">
+        tools:layout="@layout/fragment_detection">
         <action
             android:id="@+id/action_trainingFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
-        <argument
-            android:name="trainingType"
-            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
         <action
             android:id="@+id/action_trainingFragment_to_finishFragment"
             app:destination="@id/finishFragment" />
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <argument
+            android:name="competitionDifficulty"
+            app:argType="hr.fer.tel.gibalica.utils.CompetitionDifficulty" />
+        <argument
+            android:name="competitionLengthSeconds"
+            app:argType="long"/>
     </fragment>
     <fragment
         android:id="@+id/trainingSelectionFragment"
@@ -78,6 +90,17 @@
         tools:layout="@layout/fragment_settings" >
         <action
             android:id="@+id/action_settingsFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/competitionSelectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.CompetitionSelectionFragment"
+        android:label="CompetitionSelectionFragment" >
+        <action
+            android:id="@+id/action_competitionSelectionFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment" />
+        <action
+            android:id="@+id/action_competitionSelectionFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

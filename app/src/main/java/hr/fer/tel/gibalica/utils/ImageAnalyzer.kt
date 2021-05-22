@@ -16,9 +16,8 @@ import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isSquatPerformed
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStartingPoseDetected
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isTPosePerformed
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
-class ImageAnalyzer(private val analysisTimeout: Long) : ImageAnalysis.Analyzer {
+class ImageAnalyzer(private val detectionTimeoutMillis: Long) : ImageAnalysis.Analyzer {
 
     interface AnalyzerListener {
         fun onPoseDetected(detectedPose: GibalicaPose)
@@ -67,7 +66,7 @@ class ImageAnalyzer(private val analysisTimeout: Long) : ImageAnalysis.Analyzer 
     }
 
     private fun enoughTimePassed(currentTimestamp: Long) =
-        currentTimestamp - lastAnalyzedTimestamp >= TimeUnit.SECONDS.toMillis(analysisTimeout)
+        currentTimestamp - lastAnalyzedTimestamp >= detectionTimeoutMillis
 
     private fun detectPose(pose: Pose) {
         Timber.d("${poseToBeDetected.name} detection in progress.")

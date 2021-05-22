@@ -44,7 +44,6 @@
         android:id="@+id/btn_competition"
         style="@style/Button"
         android:layout_marginBottom="32dp"
-        android:enabled="false"
         android:text="@string/btn_competition"
         app:layout_constraintBottom_toTopOf="@id/btn_day_night"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
