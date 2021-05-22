@@ -44,7 +44,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private var randomTraining = false
 
     // -- Variables for competition --
-
     // Once the interval runs out, detector moves to the next pose
     private var detectionIntervalCompetition: Long? = null
 
@@ -133,13 +132,13 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     continueToStartingPose()
                     currentPose = GibalicaPose.STARTING_POSE
                     updateDetectionOfPose()
-                    viewModel.startCounter(CounterCause.DO_NOT_DETECT, 1)
+                    viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
                 }
                 GibalicaPose.STARTING_POSE -> {
                     continueToActualPoseDetection()
                     currentPose = poseToBeDetected
                     updateDetectionOfPose()
-                    viewModel.startCounter(CounterCause.DO_NOT_DETECT, 3)
+                    viewModel.startCounter(CounterCause.WAIT_BEFORE_ACTUAL_DETECTION, 3)
                 }
                 else -> {
                     if (!randomTraining) {
@@ -208,17 +207,19 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             when (event?.eventType) {
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
-                        CounterCause.FINISH_DETECTION -> endDetection()
+                        CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> detectionInProgress = true
+                        CounterCause.WAIT_BEFORE_ACTUAL_DETECTION -> {
+                            detectionInProgress = true
+                        }
+                        CounterCause.HIDE_NEGATIVE_RESULT -> {
+                            hideResponseAndShowMessage()
+                            detectionInProgress = true
+                        }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             updateMessage()
                             detectionInProgress = true
                         }
-                        CounterCause.HIDE_NEGATIVE_RESULT -> {
-                            updateMessage()
-                            detectionInProgress = true
-                        }
-                        CounterCause.DO_NOT_DETECT ->
-                            detectionInProgress = true
+                        CounterCause.FINISH_DETECTION -> endDetection()
                     }
                 }
             }
@@ -264,6 +265,19 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun endDetection() = navigateToFinishFragment()
 
+    private fun returnToMainFragment() {
+        findNavController().navigate(
+            DetectionFragmentDirections.actionTrainingFragmentToMainFragment()
+        )
+    }
+
+    private fun navigateToFinishFragment() {
+        Timber.d("Finishing training.")
+        findNavController().navigate(
+            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment()
+        )
+    }
+
     private fun updateMessage() {
         poseToBeDetectedMessage?.let { resId ->
             showMessage(resId)
@@ -286,17 +300,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun returnToMainFragment() {
-        findNavController().navigate(
-            DetectionFragmentDirections.actionTrainingFragmentToMainFragment()
-        )
-    }
-
-    private fun navigateToFinishFragment() {
-        Timber.d("Finishing training.")
-        findNavController().navigate(
-            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment()
-        )
+    private fun hideResponseAndShowMessage() {
+        hideResponse()
+        showMessage()
     }
 
     private fun showResponse(resId: Int) = binding.apply {
@@ -306,6 +312,10 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun hideResponse() = binding.apply {
         cvResponse.invisible()
+    }
+
+    private fun showMessage() = binding.apply {
+        tvMessage.visible()
     }
 
     private fun showMessage(resId: Int) = binding.apply {

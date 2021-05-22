@@ -35,10 +35,11 @@ enum class DetectionUseCase : Serializable {
 }
 
 enum class CounterCause {
-    FINISH_DETECTION,
-    SWITCHING_TO_NEW_POSE,
+    WAIT_BEFORE_DETECTING_STARTING_POSE,
+    WAIT_BEFORE_ACTUAL_DETECTION,
     HIDE_NEGATIVE_RESULT,
-    DO_NOT_DETECT
+    SWITCHING_TO_NEW_POSE,
+    FINISH_DETECTION
 }
 
 enum class Language {
