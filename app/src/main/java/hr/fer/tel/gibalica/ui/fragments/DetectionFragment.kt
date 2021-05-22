@@ -23,6 +23,7 @@ import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_MEDIUM
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
@@ -41,11 +42,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private var poseToBeDetectedMessage: Int? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
-    private var randomDetection = false
+    private var randomDetectionType: DetectionUseCase? = null
 
     // -- Variables for competition --
     // Once the interval runs out, detector moves to the next pose
-    private var detectionIntervalCompetition: Long? = null
+    private var detectionIntervalCompetitionMillis: Long? = null
+    private var intervalTimerDisposable: Disposable? = null
 
     // When the competition is done, these will be used to calculate statistics and assign a score
     private var correctPoses = 0
@@ -70,26 +72,29 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 Timber.d("Starting training for type ${trainingType.name}")
                 setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
                 initializeDetection(trainingType)
+                if (trainingType == TrainingType.RANDOM)
+                    randomDetectionType = DetectionUseCase.TRAINING
             }
             DetectionUseCase.COMPETITION -> {
                 when (args.competitionDifficulty) {
                     CompetitionDifficulty.EASY -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
-                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_EASY
+                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_EASY
                     }
                     CompetitionDifficulty.MEDIUM -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
-                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_MEDIUM
+                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_MEDIUM
                     }
                     CompetitionDifficulty.HARD -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
-                        detectionIntervalCompetition = DETECTION_INTERVAL_MILLIS_HARD
+                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_HARD
                     }
                     CompetitionDifficulty.NONE ->
                         Timber.e("Competition was started without difficulty value.")
                 }
                 startScreenTimer(args.competitionLengthSeconds)
                 initializeDetection(TrainingType.RANDOM)
+                randomDetectionType = DetectionUseCase.COMPETITION
             }
         }
         defineCounterLogic()
@@ -143,9 +148,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 }
                 else -> {
                     showPoseDetected()
-                    if (randomDetection) {
-                        currentPose = getRandomPose()
-                        poseToBeDetectedMessage = currentPose.getPoseMessage()
+                    if (isRandomDetection()) {
+                        updateDataIfCompetitionUseCase()
+                        getNewRandomPose()
                         updateDetectionOfPose()
                         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
                     } else {
@@ -181,16 +186,13 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun initializeDetection(trainingType: TrainingType) {
-        when (trainingType) {
-            TrainingType.LEFT_HAND -> poseToBeDetected = GibalicaPose.LEFT_HAND_RAISED
-            TrainingType.RIGHT_HAND -> poseToBeDetected = GibalicaPose.RIGHT_HAND_RAISED
-            TrainingType.BOTH_HANDS -> poseToBeDetected = GibalicaPose.BOTH_HANDS_RAISED
-            TrainingType.T_POSE -> poseToBeDetected = GibalicaPose.T_POSE
-            TrainingType.SQUAT -> poseToBeDetected = GibalicaPose.SQUAT
-            TrainingType.RANDOM -> {
-                randomDetection = true
-                poseToBeDetected = getRandomPose()
-            }
+        poseToBeDetected = when (trainingType) {
+            TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
+            TrainingType.RIGHT_HAND -> GibalicaPose.RIGHT_HAND_RAISED
+            TrainingType.BOTH_HANDS -> GibalicaPose.BOTH_HANDS_RAISED
+            TrainingType.T_POSE -> GibalicaPose.T_POSE
+            TrainingType.SQUAT -> GibalicaPose.SQUAT
+            TrainingType.RANDOM -> getRandomPose()
         }
         poseToBeDetectedMessage = poseToBeDetected.getPoseMessage()
     }
@@ -209,6 +211,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> detectionInProgress = true
                         CounterCause.WAIT_BEFORE_ACTUAL_DETECTION -> {
                             detectionInProgress = true
+                            startTimerIfCompetitionUseCase()
                         }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
                             hideResponseAndShowMessage()
@@ -217,12 +220,40 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             updateMessage()
                             detectionInProgress = true
+                            startTimerIfCompetitionUseCase()
                         }
                         CounterCause.FINISH_DETECTION -> endDetection()
+                        else -> Timber.d("Timer was trigger for ${event.cause}.")
                     }
                 }
             }
         }
+    }
+
+    private fun startTimerIfCompetitionUseCase() {
+        if (randomDetectionType == DetectionUseCase.COMPETITION) {
+            startIntervalTimer()
+        }
+    }
+
+    private fun updateDataIfCompetitionUseCase() {
+        if (randomDetectionType == DetectionUseCase.COMPETITION) {
+            correctPoses++
+            totalNoOfPoses++
+            intervalTimerDisposable?.dispose()
+        }
+    }
+
+    private fun competitionPoseNotDetectedMoveToNext() {
+        totalNoOfPoses++
+        getNewRandomPose()
+        updateDetectionOfPose()
+        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
+    }
+
+    private fun getNewRandomPose() {
+        currentPose = getRandomPose()
+        poseToBeDetectedMessage = currentPose.getPoseMessage()
     }
 
     private fun updateDetectionOfPose() {
@@ -261,6 +292,25 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 {}
             )
     }
+
+    private fun startIntervalTimer() {
+        intervalTimerDisposable =
+            Flowable.interval(0, 100, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    Timber.d("Starting interval timer for $detectionIntervalCompetitionMillis seconds.")
+                }
+                .subscribe(
+                    { tick ->
+                        if (tick >= detectionIntervalCompetitionMillis!!) {
+                            competitionPoseNotDetectedMoveToNext()
+                        }
+                    },
+                    {}
+                )
+    }
+
+    private fun isRandomDetection() = randomDetectionType != null
 
     private fun endDetection() = navigateToFinishFragment()
 
