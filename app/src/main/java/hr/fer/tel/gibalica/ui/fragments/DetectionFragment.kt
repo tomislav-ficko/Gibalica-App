@@ -41,7 +41,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private var poseToBeDetectedMessage: Int? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
-    private var randomTraining = false
+    private var randomDetection = false
 
     // -- Variables for competition --
     // Once the interval runs out, detector moves to the next pose
@@ -92,6 +92,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 initializeDetection(TrainingType.RANDOM)
             }
         }
+        defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
         setupOverlayViews()
         startDetection()
@@ -138,18 +139,17 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     continueToActualPoseDetection()
                     currentPose = poseToBeDetected
                     updateDetectionOfPose()
-                    viewModel.startCounter(CounterCause.WAIT_BEFORE_ACTUAL_DETECTION, 3)
+                    viewModel.startCounter(CounterCause.WAIT_BEFORE_ACTUAL_DETECTION, 1)
                 }
                 else -> {
-                    if (!randomTraining) {
-                        showPoseDetected()
-                        viewModel.startCounter(CounterCause.FINISH_DETECTION, 2)
-                    } else {
-                        showPoseDetected()
+                    showPoseDetected()
+                    if (randomDetection) {
                         currentPose = getRandomPose()
                         poseToBeDetectedMessage = currentPose.getPoseMessage()
                         updateDetectionOfPose()
-                        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 3)
+                        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
+                    } else {
+                        viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
                     }
                 }
             }
@@ -188,12 +188,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             TrainingType.T_POSE -> poseToBeDetected = GibalicaPose.T_POSE
             TrainingType.SQUAT -> poseToBeDetected = GibalicaPose.SQUAT
             TrainingType.RANDOM -> {
-                randomTraining = true
+                randomDetection = true
                 poseToBeDetected = getRandomPose()
             }
         }
         poseToBeDetectedMessage = poseToBeDetected.getPoseMessage()
-        setupDetectionLogic()
     }
 
     private fun startDetection() {
@@ -201,7 +200,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         updateDetectionOfPose()
     }
 
-    private fun setupDetectionLogic() {
+    private fun defineCounterLogic() {
         viewModel.notificationLiveData.observe(viewLifecycleOwner) { event ->
 
             when (event?.eventType) {
@@ -246,7 +245,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 Timber.d("Starting timer for $valueSeconds seconds.")
-                binding.tvTimer.visibility = View.VISIBLE
+                binding.tvTimer.visible()
             }
             .subscribe(
                 { tick ->
