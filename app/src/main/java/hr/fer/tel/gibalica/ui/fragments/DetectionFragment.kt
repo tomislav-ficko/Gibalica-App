@@ -42,7 +42,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
     private var randomTraining = false
-    private var currentCounterCause = CounterCause.NO_EVENT
 
     // -- Variables for competition --
 
@@ -134,28 +133,24 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     continueToStartingPose()
                     currentPose = GibalicaPose.STARTING_POSE
                     updateDetectionOfPose()
-                    currentCounterCause = CounterCause.DO_NOT_DETECT
-                    viewModel.startCounter(1)
+                    viewModel.startCounter(CounterCause.DO_NOT_DETECT, 1)
                 }
                 GibalicaPose.STARTING_POSE -> {
                     continueToActualPoseDetection()
                     currentPose = poseToBeDetected
                     updateDetectionOfPose()
-                    currentCounterCause = CounterCause.DO_NOT_DETECT
-                    viewModel.startCounter(3)
+                    viewModel.startCounter(CounterCause.DO_NOT_DETECT, 3)
                 }
                 else -> {
                     if (!randomTraining) {
                         showPoseDetected()
-                        currentCounterCause = CounterCause.FINISH_DETECTION
-                        viewModel.startCounter(2)
+                        viewModel.startCounter(CounterCause.FINISH_DETECTION, 2)
                     } else {
                         showPoseDetected()
                         currentPose = getRandomPose()
                         poseToBeDetectedMessage = currentPose.getPoseMessage()
                         updateDetectionOfPose()
-                        currentCounterCause = CounterCause.SWITCHING_TO_NEW_POSE
-                        viewModel.startCounter(3)
+                        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 3)
                     }
                 }
             }
@@ -171,8 +166,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             detectionInProgress = false
 
             showPoseNotDetected()
-            currentCounterCause = CounterCause.HIDE_NEGATIVE_RESULT
-            viewModel.startCounter(2)
+            viewModel.startCounter(CounterCause.HIDE_NEGATIVE_RESULT, 2)
         }
     }
 
@@ -213,7 +207,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
             when (event?.eventType) {
                 EventType.COUNTER_FINISHED -> {
-                    when (currentCounterCause) {
+                    when (event.cause) {
                         CounterCause.FINISH_DETECTION -> endDetection()
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             updateMessage()
@@ -223,9 +217,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                             updateMessage()
                             detectionInProgress = true
                         }
-                        CounterCause.DO_NOT_DETECT -> detectionInProgress = true
-                        CounterCause.NO_EVENT -> {
-                        }
+                        CounterCause.DO_NOT_DETECT ->
+                            detectionInProgress = true
                     }
                 }
             }

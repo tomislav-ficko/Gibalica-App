@@ -38,8 +38,7 @@ enum class CounterCause {
     FINISH_DETECTION,
     SWITCHING_TO_NEW_POSE,
     HIDE_NEGATIVE_RESULT,
-    DO_NOT_DETECT,
-    NO_EVENT
+    DO_NOT_DETECT
 }
 
 enum class Language {
