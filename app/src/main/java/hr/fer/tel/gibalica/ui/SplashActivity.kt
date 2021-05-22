@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.databinding.ActivitySplashBinding
+import hr.fer.tel.gibalica.utils.CounterCause
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
@@ -22,7 +23,7 @@ class SplashActivity : ComponentActivity() {
         inflateLayout()
         setupObservable()
 
-        viewModel.startCounter(TIMER_VALUE_IN_SECONDS)
+        viewModel.startCounter(CounterCause.SPLASH_SCREEN, TIMER_VALUE_IN_SECONDS)
     }
 
     private fun inflateLayout() {
@@ -32,7 +33,7 @@ class SplashActivity : ComponentActivity() {
     }
 
     private fun setupObservable() {
-        viewModel.notificationLiveData.observe(this, { startIntro() })
+        viewModel.notificationLiveData.observe(this) { startIntro() }
     }
 
     private fun startIntro() {

@@ -35,6 +35,7 @@ enum class DetectionUseCase : Serializable {
 }
 
 enum class CounterCause {
+    SPLASH_SCREEN,
     WAIT_BEFORE_DETECTING_STARTING_POSE,
     WAIT_BEFORE_ACTUAL_DETECTION,
     HIDE_NEGATIVE_RESULT,
