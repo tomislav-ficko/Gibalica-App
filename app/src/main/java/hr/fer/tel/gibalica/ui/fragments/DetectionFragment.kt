@@ -92,7 +92,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     CompetitionDifficulty.NONE ->
                         Timber.e("Competition was started without difficulty value.")
                 }
-                startScreenTimer(args.competitionLengthSeconds)
                 initializeDetection(TrainingType.RANDOM)
                 randomDetectionType = DetectionUseCase.COMPETITION
             }
@@ -144,12 +143,13 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     continueToActualPoseDetection()
                     currentPose = poseToBeDetected
                     updateDetectionOfPose()
-                    viewModel.startCounter(CounterCause.WAIT_BEFORE_ACTUAL_DETECTION, 1)
+                    startTimersIfCompetitionUseCase()
+                    detectionInProgress = true
                 }
                 else -> {
                     showPoseDetected()
                     if (isRandomDetection()) {
-                        updateDataIfCompetitionUseCase()
+                        updateDataWhenPoseDetectedInCompetitionUseCase()
                         getNewRandomPose()
                         updateDetectionOfPose()
                         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
@@ -162,16 +162,18 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     override fun onPoseNotDetected(detectedPose: GibalicaPose) {
-        if (detectionInProgress &&
-            currentPose != GibalicaPose.ALL_JOINTS_VISIBLE &&
-            currentPose != GibalicaPose.STARTING_POSE
-        ) {
-            Timber.d("${poseToBeDetected.name} not detected")
-            detectionInProgress = false
-
+        if (isCompetition())
+            Timber.d("Not showing negative message since interval for pose is still in progress.")
+        else if (detectionInProgress && isDetectingActualPose())
             showPoseNotDetected()
-            viewModel.startCounter(CounterCause.HIDE_NEGATIVE_RESULT, 2)
-        }
+    }
+
+    private fun showPoseNotDetected() {
+        Timber.d("${poseToBeDetected.name} not detected")
+        detectionInProgress = false
+
+        showPoseNotDetectedResponse()
+        viewModel.startCounter(CounterCause.HIDE_NEGATIVE_RESULT, 2)
     }
 
     private fun setupImageAnalyzer(detectionTimeoutMillis: Long) {
@@ -209,18 +211,15 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> detectionInProgress = true
-                        CounterCause.WAIT_BEFORE_ACTUAL_DETECTION -> {
-                            detectionInProgress = true
-                            startTimerIfCompetitionUseCase()
-                        }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
                             hideResponseAndShowMessage()
                             detectionInProgress = true
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             updateMessage()
+                            hideResponse()
                             detectionInProgress = true
-                            startTimerIfCompetitionUseCase()
+                            restartTimerIfCompetitionUseCase()
                         }
                         CounterCause.FINISH_DETECTION -> endDetection()
                         else -> Timber.d("Timer was trigger for ${event.cause}.")
@@ -230,25 +229,37 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startTimerIfCompetitionUseCase() {
-        if (randomDetectionType == DetectionUseCase.COMPETITION) {
+    private fun startTimersIfCompetitionUseCase() {
+        if (isCompetition()) {
+            startCompetitionTimer(args.competitionLengthSeconds)
             startIntervalTimer()
         }
     }
 
-    private fun updateDataIfCompetitionUseCase() {
-        if (randomDetectionType == DetectionUseCase.COMPETITION) {
+    private fun restartTimerIfCompetitionUseCase() {
+        if (isCompetition()) {
+            startIntervalTimer()
+        }
+    }
+
+    private fun updateDataWhenPoseDetectedInCompetitionUseCase() {
+        if (isCompetition()) {
             correctPoses++
             totalNoOfPoses++
             intervalTimerDisposable?.dispose()
         }
     }
 
-    private fun competitionPoseNotDetectedMoveToNext() {
+    private fun updateDataWhenPoseNotDetected() {
         totalNoOfPoses++
+    }
+
+    private fun competitionPoseNotDetectedMoveToNext() {
+        showPoseNotDetected()
+        updateDataWhenPoseNotDetected()
         getNewRandomPose()
         updateDetectionOfPose()
-        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
+        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 2)
     }
 
     private fun getNewRandomPose() {
@@ -271,7 +282,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startScreenTimer(valueSeconds: Long) {
+    private fun startCompetitionTimer(valueSeconds: Long) {
         Flowable.interval(1, 1, TimeUnit.SECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -312,6 +323,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun isRandomDetection() = randomDetectionType != null
 
+    private fun isDetectingActualPose() =
+        currentPose != GibalicaPose.ALL_JOINTS_VISIBLE && currentPose != GibalicaPose.STARTING_POSE
+
+    private fun isCompetition() = randomDetectionType == DetectionUseCase.COMPETITION
+
     private fun endDetection() = navigateToFinishFragment()
 
     private fun returnToMainFragment() {
@@ -331,7 +347,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         poseToBeDetectedMessage?.let { resId ->
             showMessage(resId)
         }
-        hideResponse()
     }
 
     private fun showPoseDetected() {
@@ -339,7 +354,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         showResponse(R.string.response_positive)
     }
 
-    private fun showPoseNotDetected() = showResponse(R.string.response_negative)
+    private fun showPoseNotDetectedResponse() = showResponse(R.string.response_negative)
 
     private fun continueToStartingPose() = showMessage(R.string.message_start)
 
