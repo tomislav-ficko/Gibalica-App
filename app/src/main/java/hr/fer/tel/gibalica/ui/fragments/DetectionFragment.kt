@@ -51,7 +51,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     // When the competition is done, these will be used to calculate statistics and assign a score
     private var correctPoses = 0
-    private var totalNoOfPoses = 0
+    private var totalPoses = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -245,13 +245,13 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun updateDataWhenPoseDetectedInCompetitionUseCase() {
         if (isCompetition()) {
             correctPoses++
-            totalNoOfPoses++
+            totalPoses++
             intervalTimerDisposable?.dispose()
         }
     }
 
     private fun updateDataWhenPoseNotDetected() {
-        totalNoOfPoses++
+        totalPoses++
     }
 
     private fun competitionPoseNotDetectedMoveToNext() {
@@ -339,7 +339,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun navigateToFinishFragment() {
         Timber.d("Finishing training.")
         findNavController().navigate(
-            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment()
+            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment(
+                detectionUseCase = args.detectionUseCase,
+                totalPoses = totalPoses,
+                correctPoses = correctPoses
+            )
         )
     }
 

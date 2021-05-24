@@ -35,8 +35,11 @@
     <string name="illustration_button">Kreni</string>
 
     <string name="finish_description">Hvala ti na treniranju!</string>
-    <string name="finish_title">Bravo</string>
+    <string name="finish_title_good">Bravo</string>
+    <string name="finish_title_acceptable">Dobar pokušaj</string>
+    <string name="finish_title_bad">Hvala na trudu</string>
     <string name="finish_button">Natrag na početni zaslon</string>
+    <string name="finish_description_result">Tvoj rezultat je:</string>
 
     <string name="settings_title">Postavke</string>
     <string name="settings_language">Jezik</string>

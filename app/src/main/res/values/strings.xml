@@ -35,8 +35,12 @@
     <string name="illustration_button">Start</string>
 
     <string name="finish_description">Thank you for training!</string>
-    <string name="finish_title">Bravo</string>
+    <string name="finish_title_good">Bravo</string>
+    <string name="finish_title_acceptable">Good attempt</string>
+    <string name="finish_title_bad">Thanks for trying</string>
     <string name="finish_button">Back to main screen</string>
+    <string name="finish_description_result">Your result is:</string>
+    <string name="finish_result_format_specifier" translatable="false">%1$d / %2$d</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_language">Language</string>

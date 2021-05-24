@@ -67,6 +67,17 @@
         <action
             android:id="@+id/action_finishFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase"/>
+        <argument
+            android:name="totalPoses"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="correctPoses"
+            app:argType="integer"
+            android:defaultValue="0"/>
     </fragment>
     <fragment
         android:id="@+id/illustrationFragment"
