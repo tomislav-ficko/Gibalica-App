@@ -13,10 +13,21 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                return get(LEFT_KNEE)!!.isHorizontalPositionHigherThan(get(LEFT_HIP)!!) &&
-                        get(RIGHT_HIP)!!.isHorizontalPositionHigherThan(get(RIGHT_KNEE)!!) &&
-                        get(LEFT_HIP)!!.isVerticalPositionHigherThan(get(LEFT_KNEE)!!) &&
-                        get(RIGHT_HIP)!!.isVerticalPositionHigherThan(get(RIGHT_KNEE)!!)
+                val leftShoulderHipDistance = get(LEFT_HIP)!!.position.y - get(LEFT_SHOULDER)!!.position.y
+                val rightShoulderHipDistance = get(RIGHT_HIP)!!.position.y - get(RIGHT_SHOULDER)!!.position.y
+                val averageShoulderHipDistance = listOf(leftShoulderHipDistance, rightShoulderHipDistance).average()
+                val halfShoulderHipDistance = averageShoulderHipDistance / 2
+
+                val leftHipKneeDistance = get(LEFT_KNEE)!!.position.y - get(LEFT_HIP)!!.position.y
+                val rightHipKneeDistance = get(RIGHT_KNEE)!!.position.y - get(RIGHT_HIP)!!.position.y
+                val averageHipKneeDistance = listOf(leftHipKneeDistance, rightHipKneeDistance).average()
+
+                val hipsLowered = averageHipKneeDistance <= halfShoulderHipDistance
+                Timber.d("Hips lowered: $hipsLowered ($averageHipKneeDistance <= $halfShoulderHipDistance?).")
+                val kneesOutsideHips = get(LEFT_KNEE)!!.isHorizontalPositionHigherThan(get(LEFT_HIP)!!) &&
+                        get(RIGHT_HIP)!!.isHorizontalPositionHigherThan(get(RIGHT_KNEE)!!)
+
+                return hipsLowered && kneesOutsideHips
             }
         }
 
