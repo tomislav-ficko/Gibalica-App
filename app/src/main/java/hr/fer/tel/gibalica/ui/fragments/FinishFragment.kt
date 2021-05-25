@@ -6,13 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentFinishBinding
+import hr.fer.tel.gibalica.utils.DetectionUseCase
+import hr.fer.tel.gibalica.utils.invisible
+import hr.fer.tel.gibalica.utils.visible
 import timber.log.Timber
 
 class FinishFragment : Fragment() {
+
+    companion object {
+        private const val RESULT_THRESHOLD_GOOD = 0.75
+        private const val RESULT_THRESHOLD_ACCEPTABLE = 0.4
+    }
+
     private var _binding: FragmentFinishBinding? = null
     private val binding: FragmentFinishBinding
         get() = _binding!!
+
+    private val args: FinishFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,8 +39,47 @@ class FinishFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setData()
+    }
 
-        binding.btnFinish.setOnClickListener { returnToMainFragment() }
+    private fun setData() {
+        binding.apply {
+            when (args.detectionUseCase) {
+                DetectionUseCase.TRAINING -> {
+                    tvTitle.setText(R.string.finish_title_good)
+                    tvDescription.setText(R.string.finish_description)
+                    tvResult.invisible()
+                }
+                DetectionUseCase.COMPETITION -> {
+                    tvDescription.setText(R.string.finish_description_result)
+                    tvResult.visible()
+                    setDataAccordingToResult()
+                }
+            }
+            btnFinish.setOnClickListener { returnToMainFragment() }
+        }
+    }
+
+    private fun setDataAccordingToResult() {
+        val result = args.correctPoses.div(args.totalPoses)
+        binding.apply {
+            tvResult.text = getString(R.string.finish_result_format_specifier, args.correctPoses, args.totalPoses)
+            when {
+                result < RESULT_THRESHOLD_ACCEPTABLE -> {
+                    binding.tvTitle.setText(R.string.finish_title_bad)
+//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_bad)
+                }
+                result >= RESULT_THRESHOLD_ACCEPTABLE
+                        && result < RESULT_THRESHOLD_GOOD -> {
+                    binding.tvTitle.setText(R.string.finish_title_acceptable)
+//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_acceptable)
+                }
+                result >= RESULT_THRESHOLD_GOOD -> {
+                    binding.tvTitle.setText(R.string.finish_title_good)
+//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_good)
+                }
+            }
+        }
     }
 
     private fun returnToMainFragment() {

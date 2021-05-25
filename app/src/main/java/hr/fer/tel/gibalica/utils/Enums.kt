@@ -22,12 +22,24 @@ enum class TrainingType : Serializable {
     RANDOM
 }
 
+enum class CompetitionDifficulty : Serializable {
+    EASY,
+    MEDIUM,
+    HARD,
+    NONE
+}
+
+enum class DetectionUseCase : Serializable {
+    TRAINING,
+    COMPETITION
+}
+
 enum class CounterCause {
-    FINISH_DETECTION,
-    SWITCHING_TO_NEW_POSE,
+    SPLASH_SCREEN,
+    WAIT_BEFORE_DETECTING_STARTING_POSE,
     HIDE_NEGATIVE_RESULT,
-    DO_NOT_DETECT,
-    NO_EVENT
+    SWITCHING_TO_NEW_POSE,
+    FINISH_DETECTION
 }
 
 enum class Language {

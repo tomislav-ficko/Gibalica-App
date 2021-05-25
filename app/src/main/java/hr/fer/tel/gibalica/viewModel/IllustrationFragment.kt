@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.databinding.FragmentIllustrationBinding
+import hr.fer.tel.gibalica.utils.CompetitionDifficulty
+import hr.fer.tel.gibalica.utils.DetectionUseCase
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
@@ -43,7 +45,7 @@ class IllustrationFragment : Fragment() {
         }
         binding.apply {
             resource?.let { tvIllustration.setImageResource(it) }
-            btnStart.setOnClickListener { navigateToTrainingFragment() }
+            btnStart.setOnClickListener { navigateToDetectionFragment() }
             btnClose.setOnClickListener { navigateToTrainingSelectionFragment() }
         }
     }
@@ -59,9 +61,14 @@ class IllustrationFragment : Fragment() {
         )
     }
 
-    private fun navigateToTrainingFragment() {
+    private fun navigateToDetectionFragment() {
         findNavController().navigate(
-            IllustrationFragmentDirections.actionIllustrationFragmentToTrainingFragment(args.trainingType)
+            IllustrationFragmentDirections.actionIllustrationFragmentToTrainingFragment(
+                detectionUseCase = DetectionUseCase.TRAINING,
+                trainingType = args.trainingType,
+                competitionDifficulty = CompetitionDifficulty.NONE,
+                competitionLengthSeconds = 0
+            )
         )
     }
 }

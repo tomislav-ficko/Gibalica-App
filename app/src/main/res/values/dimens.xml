@@ -27,4 +27,7 @@
 
     <dimen name="radius_card_view_guide">8dp</dimen>
     <dimen name="margin_btn_training_selection">32dp</dimen>
+
+    <dimen name="size_text_timer">44sp</dimen>
+    <dimen name="padding_timer">16dp</dimen>
 </resources>
