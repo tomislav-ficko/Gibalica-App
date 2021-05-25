@@ -76,21 +76,21 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     randomDetectionType = DetectionUseCase.TRAINING
             }
             DetectionUseCase.COMPETITION -> {
-                when (args.competitionDifficulty) {
-                    CompetitionDifficulty.EASY -> {
+                when (args.difficulty) {
+                    Difficulty.EASY -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
                         detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_EASY
                     }
-                    CompetitionDifficulty.MEDIUM -> {
+                    Difficulty.MEDIUM -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
                         detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_MEDIUM
                     }
-                    CompetitionDifficulty.HARD -> {
+                    Difficulty.HARD -> {
                         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
                         detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_HARD
                     }
-                    CompetitionDifficulty.NONE ->
-                        Timber.e("Competition was started without difficulty value.")
+                    Difficulty.NONE ->
+                        Timber.e("Detection was started without difficulty value.")
                 }
                 initializeDetection(TrainingType.RANDOM)
                 randomDetectionType = DetectionUseCase.COMPETITION

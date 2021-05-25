@@ -17,8 +17,8 @@
             android:id="@+id/action_mainFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <action
-            android:id="@+id/action_mainFragment_to_competitionSelectionFragment"
-            app:destination="@id/competitionSelectionFragment" />
+            android:id="@+id/action_mainFragment_to_settingsSelectionFragment"
+            app:destination="@id/settingsSelectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/trainingFragment"
@@ -38,8 +38,8 @@
             android:name="trainingType"
             app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
         <argument
-            android:name="competitionDifficulty"
-            app:argType="hr.fer.tel.gibalica.utils.CompetitionDifficulty" />
+            android:name="difficulty"
+            app:argType="hr.fer.tel.gibalica.utils.Difficulty" />
         <argument
             android:name="competitionLengthSeconds"
             app:argType="long"/>
@@ -104,14 +104,14 @@
             app:destination="@id/mainFragment" />
     </fragment>
     <fragment
-        android:id="@+id/competitionSelectionFragment"
-        android:name="hr.fer.tel.gibalica.ui.fragments.CompetitionSelectionFragment"
-        android:label="CompetitionSelectionFragment" >
+        android:id="@+id/settingsSelectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.SettingsSelectionFragment"
+        android:label="SettingsSelectionFragment">
         <action
-            android:id="@+id/action_competitionSelectionFragment_to_trainingFragment"
-            app:destination="@id/trainingFragment" />
+            android:id="@+id/action_settingsSelectionFragment_to_trainingFragment"
+            app:destination="@id/trainingFragment"/>
         <action
-            android:id="@+id/action_competitionSelectionFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            android:id="@+id/action_settingsSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment"/>
     </fragment>
 </navigation>

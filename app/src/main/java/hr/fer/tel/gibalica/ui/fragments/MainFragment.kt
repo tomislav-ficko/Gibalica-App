@@ -39,7 +39,7 @@ class MainFragment : Fragment() {
         binding.apply {
             ivLogo.setOnClickListener { navigateToSettingsFragment() }
             btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
-            btnCompetition.setOnClickListener { navigateToCompetitionSelectionFragment() }
+            btnCompetition.setOnClickListener { navigateToSettingsSelectionFragment() }
             btnDayNight.setOnClickListener {} // Mode not yet implemented
         }
     }
@@ -58,10 +58,10 @@ class MainFragment : Fragment() {
         )
     }
 
-    private fun navigateToCompetitionSelectionFragment() {
+    private fun navigateToSettingsSelectionFragment() {
         Timber.d("Navigating to CompetitionSelectionFragment")
         findNavController().navigate(
-            MainFragmentDirections.actionMainFragmentToCompetitionSelectionFragment()
+            MainFragmentDirections.actionMainFragmentToSettingsSelectionFragment()
         )
     }
 }

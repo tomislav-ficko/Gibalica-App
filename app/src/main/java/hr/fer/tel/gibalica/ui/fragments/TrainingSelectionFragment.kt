@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentTrainingSelectionBinding
-import hr.fer.tel.gibalica.utils.CompetitionDifficulty
+import hr.fer.tel.gibalica.utils.Difficulty
 import hr.fer.tel.gibalica.utils.DetectionUseCase
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
@@ -65,7 +65,7 @@ class TrainingSelectionFragment : Fragment() {
             TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToTrainingFragment(
                 detectionUseCase = DetectionUseCase.TRAINING,
                 trainingType = TrainingType.RANDOM,
-                competitionDifficulty = CompetitionDifficulty.NONE,
+                difficulty = Difficulty.NONE,
                 competitionLengthSeconds = 0
             )
         )

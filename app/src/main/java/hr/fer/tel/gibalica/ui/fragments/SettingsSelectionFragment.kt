@@ -7,16 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.R
-import hr.fer.tel.gibalica.databinding.FragmentCompetitionSelectionBinding
-import hr.fer.tel.gibalica.utils.CompetitionDifficulty
+import hr.fer.tel.gibalica.databinding.FragmentSettingsSelectionBinding
 import hr.fer.tel.gibalica.utils.DetectionUseCase
+import hr.fer.tel.gibalica.utils.Difficulty
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
-class CompetitionSelectionFragment : Fragment(), View.OnClickListener {
+class SettingsSelectionFragment : Fragment(), View.OnClickListener {
 
-    private var _binding: FragmentCompetitionSelectionBinding? = null
-    private val binding: FragmentCompetitionSelectionBinding
+    private var _binding: FragmentSettingsSelectionBinding? = null
+    private val binding: FragmentSettingsSelectionBinding
         get() = _binding!!
 
     private var competitionLengthSeconds = 60L
@@ -26,7 +26,7 @@ class CompetitionSelectionFragment : Fragment(), View.OnClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCompetitionSelectionBinding.inflate(inflater, container, false)
+        _binding = FragmentSettingsSelectionBinding.inflate(inflater, container, false)
         Timber.d("Inflated!")
         return binding.root
     }
@@ -44,16 +44,16 @@ class CompetitionSelectionFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(clickedView: View?) {
         val difficulty = when (clickedView) {
-            binding.btnEasy -> CompetitionDifficulty.EASY
-            binding.btnMedium -> CompetitionDifficulty.MEDIUM
-            binding.btnHard -> CompetitionDifficulty.HARD
+            binding.btnEasy -> Difficulty.EASY
+            binding.btnMedium -> Difficulty.MEDIUM
+            binding.btnHard -> Difficulty.HARD
             else -> return
         }
         Timber.d("Navigating to DetectionFragment")
         findNavController().navigate(
-            CompetitionSelectionFragmentDirections.actionCompetitionSelectionFragmentToTrainingFragment(
+            SettingsSelectionFragmentDirections.actionSettingsSelectionFragmentToTrainingFragment(
                 detectionUseCase = DetectionUseCase.COMPETITION,
-                competitionDifficulty = difficulty,
+                difficulty = difficulty,
                 competitionLengthSeconds = competitionLengthSeconds,
                 trainingType = TrainingType.RANDOM
             )
@@ -86,9 +86,9 @@ class CompetitionSelectionFragment : Fragment(), View.OnClickListener {
                 Timber.d("Navigating to MainFragment")
                 navigateToMainFragment()
             }
-            btnEasy.setOnClickListener(this@CompetitionSelectionFragment)
-            btnEasy.setOnClickListener(this@CompetitionSelectionFragment)
-            btnHard.setOnClickListener(this@CompetitionSelectionFragment)
+            btnEasy.setOnClickListener(this@SettingsSelectionFragment)
+            btnEasy.setOnClickListener(this@SettingsSelectionFragment)
+            btnHard.setOnClickListener(this@SettingsSelectionFragment)
             lengthSlider.addOnChangeListener { _, value, _ ->
                 Timber.d("$value minutes selected in slider.")
                 competitionLengthSeconds = (value * 60).toLong()
@@ -99,7 +99,7 @@ class CompetitionSelectionFragment : Fragment(), View.OnClickListener {
 
     private fun navigateToMainFragment() {
         findNavController().navigate(
-            CompetitionSelectionFragmentDirections.actionCompetitionSelectionFragmentToMainFragment()
+            SettingsSelectionFragmentDirections.actionSettingsSelectionFragmentToMainFragment()
         )
     }
 }

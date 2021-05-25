@@ -22,7 +22,7 @@ enum class TrainingType : Serializable {
     RANDOM
 }
 
-enum class CompetitionDifficulty : Serializable {
+enum class Difficulty : Serializable {
     EASY,
     MEDIUM,
     HARD,
