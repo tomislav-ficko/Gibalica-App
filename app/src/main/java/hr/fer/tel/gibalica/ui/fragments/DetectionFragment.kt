@@ -13,9 +13,12 @@ import hr.fer.tel.gibalica.base.BaseDetectionFragment
 import hr.fer.tel.gibalica.base.REQUEST_CODE_PERMISSIONS
 import hr.fer.tel.gibalica.databinding.FragmentDetectionBinding
 import hr.fer.tel.gibalica.utils.*
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_EASY
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_HARD
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_MILLIS_MEDIUM
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_COMPETITION_MILLIS_EASY
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_COMPETITION_MILLIS_HARD
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_COMPETITION_MILLIS_MEDIUM
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_HARD
+import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_DEFAULT
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_EASY
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_HARD
@@ -44,9 +47,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private var detectionInProgress = true
     private var randomDetectionType: DetectionUseCase? = null
 
-    // -- Variables for competition --
+    // -- Variables for competition and Day-Night --
     // Once the interval runs out, detector moves to the next pose
-    private var detectionIntervalCompetitionMillis: Long? = null
+    private var detectionIntervalMillis: Long? = null
     private var intervalTimerDisposable: Disposable? = null
 
     // When the competition is done, these will be used to calculate statistics and assign a score
@@ -67,34 +70,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         super.onViewCreated(view, savedInstanceState)
 
         when (args.detectionUseCase) {
-            DetectionUseCase.TRAINING -> {
-                val trainingType = args.trainingType
-                Timber.d("Starting training for type ${trainingType.name}")
-                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
-                initializeDetection(trainingType)
-                if (trainingType == TrainingType.RANDOM)
-                    randomDetectionType = DetectionUseCase.TRAINING
-            }
-            DetectionUseCase.COMPETITION -> {
-                when (args.difficulty) {
-                    Difficulty.EASY -> {
-                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
-                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_EASY
-                    }
-                    Difficulty.MEDIUM -> {
-                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
-                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_MEDIUM
-                    }
-                    Difficulty.HARD -> {
-                        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
-                        detectionIntervalCompetitionMillis = DETECTION_INTERVAL_MILLIS_HARD
-                    }
-                    Difficulty.NONE ->
-                        Timber.e("Detection was started without difficulty value.")
-                }
-                initializeDetection(TrainingType.RANDOM)
-                randomDetectionType = DetectionUseCase.COMPETITION
-            }
+            DetectionUseCase.TRAINING -> initializeDataForTraining()
+            else -> initializeDataForCompetitionAndDayNight()
         }
         defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
@@ -166,6 +143,49 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Timber.d("Not showing negative message since interval for pose is still in progress.")
         else if (detectionInProgress && isDetectingActualPose())
             showPoseNotDetected()
+    }
+
+    private fun initializeDataForTraining() {
+        val trainingType = args.trainingType
+        Timber.d("Starting training for type ${trainingType.name}")
+        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
+        initializeDetection(trainingType)
+        if (trainingType == TrainingType.RANDOM)
+            randomDetectionType = DetectionUseCase.TRAINING
+    }
+
+    private fun initializeDataForCompetitionAndDayNight() {
+        Timber.d("Starting ${args.detectionUseCase.name}")
+        when (args.difficulty) {
+            Difficulty.EASY -> {
+                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
+                detectionIntervalMillis =
+                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
+                        DETECTION_INTERVAL_COMPETITION_MILLIS_EASY
+                    else
+                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
+            }
+            Difficulty.MEDIUM -> {
+                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
+                detectionIntervalMillis =
+                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
+                        DETECTION_INTERVAL_COMPETITION_MILLIS_MEDIUM
+                    else
+                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
+            }
+            Difficulty.HARD -> {
+                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
+                detectionIntervalMillis =
+                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
+                        DETECTION_INTERVAL_COMPETITION_MILLIS_HARD
+                    else
+                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_HARD
+            }
+            Difficulty.NONE ->
+                Timber.e("Detection was started without difficulty value.")
+        }
+        initializeDetection(TrainingType.RANDOM)
+        randomDetectionType = args.detectionUseCase
     }
 
     private fun showPoseNotDetected() {
@@ -309,11 +329,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Flowable.interval(0, 100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    Timber.d("Starting interval timer for $detectionIntervalCompetitionMillis seconds.")
+                    Timber.d("Starting interval timer for $detectionIntervalMillis seconds.")
                 }
                 .subscribe(
                     { tick ->
-                        if (tick >= detectionIntervalCompetitionMillis!!) {
+                        if (tick >= detectionIntervalMillis!!) {
                             competitionPoseNotDetectedMoveToNext()
                         }
                     },
