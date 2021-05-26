@@ -8,6 +8,7 @@ enum class GibalicaPose {
     BOTH_HANDS_RAISED,
     T_POSE,
     SQUAT,
+    UPRIGHT,
     STARTING_POSE,
     ALL_JOINTS_VISIBLE,
     NONE

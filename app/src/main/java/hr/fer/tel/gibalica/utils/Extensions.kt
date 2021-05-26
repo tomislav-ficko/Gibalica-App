@@ -184,7 +184,7 @@ fun GibalicaPose.getPoseMessage(): Int? {
         GibalicaPose.SQUAT -> R.string.message_squat
         GibalicaPose.STARTING_POSE -> R.string.message_start
         GibalicaPose.ALL_JOINTS_VISIBLE -> R.string.message_initial
-        GibalicaPose.NONE -> null
+        else -> null
     }
 }
 

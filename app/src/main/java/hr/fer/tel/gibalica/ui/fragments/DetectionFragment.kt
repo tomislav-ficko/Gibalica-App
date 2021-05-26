@@ -280,7 +280,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun getNewRandomPose() {
         currentPose = getRandomPose()
-        poseToBeDetectedMessage = currentPose.getPoseMessage()
+        poseToBeDetectedMessage =
+            if (randomDetectionType == DetectionUseCase.DAY_NIGHT) {
+                if (currentPose == GibalicaPose.UPRIGHT) R.string.day_message else R.string.night_message
+            } else
+                currentPose.getPoseMessage()
     }
 
     private fun updateDetectionOfPose() {
@@ -288,13 +292,26 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun getRandomPose(): GibalicaPose {
-        val numberOfPoses = TrainingType.values().size
-        return when (Random.nextInt(numberOfPoses)) {
-            0 -> GibalicaPose.LEFT_HAND_RAISED
-            1 -> GibalicaPose.RIGHT_HAND_RAISED
-            2 -> GibalicaPose.BOTH_HANDS_RAISED
-            3 -> GibalicaPose.SQUAT
-            else -> GibalicaPose.T_POSE
+        return when (randomDetectionType) {
+            DetectionUseCase.TRAINING, DetectionUseCase.COMPETITION -> {
+                when (Random.nextInt(5)) {
+                    0 -> GibalicaPose.LEFT_HAND_RAISED
+                    1 -> GibalicaPose.RIGHT_HAND_RAISED
+                    2 -> GibalicaPose.BOTH_HANDS_RAISED
+                    3 -> GibalicaPose.SQUAT
+                    else -> GibalicaPose.T_POSE
+                }
+            }
+            DetectionUseCase.DAY_NIGHT -> {
+                when (Random.nextInt(2)) {
+                    0 -> GibalicaPose.SQUAT
+                    else -> GibalicaPose.UPRIGHT
+                }
+            }
+            null -> {
+                Timber.d("Trying to get new random pose while randomDetectionType is null.")
+                GibalicaPose.NONE
+            }
         }
     }
 

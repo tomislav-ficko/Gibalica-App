@@ -13,6 +13,7 @@ import hr.fer.tel.gibalica.utils.PoseDetector.Companion.areBothHandsRaised
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isLeftHandRaised
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isRightHandRaised
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isSquatPerformed
+import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStandingUpright
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStartingPoseDetected
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isTPosePerformed
 import timber.log.Timber
@@ -79,6 +80,7 @@ class ImageAnalyzer(private val detectionTimeoutMillis: Long) : ImageAnalysis.An
                 GibalicaPose.BOTH_HANDS_RAISED -> pose.areBothHandsRaised()
                 GibalicaPose.T_POSE -> pose.isTPosePerformed()
                 GibalicaPose.SQUAT -> pose.isSquatPerformed()
+                GibalicaPose.UPRIGHT -> pose.isStandingUpright()
                 GibalicaPose.NONE -> false
             }
 
