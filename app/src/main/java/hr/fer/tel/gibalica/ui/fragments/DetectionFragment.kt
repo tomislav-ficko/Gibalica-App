@@ -270,7 +270,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun competitionPoseNotDetectedMoveToNext() {
+    private fun poseNotDetectedMoveToNext() {
         showPoseNotDetected()
         updatePoseCompletionData(poseDetected = false)
         getNewRandomPose()
@@ -315,7 +315,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startCompetitionTimer(valueSeconds: Long) {
+    private fun startDetectionTimer(valueSeconds: Long) {
         Flowable.interval(1, 1, TimeUnit.SECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
@@ -346,9 +346,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 }
                 .subscribe(
                     { tick ->
-                        if (tick >= detectionIntervalMillis!!) {
-                            competitionPoseNotDetectedMoveToNext()
-                        }
+                        if (tick >= detectionIntervalMillis!!)
+                            poseNotDetectedMoveToNext()
                     },
                     {}
                 )
@@ -365,14 +364,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun returnToMainFragment() {
         findNavController().navigate(
-            DetectionFragmentDirections.actionTrainingFragmentToMainFragment()
+            DetectionFragmentDirections.actionDetectionFragmentToMainFragment()
         )
     }
 
     private fun navigateToFinishFragment() {
         Timber.d("Finishing training.")
         findNavController().navigate(
-            DetectionFragmentDirections.actionTrainingFragmentToFinishFragment(
+            DetectionFragmentDirections.actionDetectionFragmentToFinishFragment(
                 detectionUseCase = args.detectionUseCase,
                 totalPoses = totalPoses,
                 correctPoses = correctPoses

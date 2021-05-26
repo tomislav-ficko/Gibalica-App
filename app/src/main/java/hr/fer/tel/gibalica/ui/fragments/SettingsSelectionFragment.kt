@@ -23,7 +23,7 @@ class SettingsSelectionFragment : Fragment(), View.OnClickListener {
         get() = _binding!!
 
     private val args: SettingsSelectionFragmentArgs by navArgs()
-    private var competitionLengthSeconds = 60L
+    private var detectionLengthSeconds = 60L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,10 +55,10 @@ class SettingsSelectionFragment : Fragment(), View.OnClickListener {
         }
         Timber.d("Navigating to DetectionFragment")
         findNavController().navigate(
-            SettingsSelectionFragmentDirections.actionSettingsSelectionFragmentToTrainingFragment(
+            SettingsSelectionFragmentDirections.actionSettingsSelectionFragmentToDetectionFragment(
                 detectionUseCase = args.detectionUseCase,
                 difficulty = difficulty,
-                competitionLengthSeconds = competitionLengthSeconds,
+                detectionLengthSeconds = detectionLengthSeconds,
                 trainingType = TrainingType.RANDOM
             )
         )
@@ -106,8 +106,8 @@ class SettingsSelectionFragment : Fragment(), View.OnClickListener {
             btnHard.setOnClickListener(this@SettingsSelectionFragment)
             lengthSlider.addOnChangeListener { _, value, _ ->
                 Timber.d("$value minutes selected in slider.")
-                competitionLengthSeconds = (value * 60).toLong()
-                Timber.d("$competitionLengthSeconds")
+                detectionLengthSeconds = (value * 60).toLong()
+                Timber.d("$detectionLengthSeconds")
             }
         }
     }

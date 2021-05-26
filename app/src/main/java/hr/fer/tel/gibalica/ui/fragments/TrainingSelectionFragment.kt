@@ -62,11 +62,11 @@ class TrainingSelectionFragment : Fragment() {
 
     private fun navigateToDetectionFragment() {
         findNavController().navigate(
-            TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToTrainingFragment(
+            TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToDetectionFragment(
                 detectionUseCase = DetectionUseCase.TRAINING,
                 trainingType = TrainingType.RANDOM,
                 difficulty = Difficulty.NONE,
-                competitionLengthSeconds = 0
+                detectionLengthSeconds = 0
             )
         )
     }
