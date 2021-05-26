@@ -106,7 +106,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     override fun onPoseDetected(detectedPose: GibalicaPose) {
         if (detectionInProgress) {
-            Timber.d("${currentPose.name} detected")
+            Timber.d("${currentPose.name} detected.")
             detectionInProgress = false
 
             when (currentPose) {
@@ -147,7 +147,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun initializeDataForTraining() {
         val trainingType = args.trainingType
-        Timber.d("Starting training for type ${trainingType.name}")
+        Timber.d("Starting training for type ${trainingType.name}.")
         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
         initializeDetection(trainingType)
         if (trainingType == TrainingType.RANDOM)
@@ -155,7 +155,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun initializeDataForCompetitionAndDayNight() {
-        Timber.d("Starting ${args.detectionUseCase.name}")
+        Timber.d("Starting ${args.detectionUseCase.name}.")
         when (args.difficulty) {
             Difficulty.EASY -> {
                 setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
@@ -189,7 +189,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun showPoseNotDetected() {
-        Timber.d("${poseToBeDetected.name} not detected")
+        Timber.d("${poseToBeDetected.name} not detected.")
         detectionInProgress = false
 
         showPoseNotDetectedResponse()
