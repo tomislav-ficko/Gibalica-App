@@ -126,7 +126,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 else -> {
                     showPoseDetected()
                     if (isRandomDetection()) {
-                        updateDataWhenPoseDetectedInCompetitionUseCase()
+                        updatePoseCompletionData(poseDetected = true)
                         getNewRandomPose()
                         updateDetectionOfPose()
                         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
@@ -262,21 +262,17 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun updateDataWhenPoseDetectedInCompetitionUseCase() {
-        if (isCompetition()) {
+    private fun updatePoseCompletionData(poseDetected: Boolean) {
+        totalPoses++
+        if (poseDetected) {
             correctPoses++
-            totalPoses++
             intervalTimerDisposable?.dispose()
         }
     }
 
-    private fun updateDataWhenPoseNotDetected() {
-        totalPoses++
-    }
-
     private fun competitionPoseNotDetectedMoveToNext() {
         showPoseNotDetected()
-        updateDataWhenPoseNotDetected()
+        updatePoseCompletionData(poseDetected = false)
         getNewRandomPose()
         updateDetectionOfPose()
         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 2)
