@@ -31,7 +31,8 @@ enum class Difficulty : Serializable {
 
 enum class DetectionUseCase : Serializable {
     TRAINING,
-    COMPETITION
+    COMPETITION,
+    DAY_NIGHT
 }
 
 enum class CounterCause {

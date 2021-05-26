@@ -61,4 +61,8 @@
     <string name="comp_btn_hard_value">2 sekunde</string>
     <string name="comp_selection_length">Duljina natjecanja</string>
     <string name="comp_length">Duljina natjecanja</string>
+
+    <string name="day_night_btn_easy_value">4 sekunde</string>
+    <string name="day_night_btn_medium_value">3 sekunde</string>
+    <string name="day_night_btn_hard_value">2 sekunde</string>
 </resources>
