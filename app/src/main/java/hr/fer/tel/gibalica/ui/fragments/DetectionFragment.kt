@@ -120,7 +120,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     continueToActualPoseDetection()
                     currentPose = poseToBeDetected
                     updateDetectionOfPose()
-                    startTimersIfCompetitionUseCase()
+                    startTimersIfCompetitionOrDayNightUseCase()
                     detectionInProgress = true
                 }
                 else -> {
@@ -139,7 +139,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     override fun onPoseNotDetected(detectedPose: GibalicaPose) {
-        if (isCompetition())
+        if (isCompetition() or isDayNight())
             Timber.d("Not showing negative message since interval for pose is still in progress.")
         else if (detectionInProgress && isDetectingActualPose())
             showPoseNotDetected()
@@ -239,7 +239,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                             updateMessage()
                             hideResponse()
                             detectionInProgress = true
-                            restartTimerIfCompetitionUseCase()
+                            restartTimerIfCompetitionOrDayNightUseCase()
                         }
                         CounterCause.FINISH_DETECTION -> endDetection()
                         else -> Timber.d("Timer was trigger for ${event.cause}.")
@@ -249,17 +249,16 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startTimersIfCompetitionUseCase() {
-        if (isCompetition()) {
-            startCompetitionTimer(args.competitionLengthSeconds)
+    private fun startTimersIfCompetitionOrDayNightUseCase() {
+        if (isCompetition() or isDayNight()) {
+            startDetectionTimer(args.detectionLengthSeconds)
             startIntervalTimer()
         }
     }
 
-    private fun restartTimerIfCompetitionUseCase() {
-        if (isCompetition()) {
+    private fun restartTimerIfCompetitionOrDayNightUseCase() {
+        if (isCompetition() or isDayNight())
             startIntervalTimer()
-        }
     }
 
     private fun updatePoseCompletionData(poseDetected: Boolean) {
@@ -330,7 +329,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         val remainingSeconds = valueSeconds - tick
                         val minutes = TimeUnit.SECONDS.toMinutes(remainingSeconds)
                         val seconds = remainingSeconds - TimeUnit.MINUTES.toSeconds(minutes)
-                        binding.tvTimer.text = String.format("%02d:%02d", minutes, seconds)
+                        if (args.detectionUseCase == DetectionUseCase.COMPETITION)
+                            binding.tvTimer.text = String.format("%02d:%02d", minutes, seconds)
                     }
                 },
                 {}
@@ -359,6 +359,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         currentPose != GibalicaPose.ALL_JOINTS_VISIBLE && currentPose != GibalicaPose.STARTING_POSE
 
     private fun isCompetition() = randomDetectionType == DetectionUseCase.COMPETITION
+
+    private fun isDayNight() = randomDetectionType == DetectionUseCase.DAY_NIGHT
 
     private fun endDetection() = navigateToFinishFragment()
 
