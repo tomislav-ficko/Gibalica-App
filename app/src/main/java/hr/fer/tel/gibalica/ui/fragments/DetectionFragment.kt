@@ -157,6 +157,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun initializeDataForCompetitionAndDayNight() {
         Timber.d("Starting ${args.detectionUseCase.name}.")
+        randomDetectionType = args.detectionUseCase
+
         when (args.difficulty) {
             Difficulty.EASY -> {
                 setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
@@ -186,7 +188,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 Timber.e("Detection was started without difficulty value.")
         }
         initializeDetection(TrainingType.RANDOM)
-        randomDetectionType = args.detectionUseCase
     }
 
     private fun showPoseNotDetected() {
