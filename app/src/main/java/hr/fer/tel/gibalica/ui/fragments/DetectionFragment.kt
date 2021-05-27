@@ -286,10 +286,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun getNewRandomPose() {
         currentPose = getRandomPose()
         poseToBeDetectedMessage =
-            if (randomDetectionType == DetectionUseCase.DAY_NIGHT) {
-                if (currentPose == GibalicaPose.UPRIGHT) R.string.day_message else R.string.night_message
-            } else
-                currentPose.getPoseMessage()
+            when {
+                randomDetectionType != DetectionUseCase.DAY_NIGHT ->
+                    currentPose.getPoseMessage()
+                currentPose == GibalicaPose.UPRIGHT ->
+                    R.string.day_message
+                else ->
+                    R.string.night_message
+            }
     }
 
     private fun updatePoseInAnalyzer() {
