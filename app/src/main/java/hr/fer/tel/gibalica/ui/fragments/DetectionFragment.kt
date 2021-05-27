@@ -111,15 +111,15 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
             when (currentPose) {
                 GibalicaPose.ALL_JOINTS_VISIBLE -> {
-                    continueToStartingPose()
                     currentPose = GibalicaPose.STARTING_POSE
-                    updateDetectionOfPose()
+                    showStartingPoseMessage()
+                    updatePoseInAnalyzer()
                     viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
                 }
                 GibalicaPose.STARTING_POSE -> {
-                    continueToActualPoseDetection()
                     currentPose = poseToBeDetected
-                    updateDetectionOfPose()
+                    updateMessage()
+                    updatePoseInAnalyzer()
                     startTimersIfCompetitionOrDayNightUseCase()
                     detectionInProgress = true
                     Timber.d("Starting pose detected, moving to detection of actual poses.")
@@ -129,7 +129,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     if (isRandomDetection()) {
                         updatePoseCompletionData(poseDetected = true)
                         getNewRandomPose()
-                        updateDetectionOfPose()
+                        updatePoseInAnalyzer()
                         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
                     } else {
                         viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
@@ -222,7 +222,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun startDetection() {
         Timber.d("Sending initial pose to analyzer.")
-        updateDetectionOfPose()
+        updatePoseInAnalyzer()
     }
 
     private fun defineCounterLogic() {
@@ -279,7 +279,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         showPoseNotDetected()
         updatePoseCompletionData(poseDetected = false)
         getNewRandomPose()
-        updateDetectionOfPose()
+        updatePoseInAnalyzer()
         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 2)
     }
 
@@ -292,7 +292,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 currentPose.getPoseMessage()
     }
 
-    private fun updateDetectionOfPose() {
+    private fun updatePoseInAnalyzer() {
         analyzer.updatePose(currentPose)
     }
 
@@ -400,13 +400,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun showPoseNotDetectedResponse() = showResponse(R.string.response_negative)
 
-    private fun continueToStartingPose() = showMessage(R.string.message_start)
-
-    private fun continueToActualPoseDetection() {
-        poseToBeDetectedMessage?.let { resId ->
-            showMessage(resId)
-        }
-    }
+    private fun showStartingPoseMessage() = showMessage(R.string.message_start)
 
     private fun hideResponseAndShowMessage() {
         hideResponse()
