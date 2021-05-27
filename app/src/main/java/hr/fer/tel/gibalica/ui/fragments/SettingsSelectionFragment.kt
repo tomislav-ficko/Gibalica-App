@@ -101,9 +101,11 @@ class SettingsSelectionFragment : Fragment(), View.OnClickListener {
                 Timber.d("Navigating to MainFragment")
                 navigateToMainFragment()
             }
-            btnEasy.setOnClickListener(this@SettingsSelectionFragment)
-            btnEasy.setOnClickListener(this@SettingsSelectionFragment)
-            btnHard.setOnClickListener(this@SettingsSelectionFragment)
+            with(this@SettingsSelectionFragment) {
+                btnEasy.setOnClickListener(this)
+                btnMedium.setOnClickListener(this)
+                btnHard.setOnClickListener(this)
+            }
             lengthSlider.addOnChangeListener { _, value, _ ->
                 Timber.d("$value minutes selected in slider.")
                 detectionLengthSeconds = (value * 60).toLong()
