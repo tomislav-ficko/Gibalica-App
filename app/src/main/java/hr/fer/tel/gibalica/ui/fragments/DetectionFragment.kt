@@ -122,6 +122,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     updateDetectionOfPose()
                     startTimersIfCompetitionOrDayNightUseCase()
                     detectionInProgress = true
+                    Timber.d("Starting pose detected, moving to detection of actual poses.")
                 }
                 else -> {
                     showPoseDetected()
@@ -230,16 +231,21 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             when (event?.eventType) {
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
-                        CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> detectionInProgress = true
+                        CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> {
+                            detectionInProgress = true
+                            Timber.d("Counter finished, continuing detection.")
+                        }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
                             hideResponseAndShowMessage()
                             detectionInProgress = true
+                            Timber.d("Negative result hidden, continuing detection.")
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             updateMessage()
                             hideResponse()
                             detectionInProgress = true
                             restartTimerIfCompetitionOrDayNightUseCase()
+                            Timber.d("Switched to new pose, continuing detection.")
                         }
                         CounterCause.FINISH_DETECTION -> endDetection()
                         else -> Timber.d("Timer was trigger for ${event.cause}.")
