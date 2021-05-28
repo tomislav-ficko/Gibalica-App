@@ -127,6 +127,15 @@ class PoseDetector {
             }
         }
 
+        fun Pose.isStandingUpright(): Boolean {
+            if (landmarksNotPresent()) return false
+            logLandmarkDetails()
+
+            with(getLandmarks()) {
+                return isStandingUpright(this)
+            }
+        }
+
         private fun isArmLowered(
             shoulder: PoseLandmark,
             elbow: PoseLandmark,

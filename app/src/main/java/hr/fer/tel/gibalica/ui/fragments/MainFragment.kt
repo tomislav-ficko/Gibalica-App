@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
+import hr.fer.tel.gibalica.utils.DetectionUseCase
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -39,8 +40,8 @@ class MainFragment : Fragment() {
         binding.apply {
             ivLogo.setOnClickListener { navigateToSettingsFragment() }
             btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
-            btnCompetition.setOnClickListener { navigateToSettingsSelectionFragment() }
-            btnDayNight.setOnClickListener {} // Mode not yet implemented
+            btnCompetition.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.COMPETITION) }
+            btnDayNight.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.DAY_NIGHT) }
         }
     }
 
@@ -58,10 +59,10 @@ class MainFragment : Fragment() {
         )
     }
 
-    private fun navigateToSettingsSelectionFragment() {
+    private fun navigateToSettingsSelectionFragment(detectionUseCase: DetectionUseCase) {
         Timber.d("Navigating to CompetitionSelectionFragment")
         findNavController().navigate(
-            MainFragmentDirections.actionMainFragmentToSettingsSelectionFragment()
+            MainFragmentDirections.actionMainFragmentToSettingsSelectionFragment(detectionUseCase)
         )
     }
 }

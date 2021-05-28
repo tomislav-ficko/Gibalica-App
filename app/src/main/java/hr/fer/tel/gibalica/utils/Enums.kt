@@ -8,6 +8,7 @@ enum class GibalicaPose {
     BOTH_HANDS_RAISED,
     T_POSE,
     SQUAT,
+    UPRIGHT,
     STARTING_POSE,
     ALL_JOINTS_VISIBLE,
     NONE
@@ -31,7 +32,8 @@ enum class Difficulty : Serializable {
 
 enum class DetectionUseCase : Serializable {
     TRAINING,
-    COMPETITION
+    COMPETITION,
+    DAY_NIGHT
 }
 
 enum class CounterCause {

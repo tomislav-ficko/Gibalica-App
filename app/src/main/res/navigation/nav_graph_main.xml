@@ -21,15 +21,15 @@
             app:destination="@id/settingsSelectionFragment" />
     </fragment>
     <fragment
-        android:id="@+id/trainingFragment"
+        android:id="@+id/detectionFragment"
         android:name="hr.fer.tel.gibalica.ui.fragments.DetectionFragment"
-        android:label="fragment_training"
+        android:label="fragment_detection"
         tools:layout="@layout/fragment_detection">
         <action
-            android:id="@+id/action_trainingFragment_to_mainFragment"
+            android:id="@+id/action_detectionFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
         <action
-            android:id="@+id/action_trainingFragment_to_finishFragment"
+            android:id="@+id/action_detectionFragment_to_finishFragment"
             app:destination="@id/finishFragment" />
         <argument
             android:name="detectionUseCase"
@@ -41,7 +41,7 @@
             android:name="difficulty"
             app:argType="hr.fer.tel.gibalica.utils.Difficulty" />
         <argument
-            android:name="competitionLengthSeconds"
+            android:name="detectionLengthSeconds"
             app:argType="long"/>
     </fragment>
     <fragment
@@ -56,8 +56,8 @@
             android:id="@+id/action_trainingSelectionFragment_to_illustrationFragment"
             app:destination="@id/illustrationFragment" />
         <action
-            android:id="@+id/action_trainingSelectionFragment_to_trainingFragment"
-            app:destination="@id/trainingFragment" />
+            android:id="@+id/action_trainingSelectionFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment" />
     </fragment>
     <fragment
         android:id="@+id/finishFragment"
@@ -85,8 +85,8 @@
         android:label="fragment_illustration"
         tools:layout="@layout/fragment_illustration" >
         <action
-            android:id="@+id/action_illustrationFragment_to_trainingFragment"
-            app:destination="@id/trainingFragment" />
+            android:id="@+id/action_illustrationFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment" />
         <argument
             android:name="trainingType"
             app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
@@ -108,10 +108,13 @@
         android:name="hr.fer.tel.gibalica.ui.fragments.SettingsSelectionFragment"
         android:label="SettingsSelectionFragment">
         <action
-            android:id="@+id/action_settingsSelectionFragment_to_trainingFragment"
-            app:destination="@id/trainingFragment"/>
+            android:id="@+id/action_settingsSelectionFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment"/>
         <action
             android:id="@+id/action_settingsSelectionFragment_to_mainFragment"
             app:destination="@id/mainFragment"/>
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase"/>
     </fragment>
 </navigation>

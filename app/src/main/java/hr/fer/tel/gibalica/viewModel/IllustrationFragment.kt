@@ -63,11 +63,11 @@ class IllustrationFragment : Fragment() {
 
     private fun navigateToDetectionFragment() {
         findNavController().navigate(
-            IllustrationFragmentDirections.actionIllustrationFragmentToTrainingFragment(
+            IllustrationFragmentDirections.actionIllustrationFragmentToDetectionFragment(
                 detectionUseCase = DetectionUseCase.TRAINING,
                 trainingType = args.trainingType,
                 difficulty = Difficulty.NONE,
-                competitionLengthSeconds = 0
+                detectionLengthSeconds = 0
             )
         )
     }

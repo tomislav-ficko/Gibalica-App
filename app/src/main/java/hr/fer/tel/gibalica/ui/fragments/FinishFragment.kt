@@ -61,7 +61,11 @@ class FinishFragment : Fragment() {
     }
 
     private fun setDataAccordingToResult() {
-        val result = args.correctPoses.div(args.totalPoses)
+        val result = try {
+            args.correctPoses.div(args.totalPoses)
+        } catch (e: ArithmeticException) {
+            0
+        }
         binding.apply {
             tvResult.text = getString(R.string.finish_result_format_specifier, args.correctPoses, args.totalPoses)
             when {
