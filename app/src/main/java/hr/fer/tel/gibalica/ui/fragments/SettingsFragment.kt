@@ -5,12 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.preference.PreferenceManager
 import hr.fer.tel.gibalica.databinding.FragmentSettingsBinding
+import hr.fer.tel.gibalica.utils.Language
+import hr.fer.tel.gibalica.utils.Setting
+import hr.fer.tel.gibalica.utils.Setting.*
 import hr.fer.tel.gibalica.utils.tryCast
-import hr.fer.tel.gibalica.viewModel.Setting
-import hr.fer.tel.gibalica.viewModel.SettingsViewModel
 import timber.log.Timber
 
 class SettingsFragment : Fragment() {
@@ -18,7 +19,6 @@ class SettingsFragment : Fragment() {
     private var _binding: FragmentSettingsBinding? = null
     private val binding: FragmentSettingsBinding
         get() = _binding!!
-    private val viewModel by viewModels<SettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,41 +32,19 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        defineObservers()
         defineActions()
-        getSavedValues()
+        loadSettings()
         binding.swAccessibility.showText = true
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.saveSettings(binding)
+        saveSettings()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun defineObservers() {
-        viewModel.savedSettingsLiveData.observe(viewLifecycleOwner, { map ->
-            map.entries.forEach { entry ->
-                when (entry.key) {
-                    Setting.LANGUAGE -> {
-                        entry.value.tryCast<Pair<Int, String>> {
-                            val buttonId = if (first != -1) first else binding.rbEnglish.id
-                            binding.rgLanguage.check(buttonId)
-                        }
-                    }
-                    Setting.SOUND ->
-                        binding.swSound.isChecked = entry.value as Boolean
-                    Setting.VOICE_CONTROL ->
-                        binding.swVoice.isChecked = entry.value as Boolean
-                    Setting.ACCESSIBILITY ->
-                        binding.swAccessibility.isChecked = entry.value as Boolean
-                }
-            }
-        })
     }
 
     private fun defineActions() {
@@ -77,7 +55,64 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    private fun getSavedValues() {
-        viewModel.loadSettings()
+    private fun saveSettings() {
+        val selectedLanguage = getSelectedLanguage(binding)
+        with(binding) {
+            PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putBoolean(SOUND.name, swSound.isChecked)
+                .putBoolean(VOICE_CONTROL.name, swVoice.isChecked)
+                .putBoolean(ACCESSIBILITY.name, swAccessibility.isChecked)
+                .putInt(Language.LANGUAGE_BUTTON_ID, selectedLanguage.first)
+                .putString(LANGUAGE.name, selectedLanguage.second.name)
+                .apply()
+        }
+    }
+
+    private fun loadSettings() {
+        val map = mutableMapOf<Setting, Any>()
+        with(PreferenceManager.getDefaultSharedPreferences(context)) {
+            val languageString = getString(LANGUAGE.name, Language.EN.name)
+            val languageButtonId = getInt(Language.LANGUAGE_BUTTON_ID, -1)
+            map[LANGUAGE] = Pair(languageButtonId, languageString) as Any
+            map[SOUND] = getBoolean(SOUND.name, false) as Any
+            map[VOICE_CONTROL] = getBoolean(VOICE_CONTROL.name, false) as Any
+            map[ACCESSIBILITY] = getBoolean(ACCESSIBILITY.name, false) as Any
+        }
+        setData(map)
+    }
+
+    private fun setData(map: Map<Setting, Any>) {
+        binding.apply {
+            map.entries.forEach { entry ->
+                when (entry.key) {
+                    LANGUAGE -> {
+                        entry.value.tryCast<Pair<Int, String>> {
+                            val buttonId =
+                                if (first != -1) first
+                                else rbEnglish.id
+                            rgLanguage.check(buttonId)
+                        }
+                    }
+                    SOUND -> swSound.isChecked = entry.value as Boolean
+                    VOICE_CONTROL -> swVoice.isChecked = entry.value as Boolean
+                    ACCESSIBILITY -> swAccessibility.isChecked = entry.value as Boolean
+                }
+            }
+        }
+    }
+
+    private fun getSelectedLanguage(binding: FragmentSettingsBinding): Pair<Int, Language> {
+        with(binding) {
+            return when (rgLanguage.checkedRadioButtonId) {
+                rbCroatian.id -> Pair(rbCroatian.id, Language.HR)
+                rbEnglish.id -> Pair(rbEnglish.id, Language.EN)
+                else -> {
+                    Timber.d("Unknown language selected, setting English by default.")
+                    Pair(rbEnglish.id, Language.EN)
+                }
+            }
+        }
     }
 }

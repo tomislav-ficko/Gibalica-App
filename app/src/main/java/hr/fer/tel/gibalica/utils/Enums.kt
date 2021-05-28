@@ -52,3 +52,10 @@ enum class Language {
         const val LANGUAGE_BUTTON_ID = "language_button_id"
     }
 }
+
+enum class Setting {
+    LANGUAGE,
+    SOUND,
+    VOICE_CONTROL,
+    ACCESSIBILITY
+}
