@@ -1,10 +1,15 @@
 package hr.fer.tel.gibalica.ui.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import hr.fer.tel.gibalica.databinding.FragmentSettingsBinding
@@ -12,13 +17,19 @@ import hr.fer.tel.gibalica.utils.Language
 import hr.fer.tel.gibalica.utils.Setting
 import hr.fer.tel.gibalica.utils.Setting.*
 import hr.fer.tel.gibalica.utils.tryCast
+import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
 class SettingsFragment : Fragment() {
 
-    private var _binding: FragmentSettingsBinding? = null
+    companion object {
+        private const val REQUEST_CODE_RECORD_AUDIO = 11
+    }
+
+    private val viewModel: MainViewModel by viewModels()
     private val binding: FragmentSettingsBinding
         get() = _binding!!
+    private var _binding: FragmentSettingsBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +48,21 @@ class SettingsFragment : Fragment() {
         binding.swAccessibility.showText = true
     }
 
+    override fun onResume() {
+        super.onResume()
+        when {
+            recordAudioPermissionNotGranted() -> {
+                Timber.d("Audio recording permission denied, turning the feature off.")
+                binding.swVoice.isChecked = false
+            }
+            binding.swVoice.isChecked -> {
+                Timber.d("Audio recording permission granted, enabling recognizer.")
+                viewModel.enableSpeechRecognizer()
+            }
+            else -> Timber.d("Audio recording permission granted, but option not enabled.")
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         saveSettings()
@@ -48,11 +74,22 @@ class SettingsFragment : Fragment() {
     }
 
     private fun defineActions() {
-        binding.ivBack.setOnClickListener {
-            findNavController().navigate(
-                SettingsFragmentDirections.actionSettingsFragmentToMainFragment()
-            )
+        binding.ivBack.setOnClickListener { navigateToMainFragment() }
+        binding.swVoice.setOnCheckedChangeListener { _, isChecked ->
+            when {
+                !isChecked -> viewModel.disableSpeechRecognizer()
+                recordAudioPermissionNotGranted() -> requestRecordAudioPermission()
+                else -> viewModel.enableSpeechRecognizer()
+            }
         }
+    }
+
+    private fun requestRecordAudioPermission() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            REQUEST_CODE_RECORD_AUDIO
+        )
     }
 
     private fun saveSettings() {
@@ -115,4 +152,14 @@ class SettingsFragment : Fragment() {
             }
         }
     }
+
+    private fun navigateToMainFragment() {
+        Timber.d("Navigating to MainFragment.")
+        findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToMainFragment())
+    }
+
+    private fun recordAudioPermissionNotGranted() = ContextCompat.checkSelfPermission(
+        requireContext(),
+        Manifest.permission.RECORD_AUDIO
+    ) != PackageManager.PERMISSION_GRANTED
 }
