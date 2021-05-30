@@ -57,7 +57,7 @@ class SettingsFragment : Fragment() {
             }
             binding.swVoice.isChecked -> {
                 Timber.d("Audio recording permission granted, enabling recognizer.")
-                viewModel.enableSpeechRecognizer()
+                enableRecognizer()
             }
             else -> Timber.d("Audio recording permission granted, but option not enabled.")
         }
@@ -79,8 +79,18 @@ class SettingsFragment : Fragment() {
             when {
                 !isChecked -> viewModel.disableSpeechRecognizer()
                 recordAudioPermissionNotGranted() -> requestRecordAudioPermission()
-                else -> viewModel.enableSpeechRecognizer()
+                else -> enableRecognizer()
             }
+        }
+    }
+
+    private fun enableRecognizer() {
+        if (SpeechRecognizer.isRecognitionAvailable(requireContext())) {
+            viewModel.enableSpeechRecognizer()
+        } else {
+            Timber.d("SpeechRecognizer not available on device, turning feature off.")
+            Toast.makeText(requireContext(), "Not available on device.", Toast.LENGTH_LONG).show()
+            binding.swVoice.isChecked = false
         }
     }
 
