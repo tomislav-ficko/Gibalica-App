@@ -1,14 +1,23 @@
 package hr.fer.tel.gibalica.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
+import hr.fer.tel.gibalica.utils.BaseRecognitionListener
 import hr.fer.tel.gibalica.utils.DetectionUseCase
+import hr.fer.tel.gibalica.utils.invisible
+import hr.fer.tel.gibalica.utils.visible
+import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -33,6 +42,16 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         defineActions()
+        defineObserver()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (speechRecognizerEnabled) {
+            binding.btnVoice.visible()
+        } else {
+            binding.btnVoice.invisible()
+        }
     }
 
     override fun onDestroyView() {
@@ -46,7 +65,56 @@ class MainFragment : Fragment() {
             btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
             btnCompetition.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.COMPETITION) }
             btnDayNight.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.DAY_NIGHT) }
+            btnVoice.setOnClickListener { startVoiceRecognizer() }
         }
+    }
+
+    private fun defineObserver() {
+        viewModel.speechRecognizer.observe(requireActivity()) { recognizerEnabledValue ->
+            Timber.d("LiveData value changed!")
+            speechRecognizerEnabled = recognizerEnabledValue
+        }
+    }
+
+    private fun startVoiceRecognizer() {
+        val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
+        recognizer.setRecognitionListener(getRecognitionListener())
+        recognizer.startListening(
+            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            }
+        )
+    }
+
+    private fun getRecognitionListener(): RecognitionListener {
+        return object : BaseRecognitionListener() {
+            override fun onResults(results: Bundle?) {
+                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                val scores = results?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
+                Timber.d("Recognized content: ${matches.toString()} ${matches?.size}")
+                Timber.d("Confidence score: ${scores?.get(0)}")
+                matches?.let {
+                    val recognizedSentence = it[0].toLowerCase()
+                    if (recognizedSentence.containsAllNecessaryParameters()) {
+                        navigateToDetectionBasedOnRecognizerOutput(recognizedSentence)
+                    } else {
+                        showNegativeMessage()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun navigateToDetectionBasedOnRecognizerOutput(recognizedSentence: String) {
+
+    }
+
+    private fun showNegativeMessage() {
+        Toast.makeText(
+            context,
+            "All necessary parameters were not recognized, please try again",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun navigateToSettingsFragment() {
@@ -68,5 +136,21 @@ class MainFragment : Fragment() {
         findNavController().navigate(
             MainFragmentDirections.actionMainFragmentToSettingsSelectionFragment(detectionUseCase)
         )
+    }
+
+    private fun String.containsAllNecessaryParameters(): Boolean {
+        return when {
+            contains("training") &&
+                    (contains("left") or
+                            contains("right") or
+                            contains("both") or
+                            contains("squat") or
+                            contains("pose") or
+                            contains("random")) -> true
+            !contains("competition") or !contains("day night") -> false
+            !contains("easy") or !contains("medium") or !contains("hard") -> false
+            !contains("length") -> false
+            else -> true
+        }
     }
 }
