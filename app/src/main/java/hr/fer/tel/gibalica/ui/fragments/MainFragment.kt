@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
 import hr.fer.tel.gibalica.utils.DetectionUseCase
@@ -12,9 +13,12 @@ import timber.log.Timber
 
 class MainFragment : Fragment() {
 
-    private var _binding: FragmentMainBinding? = null
+    private val viewModel: MainViewModel by activityViewModels()
     private val binding: FragmentMainBinding
         get() = _binding!!
+    private var _binding: FragmentMainBinding? = null
+
+    private var speechRecognizerEnabled: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
