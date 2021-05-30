@@ -38,7 +38,7 @@ class MainFragment : Fragment() {
 
     private fun defineActions() {
         binding.apply {
-            ivLogo.setOnClickListener { navigateToSettingsFragment() }
+            ivSettings.setOnClickListener { navigateToSettingsFragment() }
             btnTraining.setOnClickListener { navigateToTrainingSelectionFragment() }
             btnCompetition.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.COMPETITION) }
             btnDayNight.setOnClickListener { navigateToSettingsSelectionFragment(DetectionUseCase.DAY_NIGHT) }
