@@ -109,8 +109,53 @@ class MainFragment : Fragment() {
         }
     }
 
+    // Sentence should be "start ___ with difficulty ___ and length ___ minutes"
+    //    or "start training for ___ pose"
     private fun navigateToDetectionBasedOnRecognizerOutput(recognizedSentence: String) {
+        val detectionUseCase = when {
+            recognizedSentence.contains("training") -> DetectionUseCase.TRAINING
+            recognizedSentence.contains("competition") -> DetectionUseCase.COMPETITION
+            recognizedSentence.contains("day night") -> DetectionUseCase.DAY_NIGHT
+            else -> {
+                Timber.d("Detection use case not recognized.")
+                null
+            }
+        }
+        val trainingType =
+            if (detectionUseCase == DetectionUseCase.TRAINING) {
+                when {
+                    recognizedSentence.contains("left") -> TrainingType.LEFT_HAND
+                    recognizedSentence.contains("right") -> TrainingType.RIGHT_HAND
+                    recognizedSentence.contains("both") -> TrainingType.BOTH_HANDS
+                    recognizedSentence.contains("squat") -> TrainingType.SQUAT
+                    recognizedSentence.contains("pose") -> TrainingType.T_POSE
+                    else -> TrainingType.RANDOM
+                }
+            } else null
+        val difficulty =
+            if (detectionUseCase == DetectionUseCase.COMPETITION || detectionUseCase == DetectionUseCase.DAY_NIGHT) {
+                when {
+                    recognizedSentence.contains("easy") -> Difficulty.EASY
+                    recognizedSentence.contains("medium") -> Difficulty.MEDIUM
+                    else -> Difficulty.HARD
+                }
+            } else null
+        val detectionLengthSeconds =
+            if (recognizedSentence.contains("length")) {
+                recognizedSentence.filter { it.isDigit() }.toLong()
+            } else null
 
+        // Start detection
+        when {
+            trainingType != null && trainingType == TrainingType.RANDOM ->
+                navigateToDetectionFragment(detectionUseCase!!, trainingType, Difficulty.NONE, 0)
+            trainingType != null -> navigateToIllustrationFragment(trainingType)
+            detectionUseCase == null -> Timber.d("Detection use case not recognized.")
+            difficulty == null -> Timber.d("Difficulty not recognized.")
+            detectionLengthSeconds == null -> Timber.d("Detection length not recognized.")
+            else ->
+                navigateToDetectionFragment(detectionUseCase, TrainingType.RANDOM, difficulty, detectionLengthSeconds)
+        }
     }
 
     private fun enableScreen(isEnabled: Boolean) {
@@ -150,6 +195,30 @@ class MainFragment : Fragment() {
         Timber.d("Navigating to CompetitionSelectionFragment")
         findNavController().navigate(
             MainFragmentDirections.actionMainFragmentToSettingsSelectionFragment(detectionUseCase)
+        )
+    }
+
+    private fun navigateToIllustrationFragment(trainingType: TrainingType) {
+        Timber.d("Navigating to IllustrationFragment")
+        findNavController().navigate(
+            MainFragmentDirections.actionMainFragmentToIllustrationFragment(trainingType)
+        )
+    }
+
+    private fun navigateToDetectionFragment(
+        detectionUseCase: DetectionUseCase,
+        trainingType: TrainingType,
+        difficulty: Difficulty,
+        detectionLengthSeconds: Long
+    ) {
+        Timber.d("Navigating to DetectionFragment")
+        findNavController().navigate(
+            MainFragmentDirections.actionMainFragmentToDetectionFragment(
+                detectionUseCase,
+                trainingType,
+                difficulty,
+                detectionLengthSeconds
+            )
         )
     }
 

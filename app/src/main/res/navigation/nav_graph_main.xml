@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_mainFragment_to_settingsSelectionFragment"
             app:destination="@id/settingsSelectionFragment" />
+        <action android:id="@+id/action_mainFragment_to_illustrationFragment"
+                app:destination="@id/illustrationFragment"/>
+        <action android:id="@+id/action_mainFragment_to_detectionFragment" app:destination="@id/detectionFragment"/>
     </fragment>
     <fragment
         android:id="@+id/detectionFragment"
