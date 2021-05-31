@@ -13,10 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
-import hr.fer.tel.gibalica.utils.BaseRecognitionListener
-import hr.fer.tel.gibalica.utils.DetectionUseCase
-import hr.fer.tel.gibalica.utils.invisible
-import hr.fer.tel.gibalica.utils.visible
+import hr.fer.tel.gibalica.utils.*
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
@@ -43,6 +40,7 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         defineActions()
         defineObserver()
+        getStoredValues()
     }
 
     override fun onResume() {
@@ -74,6 +72,10 @@ class MainFragment : Fragment() {
             Timber.d("LiveData value changed!")
             speechRecognizerEnabled = recognizerEnabledValue
         }
+    }
+
+    private fun getStoredValues() {
+        speechRecognizerEnabled = SharedPrefsUtils.isVoiceRecognitionEnabled(requireContext())
     }
 
     private fun startVoiceRecognizer() {
