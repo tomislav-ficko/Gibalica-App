@@ -231,8 +231,8 @@ class MainFragment : Fragment() {
                             contains("squat") or
                             contains("pose") or
                             contains("random")) -> true
-            !contains("competition") or !contains("day night") -> false
-            !contains("easy") or !contains("medium") or !contains("hard") -> false
+            !contains("competition") && !contains("day night") -> false
+            !contains("easy") && !contains("medium") && !contains("hard") -> false
             !contains("length") -> false
             else -> true
         }
