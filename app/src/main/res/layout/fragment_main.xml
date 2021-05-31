@@ -86,4 +86,13 @@
         app:layout_constraintTop_toBottomOf="@id/btn_day_night"
         tools:visibility="visible" />
 
+    <View
+        android:id="@+id/recognition_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.6"
+        android:foreground="@color/black"
+        android:visibility="invisible"
+        tools:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

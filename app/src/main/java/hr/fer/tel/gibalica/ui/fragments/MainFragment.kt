@@ -79,6 +79,7 @@ class MainFragment : Fragment() {
     }
 
     private fun startVoiceRecognizer() {
+        enableScreen(isEnabled = false)
         val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
         recognizer.setRecognitionListener(getRecognitionListener())
         recognizer.startListening(
@@ -91,6 +92,7 @@ class MainFragment : Fragment() {
     private fun getRecognitionListener(): RecognitionListener {
         return object : BaseRecognitionListener() {
             override fun onResults(results: Bundle?) {
+                enableScreen(isEnabled = true)
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 val scores = results?.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
                 Timber.d("Recognized content: ${matches.toString()} ${matches?.size}")
@@ -109,6 +111,17 @@ class MainFragment : Fragment() {
 
     private fun navigateToDetectionBasedOnRecognizerOutput(recognizedSentence: String) {
 
+    }
+
+    private fun enableScreen(isEnabled: Boolean) {
+        binding.apply {
+            if (isEnabled) recognitionBackground.invisible() else recognitionBackground.visible()
+            btnVoice.isEnabled = isEnabled
+            btnTraining.isEnabled = isEnabled
+            btnCompetition.isEnabled = isEnabled
+            btnDayNight.isEnabled = isEnabled
+            ivSettings.isEnabled = isEnabled
+        }
     }
 
     private fun showNegativeMessage() {
