@@ -2,6 +2,7 @@ package hr.fer.tel.gibalica.ui.fragments
 
 import android.graphics.SurfaceTexture
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,6 +29,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -41,6 +43,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private val viewModel by viewModels<MainViewModel>()
 
     private lateinit var analyzer: ImageAnalyzer
+    private lateinit var textToSpeech: TextToSpeech
     private lateinit var poseToBeDetected: GibalicaPose
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
@@ -74,6 +77,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
         defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
+        setupTextToSpeech()
         setupOverlayViews()
         startDetection()
     }
@@ -170,6 +174,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun runLogicWhenInitialPoseDetected() {
         currentPose = GibalicaPose.STARTING_POSE
         showMessageForCurrentPose()
+        speakCurrentPoseMessage()
         updatePoseInAnalyzer()
         viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
     }
@@ -177,6 +182,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun runLogicWhenStartingPoseDetected() {
         currentPose = poseToBeDetected
         showMessageForCurrentPose()
+        speakCurrentPoseMessage()
         updatePoseInAnalyzer()
         startTimersIfCompetitionOrDayNightUseCase()
         detectionInProgress = true
@@ -208,6 +214,19 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         analyzer.setListener(this)
     }
 
+    private fun setupTextToSpeech() {
+        textToSpeech = TextToSpeech(context) { status ->
+            if (status != TextToSpeech.ERROR) {
+                Timber.d("TTS engine initialized.")
+                Timber.i("Available TTS languages:\n${textToSpeech.availableLanguages}.")
+                textToSpeech.language = Locale.US
+                Timber.d("Chosen TTS language: ${textToSpeech.voice.locale}.")
+                Timber.d("Default TTS voice: ${textToSpeech.voice}.")
+                textToSpeech.setPitch(0.7f)
+            }
+        }
+    }
+
     private fun setupOverlayViews() {
         showMessageForCurrentPose()
         hideResponse()
@@ -227,6 +246,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun startDetection() {
         Timber.d("Sending initial pose to analyzer.")
+        speakCurrentPoseMessage()
         updatePoseInAnalyzer()
     }
 
@@ -247,6 +267,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
                             showMessageForCurrentPose()
+                            speakCurrentPoseMessage()
                             hideResponse()
                             detectionInProgress = true
                             restartTimerIfCompetitionOrDayNightUseCase()
@@ -294,6 +315,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun updatePoseInAnalyzer() {
         analyzer.updatePose(currentPose)
+    }
+
+    private fun speakCurrentPoseMessage() {
+        val message = getMessageForCurrentPose()
+        Timber.d("TTS message: $message")
+        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, System.currentTimeMillis().toString())
     }
 
     private fun getRandomPose(): GibalicaPose {
