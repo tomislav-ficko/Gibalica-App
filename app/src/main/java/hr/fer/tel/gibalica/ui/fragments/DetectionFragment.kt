@@ -110,31 +110,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             detectionInProgress = false
 
             when (currentPose) {
-                GibalicaPose.ALL_JOINTS_VISIBLE -> {
-                    currentPose = GibalicaPose.STARTING_POSE
-                    showStartingPoseMessage()
-                    updatePoseInAnalyzer()
-                    viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
-                }
-                GibalicaPose.STARTING_POSE -> {
-                    currentPose = poseToBeDetected
-                    updateMessage()
-                    updatePoseInAnalyzer()
-                    startTimersIfCompetitionOrDayNightUseCase()
-                    detectionInProgress = true
-                    Timber.d("Starting pose detected, moving to detection of actual poses.")
-                }
-                else -> {
-                    showPoseDetected()
-                    if (isRandomDetection()) {
-                        updatePoseCompletionData(poseDetected = true)
-                        getNewRandomPose()
-                        updatePoseInAnalyzer()
-                        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
-                    } else {
-                        viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
-                    }
-                }
+                GibalicaPose.ALL_JOINTS_VISIBLE -> runLogicWhenInitialPoseDetected()
+                GibalicaPose.STARTING_POSE -> runLogicWhenStartingPoseDetected()
+                else -> runLogicWhenOtherPosesDetected()
             }
         }
     }
@@ -188,6 +166,37 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 Timber.e("Detection was started without difficulty value.")
         }
         initializeDetection(TrainingType.RANDOM)
+    }
+
+    private fun runLogicWhenInitialPoseDetected() {
+        currentPose = GibalicaPose.STARTING_POSE
+        poseToBeDetectedMessage = GibalicaPose.STARTING_POSE.getPoseMessage()
+        updateMessage()
+        speakCurrentPoseMessage()
+        updatePoseInAnalyzer()
+        viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
+    }
+
+    private fun runLogicWhenStartingPoseDetected() {
+        currentPose = poseToBeDetected
+        poseToBeDetectedMessage = currentPose.getPoseMessage()
+        updateMessage()
+        updatePoseInAnalyzer()
+        startTimersIfCompetitionOrDayNightUseCase()
+        detectionInProgress = true
+        Timber.d("Starting pose detected, moving to detection of actual poses.")
+    }
+
+    private fun runLogicWhenOtherPosesDetected() {
+        showPoseDetected()
+        if (isRandomDetection()) {
+            updatePoseCompletionData(poseDetected = true)
+            getNewRandomPose()
+            updatePoseInAnalyzer()
+            viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
+        } else {
+            viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
+        }
     }
 
     private fun showPoseNotDetected() {
