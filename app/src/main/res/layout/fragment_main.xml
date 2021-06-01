@@ -21,13 +21,25 @@
         app:layout_constraintGuide_percent="0.75" />
 
     <ImageView
-        android:id="@+id/iv_logo"
+        android:id="@+id/iv_settings"
         style="@style/ImageButton"
         android:layout_marginEnd="@dimen/margin_img_btn"
         android:src="@drawable/ic_baseline_settings_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/black" />
+
+    <ImageView
+        android:id="@+id/iv_logo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/ic_gibalica"
+        app:layout_constraintBottom_toTopOf="@id/btn_training"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/iv_settings"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <Button
         android:id="@+id/btn_training"
@@ -37,8 +49,7 @@
         app:layout_constraintBottom_toTopOf="@id/btn_competition"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/iv_logo"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toBottomOf="@id/iv_logo" />
 
     <Button
         android:id="@+id/btn_competition"
@@ -55,9 +66,33 @@
         style="@style/Button"
         android:layout_marginBottom="32dp"
         android:text="@string/btn_day_night"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_voice"
         app:layout_constraintEnd_toStartOf="@id/guideline_end"
         app:layout_constraintStart_toEndOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@id/btn_competition" />
+
+    <ImageButton
+        android:id="@+id/btn_voice"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@color/white"
+        android:padding="15dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_mic"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end"
+        app:layout_constraintStart_toEndOf="@id/guideline_start"
+        app:layout_constraintTop_toBottomOf="@id/btn_day_night"
+        tools:visibility="visible" />
+
+    <View
+        android:id="@+id/recognition_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.6"
+        android:foreground="@color/black"
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
