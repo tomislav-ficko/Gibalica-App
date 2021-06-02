@@ -174,7 +174,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun runLogicWhenStartingPoseDetected() {
-        currentPose = setInitialPose()
+        currentPose = getInitialPose()
         showMessageForCurrentPose()
         speakCurrentPoseMessage()
         updatePoseInAnalyzer()
@@ -229,7 +229,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun setInitialPose(): GibalicaPose {
+    private fun getInitialPose(): GibalicaPose {
         return when {
             isRandomDetection() -> getRandomPose()
             args.trainingType == TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
