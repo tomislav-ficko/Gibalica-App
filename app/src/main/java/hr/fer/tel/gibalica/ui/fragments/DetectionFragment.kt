@@ -76,8 +76,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
         setupTextToSpeech()
-        setupOverlayViews()
-        startDetection()
+        viewModel.startCounter(CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE, 1)
     }
 
     override fun onDestroyView() {
@@ -250,6 +249,10 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             when (event?.eventType) {
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
+                        CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE -> {
+                            setupOverlayViews()
+                            startDetection()
+                        }
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> {
                             detectionInProgress = true
                             Timber.d("Counter finished, continuing detection.")
