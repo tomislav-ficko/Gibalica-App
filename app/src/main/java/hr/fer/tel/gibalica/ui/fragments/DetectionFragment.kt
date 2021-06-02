@@ -45,7 +45,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private lateinit var analyzer: ImageAnalyzer
     private var textToSpeech: TextToSpeech? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
-    private var detectionInProgress = true
+    private var detectionInProgress = false
 
     // -- Variables for competition and Day-Night --
     // Once the interval runs out, detector moves to the next pose
@@ -69,12 +69,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnClose.setOnClickListener { returnToMainFragment() }
         when (args.detectionUseCase) {
             DetectionUseCase.TRAINING -> initializeDataForTraining()
             else -> initializeDataForCompetitionAndDayNight()
         }
         defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
+        updatePoseInAnalyzer()
         setupTextToSpeech()
         viewModel.startCounter(CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE, 1)
     }
@@ -227,12 +229,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun setupOverlayViews() {
-        showMessageForCurrentPose()
-        hideResponse()
-        binding.btnClose.setOnClickListener { returnToMainFragment() }
-    }
-
     private fun setInitialPose(): GibalicaPose {
         return when {
             isRandomDetection() -> getRandomPose()
@@ -244,12 +240,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startDetection() {
-        Timber.d("Sending initial pose to analyzer.")
-        speakCurrentPoseMessage()
-        updatePoseInAnalyzer()
-    }
-
     private fun defineCounterLogic() {
         viewModel.notificationLiveData.observe(viewLifecycleOwner) { event ->
 
@@ -257,8 +247,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
                         CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE -> {
-                            setupOverlayViews()
-                            startDetection()
+                            hideResponse()
+                            showMessageForCurrentPose()
+                            speakCurrentPoseMessage()
+                            Timber.d("Components initialized, starting detection.")
+                            detectionInProgress = true
                         }
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> {
                             detectionInProgress = true
@@ -271,9 +264,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                             Timber.d("Negative result hidden, continuing detection.")
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
+                            hideResponse()
                             showMessageForCurrentPose()
                             speakCurrentPoseMessage()
-                            hideResponse()
                             detectionInProgress = true
                             restartTimerIfCompetitionOrDayNightUseCase()
                             Timber.d("Switched to new pose, continuing detection.")
