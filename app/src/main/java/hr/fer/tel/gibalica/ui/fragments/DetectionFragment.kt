@@ -44,10 +44,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private lateinit var analyzer: ImageAnalyzer
     private lateinit var textToSpeech: TextToSpeech
-    private lateinit var poseToBeDetected: GibalicaPose
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
-    private var randomDetectionType: DetectionUseCase? = null
 
     // -- Variables for competition and Day-Night --
     // Once the interval runs out, detector moves to the next pose
@@ -131,14 +129,10 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         val trainingType = args.trainingType
         Timber.d("Starting training for type ${trainingType.name}.")
         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
-        initializeDetection(trainingType)
-        if (trainingType == TrainingType.RANDOM)
-            randomDetectionType = DetectionUseCase.TRAINING
     }
 
     private fun initializeDataForCompetitionAndDayNight() {
         Timber.d("Starting ${args.detectionUseCase.name}.")
-        randomDetectionType = args.detectionUseCase
 
         when (args.difficulty) {
             Difficulty.EASY -> {
@@ -168,7 +162,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Difficulty.NONE ->
                 Timber.e("Detection was started without difficulty value.")
         }
-        initializeDetection(TrainingType.RANDOM)
     }
 
     private fun runLogicWhenInitialPoseDetected() {
@@ -180,7 +173,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun runLogicWhenStartingPoseDetected() {
-        currentPose = poseToBeDetected
+        currentPose = setInitialPose()
         showMessageForCurrentPose()
         speakCurrentPoseMessage()
         updatePoseInAnalyzer()
@@ -202,7 +195,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun showPoseNotDetected() {
-        Timber.d("${poseToBeDetected.name} not detected.")
+        Timber.d("${currentPose.name} not detected.")
         detectionInProgress = false
 
         showPoseNotDetectedResponse()
@@ -233,14 +226,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         binding.btnClose.setOnClickListener { returnToMainFragment() }
     }
 
-    private fun initializeDetection(trainingType: TrainingType) {
-        poseToBeDetected = when (trainingType) {
-            TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
-            TrainingType.RIGHT_HAND -> GibalicaPose.RIGHT_HAND_RAISED
-            TrainingType.BOTH_HANDS -> GibalicaPose.BOTH_HANDS_RAISED
-            TrainingType.T_POSE -> GibalicaPose.T_POSE
-            TrainingType.SQUAT -> GibalicaPose.SQUAT
-            TrainingType.RANDOM -> getRandomPose()
+    private fun setInitialPose(): GibalicaPose {
+        return when {
+            isRandomDetection() -> getRandomPose()
+            args.trainingType == TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
+            args.trainingType == TrainingType.RIGHT_HAND -> GibalicaPose.RIGHT_HAND_RAISED
+            args.trainingType == TrainingType.BOTH_HANDS -> GibalicaPose.BOTH_HANDS_RAISED
+            args.trainingType == TrainingType.T_POSE -> GibalicaPose.T_POSE
+            else -> GibalicaPose.SQUAT
         }
     }
 
@@ -324,7 +317,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun getRandomPose(): GibalicaPose {
-        return when (randomDetectionType) {
+        return when (args.detectionUseCase) {
             DetectionUseCase.TRAINING, DetectionUseCase.COMPETITION -> {
                 when (Random.nextInt(5)) {
                     0 -> GibalicaPose.LEFT_HAND_RAISED
@@ -339,10 +332,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     0 -> GibalicaPose.SQUAT
                     else -> GibalicaPose.UPRIGHT
                 }
-            }
-            null -> {
-                Timber.d("Trying to get new random pose while randomDetectionType is null.")
-                GibalicaPose.NONE
             }
         }
     }
@@ -386,14 +375,18 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 )
     }
 
-    private fun isRandomDetection() = randomDetectionType != null
+    private fun isRandomDetection(): Boolean {
+        return args.detectionUseCase == DetectionUseCase.COMPETITION ||
+                args.detectionUseCase == DetectionUseCase.DAY_NIGHT ||
+                args.trainingType == TrainingType.RANDOM
+    }
 
     private fun isDetectingActualPose() =
         currentPose != GibalicaPose.ALL_JOINTS_VISIBLE && currentPose != GibalicaPose.STARTING_POSE
 
-    private fun isCompetition() = randomDetectionType == DetectionUseCase.COMPETITION
+    private fun isCompetition() = args.detectionUseCase == DetectionUseCase.COMPETITION
 
-    private fun isDayNight() = randomDetectionType == DetectionUseCase.DAY_NIGHT
+    private fun isDayNight() = args.detectionUseCase == DetectionUseCase.DAY_NIGHT
 
     private fun endDetection() = navigateToFinishFragment()
 
@@ -440,17 +433,18 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun getMessageForCurrentPose(): String {
-        val resId =
-            when {
-                randomDetectionType != DetectionUseCase.DAY_NIGHT ->
-                    currentPose.getPoseMessage()
-                currentPose == GibalicaPose.UPRIGHT ->
-                    R.string.day_message
-                else ->
-                    R.string.night_message
-            }
-        return if (resId != null) getString(resId)
-        else {
+        val resId = when {
+            args.detectionUseCase != DetectionUseCase.DAY_NIGHT ->
+                currentPose.getPoseMessage()
+            currentPose == GibalicaPose.UPRIGHT ->
+                R.string.day_message
+            else ->
+                R.string.night_message
+        }
+
+        return if (resId != null) {
+            getString(resId)
+        } else {
             Timber.d("Received message resId is null, returning empty string.")
             ""
         }
