@@ -43,7 +43,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private val viewModel by viewModels<MainViewModel>()
 
     private lateinit var analyzer: ImageAnalyzer
-    private lateinit var textToSpeech: TextToSpeech
+    private var textToSpeech: TextToSpeech? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = true
 
@@ -208,16 +208,22 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun setupTextToSpeech() {
-        textToSpeech = TextToSpeech(context) { status ->
-            if (status != TextToSpeech.ERROR) {
-                Timber.d("TTS engine initialized.")
-                Timber.i("Available TTS languages:\n${textToSpeech.availableLanguages}.")
-                textToSpeech.language = Locale.US
-                Timber.d("Chosen TTS language: ${textToSpeech.voice.locale}.")
-                Timber.d("Default TTS voice: ${textToSpeech.voice}.")
-                textToSpeech.setPitch(1.2f)
-                textToSpeech.setSpeechRate(0.8f)
+        if (isSoundEnabled()) {
+            textToSpeech = TextToSpeech(context) { status ->
+                if (status != TextToSpeech.ERROR) {
+                    textToSpeech?.let { tts ->
+                        Timber.d("TTS engine initialized.")
+                        Timber.i("Available TTS languages:\n${tts.availableLanguages}.")
+                        tts.language = Locale.US
+                        Timber.d("Chosen TTS language: ${tts.voice.locale}.")
+                        Timber.d("Default TTS voice: ${tts.voice}.")
+                        tts.setPitch(1.2f)
+                        tts.setSpeechRate(0.8f)
+                    }
+                }
             }
+        } else {
+            Timber.d("TTS engine not initialized, sound setting disabled.")
         }
     }
 
@@ -319,7 +325,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun speakCurrentPoseMessage() {
         val message = getMessageForCurrentPose()
         Timber.d("TTS message: $message")
-        textToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null, System.currentTimeMillis().toString())
+        textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, System.currentTimeMillis().toString())
     }
 
     private fun getRandomPose(): GibalicaPose {
@@ -389,6 +395,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun isCompetition() = args.detectionUseCase == DetectionUseCase.COMPETITION
 
     private fun isDayNight() = args.detectionUseCase == DetectionUseCase.DAY_NIGHT
+
+    private fun isSoundEnabled() = SharedPrefsUtils.isSoundEnabled(requireContext())
 
     private fun endDetection() = navigateToFinishFragment()
 
