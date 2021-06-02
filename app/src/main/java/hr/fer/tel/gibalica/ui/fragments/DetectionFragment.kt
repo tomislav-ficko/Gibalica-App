@@ -215,7 +215,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 textToSpeech.language = Locale.US
                 Timber.d("Chosen TTS language: ${textToSpeech.voice.locale}.")
                 Timber.d("Default TTS voice: ${textToSpeech.voice}.")
-                textToSpeech.setPitch(0.7f)
+                textToSpeech.setPitch(1.2f)
+                textToSpeech.setSpeechRate(0.8f)
             }
         }
     }
