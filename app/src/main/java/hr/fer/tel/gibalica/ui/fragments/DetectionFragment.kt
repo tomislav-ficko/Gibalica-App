@@ -29,7 +29,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -84,6 +83,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -211,19 +212,24 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun setupTextToSpeech() {
         if (isSoundEnabled()) {
-            textToSpeech = TextToSpeech(context) { status ->
-                if (status != TextToSpeech.ERROR) {
-                    textToSpeech?.let { tts ->
-                        Timber.d("TTS engine initialized.")
-                        Timber.i("Available TTS languages:\n${tts.availableLanguages}.")
-                        tts.language = Locale.US
-                        Timber.d("Chosen TTS language: ${tts.voice.locale}.")
-                        Timber.d("Default TTS voice: ${tts.voice}.")
-                        tts.setPitch(1.2f)
-                        tts.setSpeechRate(0.8f)
-                    }
-                }
+            val enginePackageName = when (getApplicationLanguage()) {
+                Language.EN -> "com.google.android.tts"
+                Language.HR -> "alfanum.co.rs.alfanumtts.cro"
             }
+            textToSpeech = TextToSpeech(
+                requireContext(),
+                { status ->
+                    if (status == TextToSpeech.SUCCESS) {
+                        textToSpeech?.let { tts ->
+                            Timber.i("Available TTS engines:\n${tts.engines}.")
+                            Timber.d("${tts.defaultEngine} TTS engine initialized.")
+                            Timber.d("Chosen TTS language: ${tts.voice.locale}.")
+                            Timber.d("Default TTS voice: ${tts.voice}.")
+                        }
+                    } else Timber.d("TTS engine could not be initialized, status code is $status.")
+                },
+                enginePackageName
+            )
         } else {
             Timber.d("TTS engine not initialized, sound setting disabled.")
         }
@@ -390,6 +396,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun isDayNight() = args.detectionUseCase == DetectionUseCase.DAY_NIGHT
 
     private fun isSoundEnabled() = SharedPrefsUtils.isSoundEnabled(requireContext())
+
+    private fun getApplicationLanguage() = SharedPrefsUtils.getApplicationLanguage(requireContext())
 
     private fun endDetection() = navigateToFinishFragment()
 
