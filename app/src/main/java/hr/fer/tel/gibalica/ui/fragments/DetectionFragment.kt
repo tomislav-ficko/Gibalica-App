@@ -29,6 +29,7 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
@@ -62,6 +63,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     ): View {
         _binding = FragmentDetectionBinding.inflate(inflater, container, false)
         Timber.d("Inflated!")
+        changeLocaleBasedOnApplicationLanguage()
         return binding.root
     }
 
@@ -125,6 +127,20 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Timber.d("Not showing negative message since interval for pose is still in progress.")
         else if (detectionInProgress && isDetectingActualPose())
             disableDetectionAndShowPoseNotDetected()
+    }
+
+    /**
+     * Used to change from which strings.xml file will the resources be retrieved.
+     */
+    private fun changeLocaleBasedOnApplicationLanguage() {
+        val locale = when (getApplicationLanguage()) {
+            Language.EN -> Locale("en")
+            Language.HR -> Locale("hr")
+        }
+        Timber.d("Chosen locale is $locale.")
+        val configuration = resources.configuration
+        configuration.setLocale(locale)
+        resources.updateConfiguration(configuration, resources.displayMetrics)
     }
 
     private fun initializeDataForTraining() {
