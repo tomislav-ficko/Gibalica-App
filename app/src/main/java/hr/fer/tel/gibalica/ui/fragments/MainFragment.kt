@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
 import hr.fer.tel.gibalica.utils.*
@@ -162,7 +163,7 @@ class MainFragment : BaseFragment() {
     private fun showNegativeMessage() {
         Toast.makeText(
             context,
-            "All necessary parameters were not recognized, please try again",
+            getString(R.string.voice_control_negative_message),
             Toast.LENGTH_LONG
         ).show()
     }
