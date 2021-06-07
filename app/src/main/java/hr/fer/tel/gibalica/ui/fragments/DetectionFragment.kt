@@ -232,15 +232,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 Language.EN -> "com.google.android.tts"
                 Language.HR -> "alfanum.co.rs.alfanumtts.cro"
             }
+            Timber.d("TTS engine to be initialized: $enginePackageName.")
             textToSpeech = TextToSpeech(
                 requireContext(),
                 { status ->
                     if (status == TextToSpeech.SUCCESS) {
                         textToSpeech?.let { tts ->
                             Timber.i("Available TTS engines:\n${tts.engines}.")
-                            Timber.d("${tts.defaultEngine} TTS engine initialized.")
-                            Timber.d("Chosen TTS language: ${tts.voice.locale}.")
-                            Timber.d("Default TTS voice: ${tts.voice}.")
+                            Timber.d("Chosen TTS language: ${tts.voice?.locale}.")
                         }
                     } else Timber.d("TTS engine could not be initialized, status code is $status.")
                 },
