@@ -85,11 +85,17 @@ class MainFragment : BaseFragment() {
 
     private fun startVoiceRecognizer() {
         enableScreen(isEnabled = false)
+        val appLanguage = when (getApplicationLanguage()) {
+            Language.EN -> "en-GB"
+            Language.HR -> "hr-HR"
+        }
+        Timber.d("Recognizer listening for $appLanguage language.")
         val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
         recognizer.setRecognitionListener(getRecognitionListener())
         recognizer.startListening(
             Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, appLanguage)
             }
         )
     }
@@ -104,7 +110,12 @@ class MainFragment : BaseFragment() {
                 Timber.d("Confidence score: ${scores?.get(0)}")
                 matches?.let {
                     val recognizedSentence = it[0].toLowerCase()
-                    if (recognizedSentence.containsAllNecessaryParameters()) {
+
+                    val sentenceContainsNecessaryData = when (getApplicationLanguage()) {
+                        Language.EN -> SpeechRecognizerUtils.stringContainsAllNecessaryDataInEnglish(recognizedSentence)
+                        Language.HR -> SpeechRecognizerUtils.stringContainsAllNecessaryDataInCroatian(recognizedSentence)
+                    }
+                    if (sentenceContainsNecessaryData) {
                         navigateToDetectionBasedOnRecognizerOutput(recognizedSentence)
                     } else {
                         showNegativeMessage()
@@ -114,52 +125,26 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    // Sentence should be "start ___ with difficulty ___ and length ___ minutes"
-    //    or "start training for ___ pose"
     private fun navigateToDetectionBasedOnRecognizerOutput(recognizedSentence: String) {
-        val detectionUseCase = when {
-            recognizedSentence.contains("training") -> DetectionUseCase.TRAINING
-            recognizedSentence.contains("competition") -> DetectionUseCase.COMPETITION
-            recognizedSentence.contains("day night") -> DetectionUseCase.DAY_NIGHT
-            else -> {
-                Timber.d("Detection use case not recognized.")
-                null
-            }
+        val detectionParameters = when (getApplicationLanguage()) {
+            Language.EN -> SpeechRecognizerUtils.getDetectionParametersFromEnglish(recognizedSentence)
+            Language.HR -> SpeechRecognizerUtils.getDetectionParametersFromCroatian(recognizedSentence)
         }
-        val trainingType =
-            if (detectionUseCase == DetectionUseCase.TRAINING) {
-                when {
-                    recognizedSentence.contains("left") -> TrainingType.LEFT_HAND
-                    recognizedSentence.contains("right") -> TrainingType.RIGHT_HAND
-                    recognizedSentence.contains("both") -> TrainingType.BOTH_HANDS
-                    recognizedSentence.contains("squat") -> TrainingType.SQUAT
-                    recognizedSentence.contains("pose") -> TrainingType.T_POSE
-                    else -> TrainingType.RANDOM
-                }
-            } else null
-        val difficulty =
-            if (detectionUseCase == DetectionUseCase.COMPETITION || detectionUseCase == DetectionUseCase.DAY_NIGHT) {
-                when {
-                    recognizedSentence.contains("easy") -> Difficulty.EASY
-                    recognizedSentence.contains("medium") -> Difficulty.MEDIUM
-                    else -> Difficulty.HARD
-                }
-            } else null
-        val detectionLengthSeconds =
-            if (recognizedSentence.contains("length")) {
-                recognizedSentence.filter { it.isDigit() }.toLong()
-            } else null
-
-        // Start detection
-        when {
-            trainingType != null && trainingType == TrainingType.RANDOM ->
-                navigateToDetectionFragment(detectionUseCase!!, trainingType, Difficulty.NONE, 0)
-            trainingType != null -> navigateToIllustrationFragment(trainingType)
-            detectionUseCase == null -> Timber.d("Detection use case not recognized.")
-            difficulty == null -> Timber.d("Difficulty not recognized.")
-            detectionLengthSeconds == null -> Timber.d("Detection length not recognized.")
-            else ->
-                navigateToDetectionFragment(detectionUseCase, TrainingType.RANDOM, difficulty, detectionLengthSeconds)
+        with(detectionParameters) {
+            when {
+                trainingType != null && trainingType == TrainingType.RANDOM ->
+                    navigateToDetectionFragment(detectionUseCase!!, trainingType!!, Difficulty.NONE, 0)
+                trainingType != null -> navigateToIllustrationFragment(trainingType!!)
+                detectionUseCase == null -> Timber.d("Detection use case not recognized.")
+                difficulty == null -> Timber.d("Difficulty not recognized.")
+                detectionLengthSeconds == null -> Timber.d("Detection length not recognized.")
+                else -> navigateToDetectionFragment(
+                    detectionUseCase!!,
+                    TrainingType.RANDOM,
+                    difficulty!!,
+                    detectionLengthSeconds!!
+                )
+            }
         }
     }
 
@@ -225,21 +210,5 @@ class MainFragment : BaseFragment() {
                 detectionLengthSeconds
             )
         )
-    }
-
-    private fun String.containsAllNecessaryParameters(): Boolean {
-        return when {
-            contains("training") &&
-                    (contains("left") or
-                            contains("right") or
-                            contains("both") or
-                            contains("squat") or
-                            contains("pose") or
-                            contains("random")) -> true
-            !contains("competition") && !contains("day night") -> false
-            !contains("easy") && !contains("medium") && !contains("hard") -> false
-            !contains("length") -> false
-            else -> true
-        }
     }
 }
