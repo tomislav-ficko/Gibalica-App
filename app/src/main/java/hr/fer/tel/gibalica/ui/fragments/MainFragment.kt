@@ -9,15 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentMainBinding
 import hr.fer.tel.gibalica.utils.*
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
-class MainFragment : Fragment() {
+class MainFragment : BaseFragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
     private val binding: FragmentMainBinding
@@ -25,6 +25,11 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
 
     private var speechRecognizerEnabled: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        changeLocaleBasedOnApplicationLanguage()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -13,7 +13,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.utils.ImageAnalyzer
 import timber.log.Timber
@@ -22,7 +21,7 @@ import java.util.concurrent.Executors
 
 const val REQUEST_CODE_PERMISSIONS = 42
 
-open class BaseDetectionFragment : Fragment(), TextureView.SurfaceTextureListener {
+open class BaseDetectionFragment : BaseFragment(), TextureView.SurfaceTextureListener {
 
     private lateinit var cameraExecutor: ExecutorService
 

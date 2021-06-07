@@ -10,10 +10,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentSettingsBinding
 import hr.fer.tel.gibalica.utils.Language
 import hr.fer.tel.gibalica.utils.Setting
@@ -22,7 +22,7 @@ import hr.fer.tel.gibalica.utils.tryCast
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import timber.log.Timber
 
-class SettingsFragment : Fragment() {
+class SettingsFragment : BaseFragment() {
 
     companion object {
         private const val REQUEST_CODE_RECORD_AUDIO = 11
