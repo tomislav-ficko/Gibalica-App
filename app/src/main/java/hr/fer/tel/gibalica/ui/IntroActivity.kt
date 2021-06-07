@@ -1,11 +1,11 @@
 package hr.fer.tel.gibalica.ui
 
 import android.os.Bundle
-import androidx.fragment.app.FragmentActivity
+import hr.fer.tel.gibalica.base.BaseActivity
 import hr.fer.tel.gibalica.databinding.ActivityIntroBinding
 import timber.log.Timber
 
-class IntroActivity : FragmentActivity() {
+class IntroActivity : BaseActivity() {
 
     private lateinit var binding: ActivityIntroBinding
 

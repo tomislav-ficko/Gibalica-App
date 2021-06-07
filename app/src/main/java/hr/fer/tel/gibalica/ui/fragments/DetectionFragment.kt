@@ -2,6 +2,7 @@ package hr.fer.tel.gibalica.ui.fragments
 
 import android.graphics.SurfaceTexture
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,11 +42,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private val viewModel by viewModels<MainViewModel>()
 
     private lateinit var analyzer: ImageAnalyzer
-    private lateinit var poseToBeDetected: GibalicaPose
-    private var poseToBeDetectedMessage: Int? = null
+    private var textToSpeech: TextToSpeech? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
-    private var detectionInProgress = true
-    private var randomDetectionType: DetectionUseCase? = null
+    private var detectionInProgress = false
 
     // -- Variables for competition and Day-Night --
     // Once the interval runs out, detector moves to the next pose
@@ -69,19 +68,23 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnClose.setOnClickListener { returnToMainFragment() }
         when (args.detectionUseCase) {
             DetectionUseCase.TRAINING -> initializeDataForTraining()
             else -> initializeDataForCompetitionAndDayNight()
         }
         defineCounterLogic()
         initializeAndStartCamera(binding.txvViewFinder, analyzer)
-        setupOverlayViews()
-        startDetection()
+        updatePoseInAnalyzer()
+        setupTextToSpeech()
+        viewModel.startCounter(CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE, 1)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        textToSpeech?.stop()
+        textToSpeech?.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -110,31 +113,9 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             detectionInProgress = false
 
             when (currentPose) {
-                GibalicaPose.ALL_JOINTS_VISIBLE -> {
-                    currentPose = GibalicaPose.STARTING_POSE
-                    showStartingPoseMessage()
-                    updatePoseInAnalyzer()
-                    viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
-                }
-                GibalicaPose.STARTING_POSE -> {
-                    currentPose = poseToBeDetected
-                    updateMessage()
-                    updatePoseInAnalyzer()
-                    startTimersIfCompetitionOrDayNightUseCase()
-                    detectionInProgress = true
-                    Timber.d("Starting pose detected, moving to detection of actual poses.")
-                }
-                else -> {
-                    showPoseDetected()
-                    if (isRandomDetection()) {
-                        updatePoseCompletionData(poseDetected = true)
-                        getNewRandomPose()
-                        updatePoseInAnalyzer()
-                        viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
-                    } else {
-                        viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
-                    }
-                }
+                GibalicaPose.ALL_JOINTS_VISIBLE -> runLogicWhenInitialPoseDetected()
+                GibalicaPose.STARTING_POSE -> runLogicWhenStartingPoseDetected()
+                else -> runLogicWhenOtherPosesDetected()
             }
         }
     }
@@ -143,21 +124,17 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         if (isCompetition() or isDayNight())
             Timber.d("Not showing negative message since interval for pose is still in progress.")
         else if (detectionInProgress && isDetectingActualPose())
-            showPoseNotDetected()
+            disableDetectionAndShowPoseNotDetected()
     }
 
     private fun initializeDataForTraining() {
         val trainingType = args.trainingType
         Timber.d("Starting training for type ${trainingType.name}.")
         setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
-        initializeDetection(trainingType)
-        if (trainingType == TrainingType.RANDOM)
-            randomDetectionType = DetectionUseCase.TRAINING
     }
 
     private fun initializeDataForCompetitionAndDayNight() {
         Timber.d("Starting ${args.detectionUseCase.name}.")
-        randomDetectionType = args.detectionUseCase
 
         when (args.difficulty) {
             Difficulty.EASY -> {
@@ -187,11 +164,41 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Difficulty.NONE ->
                 Timber.e("Detection was started without difficulty value.")
         }
-        initializeDetection(TrainingType.RANDOM)
     }
 
-    private fun showPoseNotDetected() {
-        Timber.d("${poseToBeDetected.name} not detected.")
+    private fun runLogicWhenInitialPoseDetected() {
+        currentPose = GibalicaPose.STARTING_POSE
+        showMessageForCurrentPose()
+        speakCurrentPoseMessage()
+        updatePoseInAnalyzer()
+        viewModel.startCounter(CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE, 1)
+    }
+
+    private fun runLogicWhenStartingPoseDetected() {
+        currentPose = getInitialPose()
+        showMessageForCurrentPose()
+        speakCurrentPoseMessage()
+        updatePoseInAnalyzer()
+        startTimersIfCompetitionOrDayNightUseCase()
+        detectionInProgress = true
+        Timber.d("Starting pose detected, moving to detection of actual poses.")
+    }
+
+    private fun runLogicWhenOtherPosesDetected() {
+        hideMessage()
+        showPoseDetectedResponse()
+        if (isRandomDetection()) {
+            updatePoseCompletionData(poseDetected = true)
+            getNewRandomPose()
+            updatePoseInAnalyzer()
+            viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
+        } else {
+            viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
+        }
+    }
+
+    private fun disableDetectionAndShowPoseNotDetected() {
+        Timber.d("${currentPose.name} not detected.")
         detectionInProgress = false
 
         showPoseNotDetectedResponse()
@@ -203,27 +210,39 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         analyzer.setListener(this)
     }
 
-    private fun setupOverlayViews() {
-        showMessage(R.string.message_initial)
-        hideResponse()
-        binding.btnClose.setOnClickListener { returnToMainFragment() }
-    }
-
-    private fun initializeDetection(trainingType: TrainingType) {
-        poseToBeDetected = when (trainingType) {
-            TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
-            TrainingType.RIGHT_HAND -> GibalicaPose.RIGHT_HAND_RAISED
-            TrainingType.BOTH_HANDS -> GibalicaPose.BOTH_HANDS_RAISED
-            TrainingType.T_POSE -> GibalicaPose.T_POSE
-            TrainingType.SQUAT -> GibalicaPose.SQUAT
-            TrainingType.RANDOM -> getRandomPose()
+    private fun setupTextToSpeech() {
+        if (isSoundEnabled()) {
+            val enginePackageName = when (getApplicationLanguage()) {
+                Language.EN -> "com.google.android.tts"
+                Language.HR -> "alfanum.co.rs.alfanumtts.cro"
+            }
+            Timber.d("TTS engine to be initialized: $enginePackageName.")
+            textToSpeech = TextToSpeech(
+                requireContext(),
+                { status ->
+                    if (status == TextToSpeech.SUCCESS) {
+                        textToSpeech?.let { tts ->
+                            Timber.i("Available TTS engines:\n${tts.engines}.")
+                            Timber.d("Chosen TTS language: ${tts.voice?.locale}.")
+                        }
+                    } else Timber.d("TTS engine could not be initialized, status code is $status.")
+                },
+                enginePackageName
+            )
+        } else {
+            Timber.d("TTS engine not initialized, sound setting disabled.")
         }
-        poseToBeDetectedMessage = poseToBeDetected.getPoseMessage()
     }
 
-    private fun startDetection() {
-        Timber.d("Sending initial pose to analyzer.")
-        updatePoseInAnalyzer()
+    private fun getInitialPose(): GibalicaPose {
+        return when {
+            isRandomDetection() -> getRandomPose()
+            args.trainingType == TrainingType.LEFT_HAND -> GibalicaPose.LEFT_HAND_RAISED
+            args.trainingType == TrainingType.RIGHT_HAND -> GibalicaPose.RIGHT_HAND_RAISED
+            args.trainingType == TrainingType.BOTH_HANDS -> GibalicaPose.BOTH_HANDS_RAISED
+            args.trainingType == TrainingType.T_POSE -> GibalicaPose.T_POSE
+            else -> GibalicaPose.SQUAT
+        }
     }
 
     private fun defineCounterLogic() {
@@ -232,18 +251,27 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             when (event?.eventType) {
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
+                        CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE -> {
+                            hideResponse()
+                            showMessageForCurrentPose()
+                            speakCurrentPoseMessage()
+                            Timber.d("Components initialized, starting detection.")
+                            detectionInProgress = true
+                        }
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> {
                             detectionInProgress = true
                             Timber.d("Counter finished, continuing detection.")
                         }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
-                            hideResponseAndShowMessage()
+                            hideResponse()
+                            showMessageForCurrentPose()
                             detectionInProgress = true
                             Timber.d("Negative result hidden, continuing detection.")
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
-                            updateMessage()
                             hideResponse()
+                            showMessageForCurrentPose()
+                            speakCurrentPoseMessage()
                             detectionInProgress = true
                             restartTimerIfCompetitionOrDayNightUseCase()
                             Timber.d("Switched to new pose, continuing detection.")
@@ -277,7 +305,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun poseNotDetectedMoveToNext() {
-        showPoseNotDetected()
+        disableDetectionAndShowPoseNotDetected()
         updatePoseCompletionData(poseDetected = false)
         getNewRandomPose()
         updatePoseInAnalyzer()
@@ -286,23 +314,20 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun getNewRandomPose() {
         currentPose = getRandomPose()
-        poseToBeDetectedMessage =
-            when {
-                randomDetectionType != DetectionUseCase.DAY_NIGHT ->
-                    currentPose.getPoseMessage()
-                currentPose == GibalicaPose.UPRIGHT ->
-                    R.string.day_message
-                else ->
-                    R.string.night_message
-            }
     }
 
     private fun updatePoseInAnalyzer() {
         analyzer.updatePose(currentPose)
     }
 
+    private fun speakCurrentPoseMessage() {
+        val message = getMessageForCurrentPose()
+        Timber.d("TTS message: $message")
+        textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, System.currentTimeMillis().toString())
+    }
+
     private fun getRandomPose(): GibalicaPose {
-        return when (randomDetectionType) {
+        return when (args.detectionUseCase) {
             DetectionUseCase.TRAINING, DetectionUseCase.COMPETITION -> {
                 when (Random.nextInt(5)) {
                     0 -> GibalicaPose.LEFT_HAND_RAISED
@@ -317,10 +342,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                     0 -> GibalicaPose.SQUAT
                     else -> GibalicaPose.UPRIGHT
                 }
-            }
-            null -> {
-                Timber.d("Trying to get new random pose while randomDetectionType is null.")
-                GibalicaPose.NONE
             }
         }
     }
@@ -364,14 +385,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 )
     }
 
-    private fun isRandomDetection() = randomDetectionType != null
+    private fun isRandomDetection() = isCompetition() || isDayNight() || args.trainingType == TrainingType.RANDOM
 
     private fun isDetectingActualPose() =
         currentPose != GibalicaPose.ALL_JOINTS_VISIBLE && currentPose != GibalicaPose.STARTING_POSE
 
-    private fun isCompetition() = randomDetectionType == DetectionUseCase.COMPETITION
+    private fun isCompetition() = args.detectionUseCase == DetectionUseCase.COMPETITION
 
-    private fun isDayNight() = randomDetectionType == DetectionUseCase.DAY_NIGHT
+    private fun isDayNight() = args.detectionUseCase == DetectionUseCase.DAY_NIGHT
 
     private fun endDetection() = navigateToFinishFragment()
 
@@ -392,45 +413,40 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         )
     }
 
-    private fun updateMessage() {
-        poseToBeDetectedMessage?.let { resId ->
-            showMessage(resId)
-        }
-    }
-
-    private fun showPoseDetected() {
-        hideMessage()
-        showResponse(R.string.response_positive)
-    }
+    private fun showPoseDetectedResponse() = showResponse(R.string.response_positive)
 
     private fun showPoseNotDetectedResponse() = showResponse(R.string.response_negative)
-
-    private fun showStartingPoseMessage() = showMessage(R.string.message_start)
-
-    private fun hideResponseAndShowMessage() {
-        hideResponse()
-        showMessage()
-    }
 
     private fun showResponse(resId: Int) = binding.apply {
         tvResponse.setText(resId)
         cvResponse.visible()
     }
 
-    private fun hideResponse() = binding.apply {
-        cvResponse.invisible()
-    }
+    private fun hideResponse() = binding.apply { cvResponse.invisible() }
 
-    private fun showMessage() = binding.apply {
+    private fun hideMessage() = binding.apply { tvMessage.invisible() }
+
+    private fun showMessageForCurrentPose() = binding.apply {
+        val message = getMessageForCurrentPose()
+        tvMessage.text = message
         tvMessage.visible()
     }
 
-    private fun showMessage(resId: Int) = binding.apply {
-        tvMessage.setText(resId)
-        tvMessage.visible()
-    }
+    private fun getMessageForCurrentPose(): String {
+        val resId = when {
+            args.detectionUseCase != DetectionUseCase.DAY_NIGHT ->
+                currentPose.getPoseMessage()
+            currentPose == GibalicaPose.UPRIGHT ->
+                R.string.day_message
+            else ->
+                R.string.night_message
+        }
 
-    private fun hideMessage() = binding.apply {
-        tvMessage.invisible()
+        return if (resId != null) {
+            getString(resId)
+        } else {
+            Timber.d("Received message resId is null, returning empty string.")
+            ""
+        }
     }
 }
