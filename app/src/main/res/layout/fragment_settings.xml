@@ -46,6 +46,7 @@
         android:id="@+id/rg_language"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="@id/guideline_start"
         app:layout_constraintTop_toBottomOf="@id/tv_language">
 
@@ -75,13 +76,11 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/sw_sound"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOff="@string/settings_off"
-        android:textOn="@string/settings_on"
+        android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_sound"
-        app:showText="true" />
+        app:layout_constraintTop_toBottomOf="@id/tv_sound" />
 
     <TextView
         android:id="@+id/tv_voice"
@@ -95,13 +94,11 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/sw_voice"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOff="@string/settings_off"
-        android:textOn="@string/settings_on"
+        android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_voice"
-        app:showText="true" />
+        app:layout_constraintTop_toBottomOf="@id/tv_voice" />
 
     <TextView
         android:id="@+id/tv_accessibility"
@@ -115,13 +112,11 @@
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/sw_accessibility"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textOff="@string/settings_off"
-        android:textOn="@string/settings_on"
+        android:layout_marginStart="20dp"
         app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_accessibility"
-        app:showText="true" />
+        app:layout_constraintTop_toBottomOf="@id/tv_accessibility" />
 
     <Button
         android:id="@+id/btn_guide"
