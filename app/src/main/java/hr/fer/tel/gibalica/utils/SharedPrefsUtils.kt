@@ -32,5 +32,10 @@ class SharedPrefsUtils {
                 }
             }
         }
+
+        fun isFirstApplicationStart(context: Context): Boolean {
+            val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
+            return sharedPrefs.getBoolean(Setting.FIRST_START.name, true)
+        }
     }
 }
