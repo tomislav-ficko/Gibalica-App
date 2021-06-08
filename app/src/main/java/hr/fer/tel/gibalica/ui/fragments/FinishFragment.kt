@@ -48,9 +48,10 @@ class FinishFragment : Fragment() {
                 DetectionUseCase.TRAINING -> {
                     tvTitle.setText(R.string.finish_title_good)
                     tvDescription.setText(R.string.finish_description)
+                    binding.ivEmoji.setImageResource(R.drawable.ic_emoji_great)
                     tvResult.invisible()
                 }
-                DetectionUseCase.COMPETITION -> {
+                DetectionUseCase.COMPETITION, DetectionUseCase.DAY_NIGHT -> {
                     tvDescription.setText(R.string.finish_description_result)
                     tvResult.visible()
                     setDataAccordingToResult()
@@ -71,16 +72,16 @@ class FinishFragment : Fragment() {
             when {
                 result < RESULT_THRESHOLD_ACCEPTABLE -> {
                     binding.tvTitle.setText(R.string.finish_title_bad)
-//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_bad)
+                    binding.ivEmoji.setImageResource(R.drawable.ic_emoji_bad)
                 }
                 result >= RESULT_THRESHOLD_ACCEPTABLE
                         && result < RESULT_THRESHOLD_GOOD -> {
                     binding.tvTitle.setText(R.string.finish_title_acceptable)
-//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_acceptable)
+                    binding.ivEmoji.setImageResource(R.drawable.ic_emoji_good)
                 }
                 result >= RESULT_THRESHOLD_GOOD -> {
                     binding.tvTitle.setText(R.string.finish_title_good)
-//                  binding.ivEmoji.setImageResource(R.drawable.ic_emoji_good)
+                    binding.ivEmoji.setImageResource(R.drawable.ic_emoji_great)
                 }
             }
         }
