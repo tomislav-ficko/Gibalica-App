@@ -48,8 +48,7 @@
     <string name="settings_accessibility">Pristupačnost</string>
     <string name="settings_language_english">Engleski</string>
     <string name="settings_language_croatian">Hrvatski</string>
-    <string name="settings_off">Isključeno</string>
-    <string name="settings_on">Uključeno</string>
+    <string name="settings_button_guide">Prikaži vodič</string>
     <string name="voice_control_negative_message">Potrebni parametri nisu prepoznati, molimo pokušajte opet.</string>
 
     <string name="comp_selection_title">Odaberite postavke</string>

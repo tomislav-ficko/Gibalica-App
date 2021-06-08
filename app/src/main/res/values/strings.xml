@@ -49,8 +49,7 @@
     <string name="settings_accessibility">Accessibility</string>
     <string name="settings_language_croatian">Croatian</string>
     <string name="settings_language_english">English</string>
-    <string name="settings_off">Off</string>
-    <string name="settings_on">On</string>
+    <string name="settings_button_guide">Show Guide</string>
     <string name="voice_control_negative_message">Necessary parameters were not recognized, please try again.</string>
 
     <string name="comp_selection_title">Select your settings</string>

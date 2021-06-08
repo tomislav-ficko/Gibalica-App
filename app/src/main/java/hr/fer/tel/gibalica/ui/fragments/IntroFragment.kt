@@ -40,7 +40,7 @@ class IntroFragment : Fragment() {
 
     private fun navigateToGuideFragment() {
         findNavController().navigate(
-            IntroFragmentDirections.actionIntroFragmentToGuideFragment()
+            IntroFragmentDirections.actionIntroFragmentToGuideFragment(initiatedFromIntroScreen = true)
         )
     }
 

@@ -105,6 +105,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_guideFragment2"
+            app:destination="@id/guideFragment2" />
     </fragment>
     <fragment
         android:id="@+id/settingsSelectionFragment"
@@ -119,5 +122,18 @@
         <argument
             android:name="detectionUseCase"
             app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase"/>
+    </fragment>
+    <fragment
+        android:id="@+id/guideFragment2"
+        android:name="hr.fer.tel.gibalica.ui.fragments.GuideFragment"
+        android:label="fragment_guide"
+        tools:layout="@layout/fragment_guide" >
+        <action
+            android:id="@+id/action_guideFragment2_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <argument
+            android:name="initiatedFromIntroScreen"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 </navigation>

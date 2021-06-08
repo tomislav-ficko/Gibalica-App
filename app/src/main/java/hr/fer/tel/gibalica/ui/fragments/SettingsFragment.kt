@@ -76,12 +76,15 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun defineActions() {
-        binding.ivBack.setOnClickListener { navigateToMainFragment() }
-        binding.swVoice.setOnCheckedChangeListener { _, isChecked ->
-            when {
-                !isChecked -> viewModel.disableSpeechRecognizer()
-                recordAudioPermissionNotGranted() -> requestRecordAudioPermission()
-                else -> enableRecognizer()
+        binding.apply {
+            ivBack.setOnClickListener { navigateToMainFragment() }
+            btnGuide.setOnClickListener { navigateToGuideFragment() }
+            swVoice.setOnCheckedChangeListener { _, isChecked ->
+                when {
+                    !isChecked -> viewModel.disableSpeechRecognizer()
+                    recordAudioPermissionNotGranted() -> requestRecordAudioPermission()
+                    else -> enableRecognizer()
+                }
             }
         }
     }
@@ -168,6 +171,11 @@ class SettingsFragment : BaseFragment() {
     private fun navigateToMainFragment() {
         Timber.d("Navigating to MainFragment.")
         findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToMainFragment())
+    }
+
+    private fun navigateToGuideFragment() {
+        Timber.d("Navigating to GuideFragment.")
+        findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToGuideFragment2())
     }
 
     private fun recordAudioPermissionNotGranted() = ContextCompat.checkSelfPermission(

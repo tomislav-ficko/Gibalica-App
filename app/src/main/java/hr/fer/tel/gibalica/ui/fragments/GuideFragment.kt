@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.databinding.FragmentGuideBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import hr.fer.tel.gibalica.utils.SliderAdapter
@@ -21,6 +22,7 @@ class GuideFragment : Fragment() {
     private val binding: FragmentGuideBinding
         get() = _binding!!
 
+    private val args: GuideFragmentArgs by navArgs()
     private val viewModel: IntroViewModel by viewModels()
 
     override fun onCreateView(
@@ -43,7 +45,11 @@ class GuideFragment : Fragment() {
     private fun setupIllustrations() {
         binding.imageSlider.setSliderAdapter(SliderAdapter(viewModel))
         binding.btnNext.setOnClickListener {
-            startActivity(Intent(requireContext(), MainActivity::class.java))
+            if (args.initiatedFromIntroScreen) {
+                startActivity(Intent(requireContext(), MainActivity::class.java))
+            } else {
+                activity?.onBackPressed()
+            }
         }
     }
 

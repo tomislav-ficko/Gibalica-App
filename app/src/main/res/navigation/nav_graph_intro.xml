@@ -18,5 +18,10 @@
         android:id="@+id/guideFragment"
         android:name="hr.fer.tel.gibalica.ui.fragments.GuideFragment"
         android:label="fragment_guide"
-        tools:layout="@layout/fragment_guide" />
+        tools:layout="@layout/fragment_guide" >
+        <argument
+            android:name="initiatedFromIntroScreen"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
 </navigation>
