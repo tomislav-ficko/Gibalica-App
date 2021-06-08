@@ -36,8 +36,8 @@ class IllustrationFragment : Fragment() {
         val trainingType = args.trainingType
         Timber.d("Showing illustration for training type: ${trainingType.name}")
         val resource = when (trainingType) {
-            TrainingType.LEFT_HAND -> R.drawable.illustration_left
-            TrainingType.RIGHT_HAND -> R.drawable.illustration_right
+            TrainingType.LEFT_HAND -> R.drawable.illustration_right
+            TrainingType.RIGHT_HAND -> R.drawable.illustration_left
             TrainingType.BOTH_HANDS -> R.drawable.illustration_both
             TrainingType.T_POSE -> R.drawable.illustration_t_pose
             TrainingType.SQUAT -> R.drawable.illustration_squat
