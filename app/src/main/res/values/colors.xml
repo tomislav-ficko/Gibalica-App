@@ -8,10 +8,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="background_app">#FFFFFF</color>
+    <color name="background_app">#F1ECE1</color>
+    <color name="background_app_accessible">#FFFFFF</color>
 
-    <color name="background_button">@color/teal_200</color>
-    <color name="background_button_pressed">@color/teal_700</color>
+    <color name="background_button">#65AA16</color>
+    <color name="background_button_pressed">#518816</color>
+    <color name="background_button_accessible">#636363</color>
+    <color name="background_button_pressed_accessible">#4A4A4A</color>
 
     <color name="slider_selected">#5A5A5A</color>
     <color name="slider_unselected">@color/white</color>
