@@ -143,7 +143,7 @@ class SettingsFragment : BaseFragment() {
                         entry.value.tryCast<Pair<Int, String>> {
                             val buttonId =
                                 if (first != -1) first
-                                else rbEnglish.id
+                                else rbCroatian.id
                             rgLanguage.check(buttonId)
                         }
                     }

@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager
 import dagger.hilt.android.AndroidEntryPoint
 import hr.fer.tel.gibalica.databinding.ActivitySplashBinding
 import hr.fer.tel.gibalica.utils.CounterCause
+import hr.fer.tel.gibalica.utils.Language
 import hr.fer.tel.gibalica.utils.Setting
 import hr.fer.tel.gibalica.utils.SharedPrefsUtils
 import hr.fer.tel.gibalica.viewModel.MainViewModel
@@ -25,7 +26,7 @@ class SplashActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         inflateLayout()
         setupObservable()
-
+        saveCroatianAsStartupLanguage()
         viewModel.startCounter(CounterCause.SPLASH_SCREEN, TIMER_VALUE_IN_SECONDS)
     }
 
@@ -53,6 +54,14 @@ class SplashActivity : ComponentActivity() {
     private fun startMainActivity() {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
+    }
+
+    private fun saveCroatianAsStartupLanguage() {
+        PreferenceManager.getDefaultSharedPreferences(baseContext)
+            .edit()
+            .putInt(Language.LANGUAGE_BUTTON_ID, -1)
+            .putString(Setting.LANGUAGE.name, Language.HR.name)
+            .apply()
     }
 
     private fun disableIntroOnStartup() {
