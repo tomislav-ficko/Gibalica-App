@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentIntroBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import timber.log.Timber
 
-class IntroFragment : Fragment() {
+class IntroFragment : BaseFragment() {
 
     private var _binding: FragmentIntroBinding? = null
     private val binding: FragmentIntroBinding
@@ -47,5 +47,14 @@ class IntroFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun improveViewAccessability() {
+        binding.apply {
+            btnStartGuide.textSize = getAccessibleButtonTextSize()
+            btnSkip.textSize = getAccessibleButtonTextSize()
+            tvIntroTitle.textSize = getAccessibleTitleTextSize()
+            tvIntroBody.textSize = getAccessibleBodyTextSize()
+        }
     }
 }

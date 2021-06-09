@@ -4,17 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentFinishBinding
 import hr.fer.tel.gibalica.utils.DetectionUseCase
 import hr.fer.tel.gibalica.utils.invisible
 import hr.fer.tel.gibalica.utils.visible
 import timber.log.Timber
 
-class FinishFragment : Fragment() {
+class FinishFragment : BaseFragment() {
 
     companion object {
         private const val RESULT_THRESHOLD_GOOD = 0.75
@@ -40,6 +40,14 @@ class FinishFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setData()
+    }
+
+    override fun improveViewAccessability() {
+        binding.apply {
+            tvTitle.textSize = getAccessibleTitleTextSize()
+            tvDescription.textSize = getAccessibleBodyTextSize()
+            btnFinish.textSize = getAccessibleButtonTextSize()
+        }
     }
 
     private fun setData() {

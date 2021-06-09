@@ -2,10 +2,13 @@
 <resources>
     <dimen name="margin_sides">24dp</dimen>
     <dimen name="size_title">32sp</dimen>
+    <dimen name="size_title_accessible">34sp</dimen>
     <dimen name="size_body">18sp</dimen>
+    <dimen name="size_body_accessible">22sp</dimen>
 
     <dimen name="margin_button">64dp</dimen>
     <dimen name="size_button">16sp</dimen>
+    <dimen name="size_button_accessible">18sp</dimen>
     <dimen name="radius_btn">32dp</dimen>
 
     <dimen name="margin_slider_indicator">15dp</dimen>
@@ -21,13 +24,16 @@
     <dimen name="size_img_btn">48dp</dimen>
 
     <dimen name="size_text_message">36sp</dimen>
+    <dimen name="size_text_message_accessible">38sp</dimen>
     <dimen name="padding_message">12dp</dimen>
     <dimen name="size_text_response">36sp</dimen>
+    <dimen name="size_text_response_accessible">38sp</dimen>
     <dimen name="padding_response">8dp</dimen>
 
     <dimen name="radius_card_view_guide">8dp</dimen>
     <dimen name="margin_btn_training_selection">32dp</dimen>
 
     <dimen name="size_text_timer">44sp</dimen>
+    <dimen name="size_text_timer_accessible">56sp</dimen>
     <dimen name="padding_timer">16dp</dimen>
 </resources>

@@ -21,7 +21,7 @@ import java.util.concurrent.Executors
 
 const val REQUEST_CODE_PERMISSIONS = 42
 
-open class BaseDetectionFragment : BaseFragment(), TextureView.SurfaceTextureListener {
+abstract class BaseDetectionFragment : BaseFragment(), TextureView.SurfaceTextureListener {
 
     private lateinit var cameraExecutor: ExecutorService
 

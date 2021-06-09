@@ -4,17 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentIllustrationBinding
-import hr.fer.tel.gibalica.utils.Difficulty
 import hr.fer.tel.gibalica.utils.DetectionUseCase
+import hr.fer.tel.gibalica.utils.Difficulty
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
-class IllustrationFragment : Fragment() {
+class IllustrationFragment : BaseFragment() {
 
     private var _binding: FragmentIllustrationBinding? = null
     private val binding: FragmentIllustrationBinding
@@ -53,6 +53,10 @@ class IllustrationFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun improveViewAccessability() {
+        binding.btnStart.textSize = getAccessibleButtonTextSize()
     }
 
     private fun navigateToTrainingSelectionFragment() {

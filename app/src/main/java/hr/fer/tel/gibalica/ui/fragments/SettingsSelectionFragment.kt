@@ -6,17 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import hr.fer.tel.gibalica.R
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentSettingsSelectionBinding
 import hr.fer.tel.gibalica.utils.DetectionUseCase
 import hr.fer.tel.gibalica.utils.Difficulty
 import hr.fer.tel.gibalica.utils.TrainingType
 import timber.log.Timber
 
-class SettingsSelectionFragment : Fragment(), View.OnClickListener {
+class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
 
     private var _binding: FragmentSettingsSelectionBinding? = null
     private val binding: FragmentSettingsSelectionBinding
@@ -44,6 +44,17 @@ class SettingsSelectionFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun improveViewAccessability() {
+        binding.apply {
+            tvTitle.textSize = getAccessibleTitleTextSize()
+            tvDescription.textSize = getAccessibleBodyTextSize()
+            btnEasy.textSize = getAccessibleButtonTextSize()
+            btnMedium.textSize = getAccessibleButtonTextSize()
+            btnHard.textSize = getAccessibleButtonTextSize()
+            tvDescriptionSlider.textSize = getAccessibleBodyTextSize()
+        }
     }
 
     override fun onClick(clickedView: View?) {

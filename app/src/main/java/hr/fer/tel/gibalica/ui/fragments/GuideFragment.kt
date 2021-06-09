@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import hr.fer.tel.gibalica.base.BaseFragment
 import hr.fer.tel.gibalica.databinding.FragmentGuideBinding
 import hr.fer.tel.gibalica.ui.MainActivity
 import hr.fer.tel.gibalica.utils.SliderAdapter
@@ -16,7 +16,7 @@ import hr.fer.tel.gibalica.utils.visible
 import hr.fer.tel.gibalica.viewModel.IntroViewModel
 import timber.log.Timber
 
-class GuideFragment : Fragment() {
+class GuideFragment : BaseFragment() {
 
     private var _binding: FragmentGuideBinding? = null
     private val binding: FragmentGuideBinding
@@ -40,6 +40,10 @@ class GuideFragment : Fragment() {
 
         setupIllustrations()
         defineListener()
+    }
+
+    override fun improveViewAccessability() {
+        binding.btnNext.textSize = getAccessibleButtonTextSize()
     }
 
     private fun setupIllustrations() {

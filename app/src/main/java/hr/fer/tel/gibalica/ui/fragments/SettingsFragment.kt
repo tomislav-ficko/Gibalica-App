@@ -75,6 +75,19 @@ class SettingsFragment : BaseFragment() {
         _binding = null
     }
 
+    override fun improveViewAccessability() {
+        binding.apply {
+            tvTitle.textSize = getAccessibleTitleTextSize()
+            tvLanguage.textSize = getAccessibleBodyTextSize()
+            rbCroatian.textSize = getAccessibleBodyTextSize()
+            rbEnglish.textSize = getAccessibleBodyTextSize()
+            tvSound.textSize = getAccessibleBodyTextSize()
+            tvVoice.textSize = getAccessibleBodyTextSize()
+            tvAccessibility.textSize = getAccessibleBodyTextSize()
+            btnGuide.textSize = getAccessibleButtonTextSize()
+        }
+    }
+
     private fun defineActions() {
         binding.apply {
             ivBack.setOnClickListener { navigateToMainFragment() }

@@ -63,6 +63,14 @@ class MainFragment : BaseFragment() {
         _binding = null
     }
 
+    override fun improveViewAccessability() {
+        binding.apply {
+            btnTraining.textSize = getAccessibleButtonTextSize()
+            btnCompetition.textSize = getAccessibleButtonTextSize()
+            btnDayNight.textSize = getAccessibleButtonTextSize()
+        }
+    }
+
     private fun defineActions() {
         binding.apply {
             ivSettings.setOnClickListener { navigateToSettingsFragment() }
