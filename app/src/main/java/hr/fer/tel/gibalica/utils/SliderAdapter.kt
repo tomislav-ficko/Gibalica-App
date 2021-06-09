@@ -36,17 +36,16 @@ class SliderAdapter(
         viewHolder?.apply {
             Timber.d("Binding viewHolder at position $position")
             when (position) {
-                0 -> setImage(R.drawable.illustration_main, binding, position)
-                1 -> setImage(R.drawable.guide_image, binding, position)
-                2 -> setImage(R.drawable.guide_image, binding, position)
-                3 -> setImage(R.drawable.guide_image, binding, position)
-                4 -> setImage(R.drawable.guide_image, binding, position)
-                else -> setImage(R.drawable.guide_image, binding, position)
+                0 -> setImage(R.drawable.screen_main, binding, position)
+                1 -> setImage(R.drawable.screen_settings, binding, position)
+                2 -> setImage(R.drawable.screen_training_selection, binding, position)
+                3 -> setImage(R.drawable.screen_settings_selection, binding, position)
+                else -> setImage(R.drawable.screen_detection, binding, position)
             }
         }
     }
 
-    override fun getCount(): Int = 6
+    override fun getCount(): Int = 5
 
     private fun setImage(
         @DrawableRes resId: Int,

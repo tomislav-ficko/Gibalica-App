@@ -31,7 +31,7 @@
         <TextView
             android:id="@+id/tv_title"
             style="@style/Title"
-            android:text="@string/training_selection_title"
+            android:text="@string/settings_title"
             app:layout_constraintBottom_toTopOf="@id/tv_language"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline_start"
