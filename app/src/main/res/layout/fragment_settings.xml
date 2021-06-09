@@ -1,136 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_app"
+    android:fillViewport="true"
     tools:context=".ui.fragments.SettingsFragment">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_back"
-        style="@style/ImageButton"
-        android:layout_marginStart="@dimen/margin_img_btn"
-        android:src="@drawable/ic_baseline_back_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
-
-    <TextView
-        android:id="@+id/tv_title"
-        style="@style/Title"
-        android:text="@string/training_selection_title"
-        app:layout_constraintBottom_toTopOf="@id/tv_language"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/iv_back" />
-
-    <TextView
-        android:id="@+id/tv_language"
-        style="@style/Subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/settings_language"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_title" />
-
-    <RadioGroup
-        android:id="@+id/rg_language"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_language">
-
-        <RadioButton
-            android:id="@+id/rb_croatian"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/background_button"
-            android:checked="true"
-            android:text="@string/settings_language_croatian" />
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
 
-        <RadioButton
-            android:id="@+id/rb_english"
+        <ImageView
+            android:id="@+id/iv_back"
+            style="@style/ImageButton"
+            android:layout_marginStart="@dimen/margin_img_btn"
+            android:src="@drawable/ic_baseline_back_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/Title"
+            android:text="@string/training_selection_title"
+            app:layout_constraintBottom_toTopOf="@id/tv_language"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/iv_back" />
+
+        <TextView
+            android:id="@+id/tv_language"
+            style="@style/Subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_language"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <RadioGroup
+            android:id="@+id/rg_language"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_language">
+
+            <RadioButton
+                android:id="@+id/rb_croatian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/background_button"
+                android:checked="true"
+                android:text="@string/settings_language_croatian" />
+
+            <RadioButton
+                android:id="@+id/rb_english"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="@color/background_button"
+                android:text="@string/settings_language_english" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tv_sound"
+            style="@style/Subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_sound"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/rg_language" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sw_sound"
+            style="@style/Switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:buttonTint="@color/background_button"
-            android:text="@string/settings_language_english" />
-    </RadioGroup>
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_sound" />
 
-    <TextView
-        android:id="@+id/tv_sound"
-        style="@style/Subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/settings_sound"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/rg_language" />
+        <TextView
+            android:id="@+id/tv_voice"
+            style="@style/Subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_voice_control"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/sw_sound" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/sw_sound"
-        style="@style/Switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_sound" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sw_voice"
+            style="@style/Switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_voice" />
 
-    <TextView
-        android:id="@+id/tv_voice"
-        style="@style/Subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/settings_voice_control"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/sw_sound" />
+        <TextView
+            android:id="@+id/tv_accessibility"
+            style="@style/Subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/settings_accessibility"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/sw_voice" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/sw_voice"
-        style="@style/Switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_voice" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sw_accessibility"
+            style="@style/Switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/guideline_start"
+            app:layout_constraintTop_toBottomOf="@id/tv_accessibility" />
 
-    <TextView
-        android:id="@+id/tv_accessibility"
-        style="@style/Subtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/settings_accessibility"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/sw_voice" />
+        <Button
+            android:id="@+id/btn_guide"
+            style="@style/Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="80dp"
+            android:layout_marginBottom="40dp"
+            android:text="@string/settings_button_guide"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sw_accessibility"
+            app:layout_constraintVertical_bias="1" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/sw_accessibility"
-        style="@style/Switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/guideline_start"
-        app:layout_constraintTop_toBottomOf="@id/tv_accessibility" />
-
-    <Button
-        android:id="@+id/btn_guide"
-        style="@style/Button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="40dp"
-        android:text="@string/settings_button_guide"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
