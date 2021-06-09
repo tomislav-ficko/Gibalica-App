@@ -21,6 +21,10 @@ class SliderAdapter(
         val binding = ItemLayoutImageSliderBinding.bind(itemView)
     }
 
+    companion object {
+        private const val LAST_ITEM_POSITION = 0
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup?): SliderViewHolder {
         val inflatedView = LayoutInflater
             .from(parent?.context)
@@ -32,12 +36,12 @@ class SliderAdapter(
         viewHolder?.apply {
             Timber.d("Binding viewHolder at position $position")
             when (position) {
-                0 -> setImage(R.drawable.illustration_main, binding)
-                1 -> setImage(R.drawable.guide_image, binding)
-                2 -> setImage(R.drawable.guide_image, binding)
-                3 -> setImage(R.drawable.guide_image, binding)
-                4 -> setImage(R.drawable.guide_image, binding)
-                else -> setImage(R.drawable.guide_image, binding, isFinalImage = true)
+                0 -> setImage(R.drawable.illustration_main, binding, position)
+                1 -> setImage(R.drawable.guide_image, binding, position)
+                2 -> setImage(R.drawable.guide_image, binding, position)
+                3 -> setImage(R.drawable.guide_image, binding, position)
+                4 -> setImage(R.drawable.guide_image, binding, position)
+                else -> setImage(R.drawable.guide_image, binding, position)
             }
         }
     }
@@ -47,10 +51,10 @@ class SliderAdapter(
     private fun setImage(
         @DrawableRes resId: Int,
         binding: ItemLayoutImageSliderBinding,
-        isFinalImage: Boolean = false
+        position: Int
     ) {
         binding.ivGuideImage.setImageResource(resId)
-        if (isFinalImage) viewModel.showNextButton()
+        if (position == LAST_ITEM_POSITION) viewModel.showNextButton()
         else viewModel.hideNextButton()
     }
 }
