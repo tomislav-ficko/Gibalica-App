@@ -67,6 +67,8 @@
         <item name="android:layout_marginStart">20dp</item>
         <item name="thumbTint">@drawable/selector_switch_thumb</item>
         <item name="trackTint">@drawable/selector_switch_track</item>
+        <item name="android:textOff"></item>
+        <item name="android:textOn"></item>
     </style>
 
 </resources>
