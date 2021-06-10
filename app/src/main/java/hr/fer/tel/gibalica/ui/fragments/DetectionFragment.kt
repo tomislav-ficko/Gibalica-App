@@ -121,10 +121,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     override fun onPoseNotDetected(detectedPose: GibalicaPose) {
-        if (isCompetition() or isDayNight())
-            Timber.d("Not showing negative message since interval for pose is still in progress.")
-        else if (detectionInProgress && isDetectingActualPose())
-            disableDetectionAndShowPoseNotDetected()
+        if (detectionInProgress) {
+            when {
+                isCompetition() or isDayNight() ->
+                    Timber.d("Not showing negative message since interval for pose is still in progress.")
+                isDetectingActualPose() ->
+                    disableDetectionAndShowPoseNotDetected()
+            }
+        }
     }
 
     override fun improveViewAccessability() {
@@ -196,6 +200,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         hideMessage()
         showPoseDetectedResponse()
         if (isRandomDetection()) {
+            intervalTimerDisposable?.dispose()
             updatePoseCompletionData(poseDetected = true)
             getNewRandomPose()
             updatePoseInAnalyzer()
@@ -306,10 +311,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun updatePoseCompletionData(poseDetected: Boolean) {
         totalPoses++
-        if (poseDetected) {
-            correctPoses++
-            intervalTimerDisposable?.dispose()
-        }
+        if (poseDetected) correctPoses++
     }
 
     private fun poseNotDetectedMoveToNext() {
@@ -386,8 +388,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 }
                 .subscribe(
                     { tick ->
-                        if (tick >= detectionIntervalMillis!!)
+                        val timerValueMillis = tick * 100
+                        if (timerValueMillis >= detectionIntervalMillis!!) {
+                            Timber.d("Stopping interval timer.")
                             poseNotDetectedMoveToNext()
+                            intervalTimerDisposable?.dispose()
+                        }
                     },
                     {}
                 )
