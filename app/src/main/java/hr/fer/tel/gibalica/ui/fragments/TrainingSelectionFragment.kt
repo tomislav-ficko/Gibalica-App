@@ -79,7 +79,7 @@ class TrainingSelectionFragment : BaseFragment() {
                 detectionUseCase = DetectionUseCase.TRAINING,
                 trainingType = TrainingType.RANDOM,
                 difficulty = Difficulty.NONE,
-                detectionLengthSeconds = 0
+                detectionLengthMinutes = 0
             )
         )
     }

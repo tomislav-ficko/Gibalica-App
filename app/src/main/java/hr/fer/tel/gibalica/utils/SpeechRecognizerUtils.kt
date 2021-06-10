@@ -109,7 +109,7 @@ class SpeechRecognizerUtils {
                         else -> Difficulty.HARD
                     }
                 } else null
-            val lengthSeconds =
+            val lengthMinutes =
                 if (recognizedSentence.contains(length)) {
                     recognizedSentence.filter { it.isDigit() }.let {
                         if (it.isNotBlank()) it.toLong() else null
@@ -117,8 +117,8 @@ class SpeechRecognizerUtils {
                 } else null
 
             return when {
-                difficulty != null && lengthSeconds != null ->
-                    DetectionParameters(useCase, null, difficulty, lengthSeconds)
+                difficulty != null && lengthMinutes != null ->
+                    DetectionParameters(useCase, null, difficulty, lengthMinutes)
                 else -> DetectionParameters(useCase, null, Difficulty.MEDIUM, 4)
             }
         }

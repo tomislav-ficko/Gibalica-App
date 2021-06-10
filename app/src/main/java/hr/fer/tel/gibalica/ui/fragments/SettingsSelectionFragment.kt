@@ -23,7 +23,7 @@ class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
         get() = _binding!!
 
     private val args: SettingsSelectionFragmentArgs by navArgs()
-    private var detectionLengthSeconds = 60L
+    private var detectionLengthMinutes = 1L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +69,7 @@ class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
             SettingsSelectionFragmentDirections.actionSettingsSelectionFragmentToDetectionFragment(
                 detectionUseCase = args.detectionUseCase,
                 difficulty = difficulty,
-                detectionLengthSeconds = detectionLengthSeconds,
+                detectionLengthMinutes = detectionLengthMinutes,
                 trainingType = TrainingType.RANDOM
             )
         )
@@ -119,8 +119,8 @@ class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
             }
             lengthSlider.addOnChangeListener { _, value, _ ->
                 Timber.d("$value minutes selected in slider.")
-                detectionLengthSeconds = (value * 60).toLong()
-                Timber.d("$detectionLengthSeconds")
+                detectionLengthMinutes = value.toLong()
+                Timber.d("$detectionLengthMinutes")
             }
         }
     }

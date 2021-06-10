@@ -4,5 +4,5 @@ class DetectionParameters(
     var detectionUseCase: DetectionUseCase? = null,
     var trainingType: TrainingType? = null,
     var difficulty: Difficulty? = null,
-    var detectionLengthSeconds: Long? = null
+    var detectionLengthMinutes: Long? = null
 )

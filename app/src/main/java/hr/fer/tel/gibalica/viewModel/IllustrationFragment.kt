@@ -71,7 +71,7 @@ class IllustrationFragment : BaseFragment() {
                 detectionUseCase = DetectionUseCase.TRAINING,
                 trainingType = args.trainingType,
                 difficulty = Difficulty.NONE,
-                detectionLengthSeconds = 0
+                detectionLengthMinutes = 0
             )
         )
     }

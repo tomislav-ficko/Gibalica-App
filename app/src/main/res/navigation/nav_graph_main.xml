@@ -44,7 +44,7 @@
             android:name="difficulty"
             app:argType="hr.fer.tel.gibalica.utils.Difficulty" />
         <argument
-            android:name="detectionLengthSeconds"
+            android:name="detectionLengthMinutes"
             app:argType="long"/>
     </fragment>
     <fragment

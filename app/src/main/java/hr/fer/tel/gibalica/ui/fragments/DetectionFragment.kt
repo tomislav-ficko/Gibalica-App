@@ -299,7 +299,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun startTimersIfCompetitionOrDayNightUseCase() {
         if (isCompetition() or isDayNight()) {
-            startDetectionTimer(args.detectionLengthSeconds)
+            startDetectionTimer(args.detectionLengthMinutes)
             startIntervalTimer()
         }
     }
@@ -356,15 +356,16 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startDetectionTimer(valueSeconds: Long) {
+    private fun startDetectionTimer(valueMinutes: Long) {
         Flowable.interval(1, 1, TimeUnit.SECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                Timber.d("Starting timer for $valueSeconds seconds.")
+                Timber.d("Starting detection timer for $valueMinutes minutes.")
                 binding.tvTimer.visible()
             }
             .subscribe(
                 { tick ->
+                    val valueSeconds = valueMinutes * 60
                     if (tick == valueSeconds) {
                         navigateToFinishFragment()
                     } else {
@@ -384,7 +385,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             Flowable.interval(0, 100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    Timber.d("Starting interval timer for $detectionIntervalMillis seconds.")
+                    Timber.d("Starting interval timer for $detectionIntervalMillis milliseconds.")
                 }
                 .subscribe(
                     { tick ->

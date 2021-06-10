@@ -146,12 +146,12 @@ class MainFragment : BaseFragment() {
                 trainingType != null -> navigateToIllustrationFragment(trainingType!!)
                 detectionUseCase == null -> Timber.d("Detection use case not recognized.")
                 difficulty == null -> Timber.d("Difficulty not recognized.")
-                detectionLengthSeconds == null -> Timber.d("Detection length not recognized.")
+                detectionLengthMinutes == null -> Timber.d("Detection length not recognized.")
                 else -> navigateToDetectionFragment(
                     detectionUseCase!!,
                     TrainingType.RANDOM,
                     difficulty!!,
-                    detectionLengthSeconds!!
+                    detectionLengthMinutes!!
                 )
             }
         }
@@ -208,7 +208,7 @@ class MainFragment : BaseFragment() {
         detectionUseCase: DetectionUseCase,
         trainingType: TrainingType,
         difficulty: Difficulty,
-        detectionLengthSeconds: Long
+        detectionLengthMinutes: Long
     ) {
         Timber.d("Navigating to DetectionFragment")
         findNavController().navigate(
@@ -216,7 +216,7 @@ class MainFragment : BaseFragment() {
                 detectionUseCase,
                 trainingType,
                 difficulty,
-                detectionLengthSeconds
+                detectionLengthMinutes
             )
         )
     }
