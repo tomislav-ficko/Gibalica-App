@@ -17,8 +17,8 @@ import timber.log.Timber
 class FinishFragment : BaseFragment() {
 
     companion object {
-        private const val RESULT_THRESHOLD_GOOD = 0.75
-        private const val RESULT_THRESHOLD_ACCEPTABLE = 0.4
+        private const val RESULT_THRESHOLD_GOOD = 0.75f
+        private const val RESULT_THRESHOLD_ACCEPTABLE = 0.4f
     }
 
     private var _binding: FragmentFinishBinding? = null
@@ -71,10 +71,11 @@ class FinishFragment : BaseFragment() {
 
     private fun setDataAccordingToResult() {
         val result = try {
-            args.correctPoses.div(args.totalPoses)
+            args.correctPoses.toFloat() / args.totalPoses
         } catch (e: ArithmeticException) {
-            0
+            0f
         }
+        Timber.d("Division result is $result.")
         binding.apply {
             tvResult.text = getString(R.string.finish_result_format_specifier, args.correctPoses, args.totalPoses)
             when {
