@@ -10,19 +10,25 @@ class SpeechRecognizerUtils {
         private val map = createSpeechRecognitionDataSetMap()
 
         /**
-         * Sentence must contain the following combination of keywords:
-         * 1 'training' + 'left/right/both/squat/pose/random'
-         * 2. 'competition' + 'length' + number + 'easy/medium/hard'
-         * 3. 'day night' + 'length' + number + 'easy/medium/hard'
+         * Sentence must contain one of the following combination of keywords:
+         *
+         * 1. 'training' + 'left/right/both/squat/pose/random'
+         * 2. 'competition' (medium difficulty, length 4 minutes)
+         * 3. 'competition' + 'length' + number + 'easy/medium/hard'
+         * 4. 'day night' (medium difficulty, length 4 minutes)
+         * 5. 'day night' + 'length' + number + 'easy/medium/hard'
          */
         fun stringContainsAllNecessaryDataInEnglish(recognizedSentence: String) =
             stringContainsAllNecessaryData(recognizedSentence, Language.EN)
 
         /**
-         * Rečenica mora sadržavati sljedeće kombinacije riječi:
+         * Rečenica mora sadržavati neku od sljedećih kombinacija riječi:
+         *
          * 1. 'trening' + 'lijeva/desna/obje/čučanj/poza/nasumično'
-         * 2. 'natjecanje' + 'duljina' + broj + 'lagano/srednje/teško'
-         * 3. 'dan noć' + 'duljina' + broj + 'lagano/srednje/teško'
+         * 2. 'natjecanje' (srednja težina, duljina 4 minute)
+         * 3. 'natjecanje' + 'duljina' + broj + 'lagano/srednje/teško'
+         * 4. 'dan noć' (srednja težina, duljina 4 minute)
+         * 5. 'dan noć' + 'duljina' + broj + 'lagano/srednje/teško'
          */
         fun stringContainsAllNecessaryDataInCroatian(recognizedSentence: String) =
             stringContainsAllNecessaryData(recognizedSentence, Language.HR)
@@ -46,10 +52,6 @@ class SpeechRecognizerUtils {
             val squat = getString(language, SQUAT)
             val pose = getString(language, POSE)
             val random = getString(language, RANDOM)
-            val easy = getString(language, EASY)
-            val medium = getString(language, MEDIUM)
-            val hard = getString(language, HARD)
-            val length = getString(language, LENGTH)
 
             with(recognizedSentence) {
                 return when {
@@ -61,8 +63,6 @@ class SpeechRecognizerUtils {
                                     contains(pose) or
                                     contains(random)) -> true
                     !contains(competition) && !contains(dayNight) -> false
-                    !contains(easy) && !contains(medium) && !contains(hard) -> false
-                    !contains(length) -> false
                     else -> true
                 }
             }
@@ -81,7 +81,7 @@ class SpeechRecognizerUtils {
             val medium = getString(language, MEDIUM)
             val length = getString(language, LENGTH)
 
-            val detectionUseCase = when {
+            val useCase = when {
                 recognizedSentence.contains(training) -> DetectionUseCase.TRAINING
                 recognizedSentence.contains(competition) -> DetectionUseCase.COMPETITION
                 recognizedSentence.contains(dayNight) -> DetectionUseCase.DAY_NIGHT
@@ -90,30 +90,37 @@ class SpeechRecognizerUtils {
                     null
                 }
             }
-            val trainingType =
-                if (detectionUseCase == DetectionUseCase.TRAINING) {
-                    when {
-                        recognizedSentence.contains(left) -> TrainingType.LEFT_HAND
-                        recognizedSentence.contains(right) -> TrainingType.RIGHT_HAND
-                        recognizedSentence.contains(both) -> TrainingType.BOTH_HANDS
-                        recognizedSentence.contains(squat) -> TrainingType.SQUAT
-                        recognizedSentence.contains(pose) -> TrainingType.T_POSE
-                        else -> TrainingType.RANDOM
-                    }
-                } else null
+            if (useCase == DetectionUseCase.TRAINING) {
+                val type = when {
+                    recognizedSentence.contains(left) -> TrainingType.LEFT_HAND
+                    recognizedSentence.contains(right) -> TrainingType.RIGHT_HAND
+                    recognizedSentence.contains(both) -> TrainingType.BOTH_HANDS
+                    recognizedSentence.contains(squat) -> TrainingType.SQUAT
+                    recognizedSentence.contains(pose) -> TrainingType.T_POSE
+                    else -> TrainingType.RANDOM
+                }
+                return DetectionParameters(detectionUseCase = useCase, trainingType = type)
+            }
             val difficulty =
-                if (detectionUseCase == DetectionUseCase.COMPETITION || detectionUseCase == DetectionUseCase.DAY_NIGHT) {
+                if (useCase == DetectionUseCase.COMPETITION || useCase == DetectionUseCase.DAY_NIGHT) {
                     when {
                         recognizedSentence.contains(easy) -> Difficulty.EASY
                         recognizedSentence.contains(medium) -> Difficulty.MEDIUM
                         else -> Difficulty.HARD
                     }
                 } else null
-            val detectionLengthSeconds =
+            val lengthSeconds =
                 if (recognizedSentence.contains(length)) {
-                    recognizedSentence.filter { it.isDigit() }.toLong()
+                    recognizedSentence.filter { it.isDigit() }.let {
+                        if (it.isNotBlank()) it.toLong() else null
+                    }
                 } else null
-            return DetectionParameters(detectionUseCase, trainingType, difficulty, detectionLengthSeconds)
+
+            return when {
+                difficulty != null && lengthSeconds != null ->
+                    DetectionParameters(useCase, null, difficulty, lengthSeconds)
+                else -> DetectionParameters(useCase, null, Difficulty.MEDIUM, 4)
+            }
         }
 
         private fun createSpeechRecognitionDataSetMap(): Map<Language, Map<SpeechRecognitionDataSetItem, String>> {
