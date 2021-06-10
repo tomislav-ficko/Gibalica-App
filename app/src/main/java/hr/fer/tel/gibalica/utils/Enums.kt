@@ -61,3 +61,19 @@ enum class Setting {
     ACCESSIBILITY,
     FIRST_START
 }
+
+enum class SpeechRecognitionDataSetItem {
+    TRAINING,
+    COMPETITION,
+    DAY_NIGHT,
+    LEFT,
+    RIGHT,
+    BOTH,
+    SQUAT,
+    POSE,
+    RANDOM,
+    LENGTH,
+    EASY,
+    MEDIUM,
+    HARD
+}
