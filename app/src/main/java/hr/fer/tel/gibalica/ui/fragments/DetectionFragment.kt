@@ -442,12 +442,11 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun getMessageForCurrentPose(): String {
         val resId = when {
-            args.detectionUseCase != DetectionUseCase.DAY_NIGHT ->
-                currentPose.getPoseMessage()
-            currentPose == GibalicaPose.UPRIGHT ->
-                R.string.day_message
-            else ->
-                R.string.night_message
+            args.detectionUseCase == DetectionUseCase.DAY_NIGHT
+                    && currentPose == GibalicaPose.UPRIGHT -> R.string.day_message
+            args.detectionUseCase == DetectionUseCase.DAY_NIGHT
+                    && currentPose == GibalicaPose.SQUAT -> R.string.night_message
+            else -> currentPose.getPoseMessage()
         }
 
         return if (resId != null) {
