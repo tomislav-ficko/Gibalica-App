@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gibalica</string>
+
+    <string name="tv_intro_title">Pozdrav</string>
+    <string name="tv_intro_body">Dobrodošli u Gibalicu, interaktivno pomagalo za vježbanje orijentacije u zabavnom okruženju.</string>
+    <string name="btn_start_guide">Pokreni vodič</string>
+    <string name="btn_skip">Preskoči</string>
+    <string name="btn_next">Dalje</string>
+
+    <string name="btn_training">Trening</string>
+    <string name="btn_competition">Natjecanje</string>
+    <string name="btn_day_night">Dan-noć</string>
+
+    <string name="message_initial">Postavi mobitel uspravno na čvrstu podlogu i odmakni se s raširenim rukama dok se cijela/i ne vidiš na ekranu.</string>
+    <string name="message_start">Za početak treninga spusti ruke ravno uz tijelo!</string>
+    <string name="message_left_hand">Podigni lijevu ruku!</string>
+    <string name="message_right_hand">Podigni desnu ruku!</string>
+    <string name="message_both_hands">Podigni obje ruke!</string>
+    <string name="message_squat">Spusti se u čučanj!</string>
+    <string name="message_t_pose">Napravi T pozu!</string>
+    <string name="response_positive">Bravo!</string>
+    <string name="response_negative">Pokušaj opet!</string>
+    <string name="message_permissions_not_granted">Dopuštenje za korištenje kamere nije dobiveno.</string>
+
+    <string name="training_selection_title">Odaberi položaj</string>
+    <string name="training_selection_description">Koji položaj želiš vježbati?</string>
+    <string name="btn_left_hand">Lijeva ruka</string>
+    <string name="btn_right_hand">Desna ruka</string>
+    <string name="btn_both_hands">Obje ruke</string>
+    <string name="btn_t_pose">T poza</string>
+    <string name="btn_squat">Čučanj</string>
+    <string name="btn_random">Razno</string>
+
+    <string name="illustration_button">Kreni</string>
+
+    <string name="finish_description">Hvala ti na treniranju!</string>
+    <string name="finish_title_good">Bravo</string>
+    <string name="finish_title_acceptable">Dobar pokušaj</string>
+    <string name="finish_title_bad">Hvala na trudu</string>
+    <string name="finish_button">Natrag na početni zaslon</string>
+    <string name="finish_description_result">Tvoj rezultat je:</string>
+
+    <string name="settings_title">Postavke</string>
+    <string name="settings_language">Jezik</string>
+    <string name="settings_sound">Zvuk</string>
+    <string name="settings_voice_control">Upravljanje govorom</string>
+    <string name="settings_accessibility">Pristupačnost</string>
+    <string name="settings_language_english">Engleski</string>
+    <string name="settings_language_croatian">Hrvatski</string>
+    <string name="settings_button_guide">Prikaži vodič</string>
+    <string name="voice_control_negative_message">Potrebni parametri nisu prepoznati, molimo pokušajte opet.</string>
+
+    <string name="comp_selection_title">Odaberite postavke</string>
+    <string name="comp_selection_description">Koliko vremena želite za ponavljanje položaja?</string>
+    <string name="comp_btn_easy">Lako</string>
+    <string name="comp_btn_easy_value">8 sekundi</string>
+    <string name="comp_btn_medium">Srednje</string>
+    <string name="comp_btn_medium_value">5 sekundi</string>
+    <string name="comp_btn_hard">Teško</string>
+    <string name="comp_btn_hard_value">2 sekunde</string>
+    <string name="comp_length">Duljina natjecanja (minute)</string>
+
+    <string name="day_night_btn_easy_value">4 sekunde</string>
+    <string name="day_night_btn_medium_value">3 sekunde</string>
+    <string name="day_night_btn_hard_value">2 sekunde</string>
+    <string name="day_message">DAN</string>
+    <string name="night_message">NOĆ</string>
+</resources>

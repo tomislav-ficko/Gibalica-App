@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_main"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_settingsSelectionFragment"
+            app:destination="@id/settingsSelectionFragment" />
+        <action android:id="@+id/action_mainFragment_to_illustrationFragment"
+                app:destination="@id/illustrationFragment"/>
+        <action android:id="@+id/action_mainFragment_to_detectionFragment" app:destination="@id/detectionFragment"/>
+    </fragment>
+    <fragment
+        android:id="@+id/detectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.DetectionFragment"
+        android:label="fragment_detection"
+        tools:layout="@layout/fragment_detection">
+        <action
+            android:id="@+id/action_detectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_detectionFragment_to_finishFragment"
+            app:destination="@id/finishFragment" />
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <argument
+            android:name="difficulty"
+            app:argType="hr.fer.tel.gibalica.utils.Difficulty" />
+        <argument
+            android:name="detectionLengthMinutes"
+            app:argType="long"/>
+    </fragment>
+    <fragment
+        android:id="@+id/trainingSelectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.TrainingSelectionFragment"
+        android:label="fragment_training_selection"
+        tools:layout="@layout/fragment_training_selection">
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_illustrationFragment"
+            app:destination="@id/illustrationFragment" />
+        <action
+            android:id="@+id/action_trainingSelectionFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/finishFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.FinishFragment"
+        android:label="fragment_finish"
+        tools:layout="@layout/fragment_finish">
+        <action
+            android:id="@+id/action_finishFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase"/>
+        <argument
+            android:name="totalPoses"
+            app:argType="integer"
+            android:defaultValue="0"/>
+        <argument
+            android:name="correctPoses"
+            app:argType="integer"
+            android:defaultValue="0"/>
+    </fragment>
+    <fragment
+        android:id="@+id/illustrationFragment"
+        android:name="hr.fer.tel.gibalica.viewModel.IllustrationFragment"
+        android:label="fragment_illustration"
+        tools:layout="@layout/fragment_illustration" >
+        <action
+            android:id="@+id/action_illustrationFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment" />
+        <argument
+            android:name="trainingType"
+            app:argType="hr.fer.tel.gibalica.utils.TrainingType" />
+        <action
+            android:id="@+id/action_illustrationFragment_to_trainingSelectionFragment"
+            app:destination="@id/trainingSelectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_guideFragment2"
+            app:destination="@id/guideFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsSelectionFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.SettingsSelectionFragment"
+        android:label="SettingsSelectionFragment">
+        <action
+            android:id="@+id/action_settingsSelectionFragment_to_detectionFragment"
+            app:destination="@id/detectionFragment"/>
+        <action
+            android:id="@+id/action_settingsSelectionFragment_to_mainFragment"
+            app:destination="@id/mainFragment"/>
+        <argument
+            android:name="detectionUseCase"
+            app:argType="hr.fer.tel.gibalica.utils.DetectionUseCase"/>
+    </fragment>
+    <fragment
+        android:id="@+id/guideFragment2"
+        android:name="hr.fer.tel.gibalica.ui.fragments.GuideFragment"
+        android:label="fragment_guide"
+        tools:layout="@layout/fragment_guide" >
+        <action
+            android:id="@+id/action_guideFragment2_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+        <argument
+            android:name="initiatedFromIntroScreen"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+</navigation>

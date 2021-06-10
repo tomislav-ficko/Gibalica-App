@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Button">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:background">@drawable/btn_background</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">@dimen/size_button</item>
+    </style>
+
+    <style name="ImageButton">
+        <item name="android:layout_width">@dimen/size_img_btn</item>
+        <item name="android:layout_height">@dimen/size_img_btn</item>
+        <item name="android:layout_marginTop">@dimen/margin_img_btn</item>
+        <item name="android:padding">@dimen/padding_img_btn</item>
+        <item name="tint">@android:color/white</item>
+    </style>
+
+    <style name="Message">
+        <item name="android:padding">@dimen/padding_message</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/size_text_message</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowRadius">4</item>
+    </style>
+
+    <style name="Timer">
+        <item name="android:padding">@dimen/padding_timer</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/size_text_timer</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="GibalicaCardView">
+        <item name="android:layout_marginStart">@dimen/margin_side_cv_response</item>
+        <item name="android:layout_marginEnd">@dimen/margin_side_cv_response</item>
+        <item name="android:layout_marginBottom">@dimen/margin_bottom_cv_response</item>
+        <item name="cardCornerRadius">@dimen/radius_cv_response</item>
+    </style>
+
+    <style name="Response">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">@dimen/size_text_response</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">@dimen/padding_response</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="Title">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_title</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+    </style>
+
+    <style name="Subtitle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/size_body</item>
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+    </style>
+
+    <style name="Switch">
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="thumbTint">@drawable/selector_switch_thumb</item>
+        <item name="trackTint">@drawable/selector_switch_track</item>
+        <item name="android:textOff"></item>
+        <item name="android:textOn"></item>
+    </style>
+
+</resources>

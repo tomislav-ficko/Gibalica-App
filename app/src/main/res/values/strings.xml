@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gibalica</string>
+
+    <string name="tv_intro_title">Hello</string>
+    <string name="tv_intro_body">Welcome to Gibalica, an interactive tool for exercizing your orientation in a fun environment.</string>
+    <string name="btn_start_guide">Start guide</string>
+    <string name="btn_skip">Skip</string>
+    <string name="btn_next">Next</string>
+
+    <string name="btn_training">Training</string>
+    <string name="btn_competition">Competition</string>
+    <string name="btn_day_night">Day-Night</string>
+
+    <string name="message_initial">Place your phone upright on a still surface and back away with your arms spread until you fit on the screen.</string>
+    <string name="message_start">To start the training, lower your arms to your side!</string>
+    <string name="message_left_hand">Raise your left hand!</string>
+    <string name="message_right_hand">Raise your right hand!</string>
+    <string name="message_both_hands">Raise both hands!</string>
+    <string name="message_squat">Do a squat!</string>
+    <string name="message_t_pose">Make T pose!</string>
+    <string name="response_positive">Well done!</string>
+    <string name="response_negative">Try again!</string>
+    <string name="message_permissions_not_granted">Camera permission not granted.</string>
+
+    <string name="training_selection_title">Choose a position</string>
+    <string name="training_selection_description">Which position do you want to practice?</string>
+    <string name="btn_left_hand">Left hand</string>
+    <string name="btn_right_hand">Right hand</string>
+    <string name="btn_both_hands">Both hands</string>
+    <string name="btn_t_pose">T pose</string>
+    <string name="btn_squat">Squat</string>
+    <string name="btn_random">Random</string>
+
+    <string name="illustration_button">Start</string>
+
+    <string name="finish_description">Thank you for training!</string>
+    <string name="finish_title_good">Bravo</string>
+    <string name="finish_title_acceptable">Good attempt</string>
+    <string name="finish_title_bad">Thanks for trying</string>
+    <string name="finish_button">Back to main screen</string>
+    <string name="finish_description_result">Your result is:</string>
+    <string name="finish_result_format_specifier" translatable="false">%1$d / %2$d</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_voice_control">Voice control</string>
+    <string name="settings_accessibility">Accessibility</string>
+    <string name="settings_language_croatian">Croatian</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_button_guide">Show Guide</string>
+    <string name="voice_control_negative_message">Necessary parameters were not recognized, please try again.</string>
+
+    <string name="comp_selection_title">Select your settings</string>
+    <string name="comp_selection_description">How much time do you want per position?</string>
+    <string name="comp_btn_easy">Easy</string>
+    <string name="comp_btn_easy_value">8 seconds</string>
+    <string name="comp_btn_medium">Medium</string>
+    <string name="comp_btn_medium_value">5 seconds</string>
+    <string name="comp_btn_hard">Hard</string>
+    <string name="comp_btn_hard_value">2 seconds</string>
+    <string name="comp_length">Competition length (minutes)</string>
+    <string name="comp_btn_format_specifier" translatable="false">%1$s\n%2$s</string>
+
+    <string name="day_night_btn_easy_value">4 seconds</string>
+    <string name="day_night_btn_medium_value">3 seconds</string>
+    <string name="day_night_btn_hard_value">2 seconds</string>
+    <string name="day_message">DAY</string>
+    <string name="night_message">NIGHT</string>
+</resources>
