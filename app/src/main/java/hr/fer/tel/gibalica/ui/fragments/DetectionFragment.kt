@@ -109,8 +109,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     override fun onPoseDetected(detectedPose: GibalicaPose) {
         if (detectionInProgress) {
-            Timber.d("${currentPose.name} detected.")
             detectionInProgress = false
+            Timber.d("${currentPose.name} detected.")
 
             when (currentPose) {
                 GibalicaPose.ALL_JOINTS_VISIBLE -> runLogicWhenInitialPoseDetected()
@@ -206,8 +206,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun disableDetectionAndShowPoseNotDetected() {
-        Timber.d("${currentPose.name} not detected.")
         detectionInProgress = false
+        Timber.d("${currentPose.name} not detected.")
 
         showPoseNotDetectedResponse()
         viewModel.startCounter(CounterCause.HIDE_NEGATIVE_RESULT, 2)
@@ -260,29 +260,23 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 EventType.COUNTER_FINISHED -> {
                     when (event.cause) {
                         CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE -> {
-                            hideResponse()
-                            showMessageForCurrentPose()
-                            speakCurrentPoseMessage()
                             Timber.d("Components initialized, starting detection.")
-                            detectionInProgress = true
+                            updateUIAndContinueDetection()
+                            speakCurrentPoseMessage()
                         }
                         CounterCause.WAIT_BEFORE_DETECTING_STARTING_POSE -> {
-                            detectionInProgress = true
                             Timber.d("Counter finished, continuing detection.")
+                            detectionInProgress = true
                         }
                         CounterCause.HIDE_NEGATIVE_RESULT -> {
-                            hideResponse()
-                            showMessageForCurrentPose()
-                            detectionInProgress = true
                             Timber.d("Negative result hidden, continuing detection.")
+                            updateUIAndContinueDetection()
                         }
                         CounterCause.SWITCHING_TO_NEW_POSE -> {
-                            hideResponse()
-                            showMessageForCurrentPose()
-                            speakCurrentPoseMessage()
-                            detectionInProgress = true
-                            restartTimerIfCompetitionOrDayNightUseCase()
                             Timber.d("Switched to new pose, continuing detection.")
+                            updateUIAndContinueDetection()
+                            speakCurrentPoseMessage()
+                            restartTimerIfCompetitionOrDayNightUseCase()
                         }
                         CounterCause.FINISH_DETECTION -> endDetection()
                         else -> Timber.d("Timer was trigger for ${event.cause}.")
@@ -290,6 +284,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 }
             }
         }
+    }
+
+    private fun updateUIAndContinueDetection() {
+        hideResponse()
+        showMessageForCurrentPose()
+        detectionInProgress = true
     }
 
     private fun startTimersIfCompetitionOrDayNightUseCase() {
