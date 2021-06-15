@@ -46,17 +46,6 @@ class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
         _binding = null
     }
 
-    override fun improveViewAccessability() {
-        binding.apply {
-            tvTitle.textSize = getAccessibleTitleTextSize()
-            tvDescription.textSize = getAccessibleBodyTextSize()
-            btnEasy.textSize = getAccessibleButtonTextSize()
-            btnMedium.textSize = getAccessibleButtonTextSize()
-            btnHard.textSize = getAccessibleButtonTextSize()
-            tvDescriptionSlider.textSize = getAccessibleBodyTextSize()
-        }
-    }
-
     override fun onClick(clickedView: View?) {
         val difficulty = when (clickedView) {
             binding.btnEasy -> Difficulty.EASY

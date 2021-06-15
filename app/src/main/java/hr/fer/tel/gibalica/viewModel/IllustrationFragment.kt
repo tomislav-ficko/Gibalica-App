@@ -55,10 +55,6 @@ class IllustrationFragment : BaseFragment() {
         _binding = null
     }
 
-    override fun improveViewAccessability() {
-        binding.btnStart.textSize = getAccessibleButtonTextSize()
-    }
-
     private fun navigateToTrainingSelectionFragment() {
         findNavController().navigate(
             IllustrationFragmentDirections.actionIllustrationFragmentToTrainingSelectionFragment()

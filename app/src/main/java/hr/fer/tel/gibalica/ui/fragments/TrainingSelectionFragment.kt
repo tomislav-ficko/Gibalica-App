@@ -47,19 +47,6 @@ class TrainingSelectionFragment : BaseFragment() {
         _binding = null
     }
 
-    override fun improveViewAccessability() {
-        binding.apply {
-            tvTitle.textSize = getAccessibleTitleTextSize()
-            tvDescription.textSize = getAccessibleBodyTextSize()
-            btnLeftHand.textSize = getAccessibleButtonTextSize()
-            btnRightHand.textSize = getAccessibleButtonTextSize()
-            btnBothHands.textSize = getAccessibleButtonTextSize()
-            btnSquat.textSize = getAccessibleButtonTextSize()
-            btnTPose.textSize = getAccessibleButtonTextSize()
-            btnRandom.textSize = getAccessibleButtonTextSize()
-        }
-    }
-
     private fun returnToMainFragment() {
         findNavController().navigate(
             TrainingSelectionFragmentDirections.actionTrainingSelectionFragmentToMainFragment()

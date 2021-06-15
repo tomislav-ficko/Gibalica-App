@@ -47,7 +47,6 @@ class SettingsFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         loadSettings()
         defineActions()
-        binding.swAccessibility.showText = true
     }
 
     override fun onResume() {
@@ -73,19 +72,6 @@ class SettingsFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun improveViewAccessability() {
-        binding.apply {
-            tvTitle.textSize = getAccessibleTitleTextSize()
-            tvLanguage.textSize = getAccessibleBodyTextSize()
-            rbCroatian.textSize = getAccessibleBodyTextSize()
-            rbEnglish.textSize = getAccessibleBodyTextSize()
-            tvSound.textSize = getAccessibleBodyTextSize()
-            tvVoice.textSize = getAccessibleBodyTextSize()
-            tvAccessibility.textSize = getAccessibleBodyTextSize()
-            btnGuide.textSize = getAccessibleButtonTextSize()
-        }
     }
 
     private fun defineActions() {
@@ -128,7 +114,6 @@ class SettingsFragment : BaseFragment() {
                 .edit()
                 .putBoolean(SOUND.name, swSound.isChecked)
                 .putBoolean(VOICE_CONTROL.name, swVoice.isChecked)
-                .putBoolean(ACCESSIBILITY.name, swAccessibility.isChecked)
                 .putInt(Language.LANGUAGE_BUTTON_ID, selectedLanguage.first)
                 .putString(LANGUAGE.name, selectedLanguage.second.name)
                 .apply()
@@ -143,7 +128,6 @@ class SettingsFragment : BaseFragment() {
             map[LANGUAGE] = Pair(languageButtonId, languageString) as Any
             map[SOUND] = getBoolean(SOUND.name, false) as Any
             map[VOICE_CONTROL] = getBoolean(VOICE_CONTROL.name, false) as Any
-            map[ACCESSIBILITY] = getBoolean(ACCESSIBILITY.name, false) as Any
         }
         setData(map)
     }
@@ -162,7 +146,6 @@ class SettingsFragment : BaseFragment() {
                     }
                     SOUND -> swSound.isChecked = entry.value as Boolean
                     VOICE_CONTROL -> swVoice.isChecked = entry.value as Boolean
-                    ACCESSIBILITY -> swAccessibility.isChecked = entry.value as Boolean
                 }
             }
         }

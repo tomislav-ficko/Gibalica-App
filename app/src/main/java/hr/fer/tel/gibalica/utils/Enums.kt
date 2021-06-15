@@ -58,7 +58,6 @@ enum class Setting {
     LANGUAGE,
     SOUND,
     VOICE_CONTROL,
-    ACCESSIBILITY,
     FIRST_START
 }
 

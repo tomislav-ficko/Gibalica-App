@@ -131,14 +131,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    override fun improveViewAccessability() {
-        binding.apply {
-            tvMessage.textSize = resources.getDimension(R.dimen.size_text_message_accessible)
-            tvResponse.textSize = resources.getDimension(R.dimen.size_text_response_accessible)
-            tvTimer.textSize = resources.getDimension(R.dimen.size_text_timer_accessible)
-        }
-    }
-
     private fun initializeDataForTraining() {
         val trainingType = args.trainingType
         Timber.d("Starting training for type ${trainingType.name}.")
