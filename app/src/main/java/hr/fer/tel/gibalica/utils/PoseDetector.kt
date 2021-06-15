@@ -178,7 +178,6 @@ class PoseDetector {
             with(landmarks) {
                 val result = get(LEFT_WRIST)!!.isVerticalPositionEqualTo(get(LEFT_ELBOW)!!) &&
                         get(LEFT_ELBOW)!!.isVerticalPositionEqualTo(get(LEFT_SHOULDER)!!) &&
-                        get(LEFT_SHOULDER)!!.isVerticalPositionEqualTo(get(RIGHT_SHOULDER)!!) &&
                         get(RIGHT_SHOULDER)!!.isVerticalPositionEqualTo(get(RIGHT_ELBOW)!!) &&
                         get(RIGHT_ELBOW)!!.isVerticalPositionEqualTo(get(RIGHT_WRIST)!!)
                 Timber.d("Checking if arms are spread out.. $result")
