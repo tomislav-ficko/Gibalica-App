@@ -13,20 +13,20 @@ class PoseDetector {
             logLandmarkDetails()
 
             with(getLandmarks()) {
-                val leftShoulderHipDistance = get(LEFT_HIP)!!.position.y - get(LEFT_SHOULDER)!!.position.y
-                val rightShoulderHipDistance = get(RIGHT_HIP)!!.position.y - get(RIGHT_SHOULDER)!!.position.y
-                val averageShoulderHipDistance = listOf(leftShoulderHipDistance, rightShoulderHipDistance).average()
-                val halfShoulderHipDistance = averageShoulderHipDistance / 2
+                val averageAnklePosition =
+                    listOf(get(LEFT_ANKLE)!!.position.y, get(RIGHT_ANKLE)!!.position.y).average()
+                val averageKneePosition =
+                    listOf(get(LEFT_KNEE)!!.position.y, get(RIGHT_KNEE)!!.position.y).average()
+                val averageHipPosition =
+                    listOf(get(LEFT_HIP)!!.position.y, get(RIGHT_HIP)!!.position.y).average()
+                val halfAnkleKneeDistance = (averageAnklePosition - averageKneePosition) / 2
+                val hipThreshold = averageKneePosition - halfAnkleKneeDistance
 
-                val leftHipKneeDistance = get(LEFT_KNEE)!!.position.y - get(LEFT_HIP)!!.position.y
-                val rightHipKneeDistance = get(RIGHT_KNEE)!!.position.y - get(RIGHT_HIP)!!.position.y
-                val averageHipKneeDistance = listOf(leftHipKneeDistance, rightHipKneeDistance).average()
-
-                val hipsLowered = averageHipKneeDistance <= halfShoulderHipDistance
-                Timber.d("Hips lowered: $hipsLowered ($averageHipKneeDistance <= $halfShoulderHipDistance?).")
-                val kneesOutsideHips = get(LEFT_KNEE)!!.isHorizontalPositionHigherThan(get(LEFT_HIP)!!) &&
-                        get(RIGHT_HIP)!!.isHorizontalPositionHigherThan(get(RIGHT_KNEE)!!)
-
+                val hipsLowered = averageHipPosition > hipThreshold
+                Timber.d("Hips lowered: $hipsLowered ($averageHipPosition > $hipThreshold?).")
+                val kneesOutsideHips =
+                    get(LEFT_KNEE)!!.isHorizontalPositionHigherThan(get(LEFT_HIP)!!) &&
+                            get(RIGHT_HIP)!!.isHorizontalPositionHigherThan(get(RIGHT_KNEE)!!)
                 return hipsLowered && kneesOutsideHips
             }
         }
