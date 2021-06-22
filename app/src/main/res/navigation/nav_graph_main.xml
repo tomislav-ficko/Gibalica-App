@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/illustrationFragment"
-        android:name="hr.fer.tel.gibalica.viewModel.IllustrationFragment"
+        android:name="hr.fer.tel.gibalica.ui.fragments.IllustrationFragment"
         android:label="fragment_illustration"
         tools:layout="@layout/fragment_illustration" >
         <action

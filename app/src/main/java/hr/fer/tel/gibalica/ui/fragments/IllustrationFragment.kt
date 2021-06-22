@@ -1,4 +1,4 @@
-package hr.fer.tel.gibalica.viewModel
+package hr.fer.tel.gibalica.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
