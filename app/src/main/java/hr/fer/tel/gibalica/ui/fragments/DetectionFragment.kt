@@ -26,7 +26,6 @@ import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener {
 
@@ -105,7 +104,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             when (detectedPose) {
                 GibalicaPose.ALL_JOINTS_VISIBLE -> runLogicWhenInitialPoseDetected()
                 GibalicaPose.STARTING_POSE -> runLogicWhenStartingPoseDetected()
-                else -> runLogicWhenOtherPosesDetected()
+                else -> runLogicWhenOtherPosesDetected(detectedPose)
             }
         }
     }
@@ -174,12 +173,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         Timber.d("Starting pose detected, moving to detection of actual poses.")
     }
 
-    private fun runLogicWhenOtherPosesDetected() {
+    private fun runLogicWhenOtherPosesDetected(detectedPose: GibalicaPose) {
         hideMessage()
         showPoseDetectedResponse()
         if (isRandomDetection()) {
             updatePoseCompletionData(poseDetected = true)
-            updatePoseInAnalyzer(getRandomPose())
+            updatePoseInAnalyzer(getRandomPose(detectedPose))
             viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
         } else {
             viewModel.startCounter(CounterCause.FINISH_DETECTION, 1)
@@ -290,7 +289,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         Timber.d("Pose not detected in given interval.")
         showPoseNotDetectedResponse()
         updatePoseCompletionData(poseDetected = false)
-        updatePoseInAnalyzer(getRandomPose())
+        val newPose = getRandomPose(analyzer.getCurrentPose())
+        updatePoseInAnalyzer(newPose)
         viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 2)
     }
 
@@ -304,23 +304,21 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         textToSpeech?.speak(message, TextToSpeech.QUEUE_FLUSH, null, System.currentTimeMillis().toString())
     }
 
-    private fun getRandomPose(): GibalicaPose {
+    private fun getRandomPose(previousPose: GibalicaPose? = null): GibalicaPose {
         return when (args.detectionUseCase) {
-            DetectionUseCase.TRAINING, DetectionUseCase.COMPETITION -> {
-                when (Random.nextInt(5)) {
-                    0 -> GibalicaPose.LEFT_HAND_RAISED
-                    1 -> GibalicaPose.RIGHT_HAND_RAISED
-                    2 -> GibalicaPose.BOTH_HANDS_RAISED
-                    3 -> GibalicaPose.SQUAT
-                    else -> GibalicaPose.T_POSE
+            DetectionUseCase.TRAINING,
+            DetectionUseCase.COMPETITION -> {
+                var newPose = GibalicaPose.getRandomGeneralPose()
+                if (previousPose != null) {
+                    while (newPose == previousPose) {
+                        newPose = GibalicaPose.getRandomGeneralPose()
+                    }
+                    newPose
+                } else {
+                    newPose
                 }
             }
-            DetectionUseCase.DAY_NIGHT -> {
-                when (Random.nextInt(2)) {
-                    0 -> GibalicaPose.SQUAT
-                    else -> GibalicaPose.UPRIGHT
-                }
-            }
+            DetectionUseCase.DAY_NIGHT -> GibalicaPose.getRandomDayNightPose()
         }
     }
 
