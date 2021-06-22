@@ -48,13 +48,4 @@ class IntroFragment : BaseFragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun improveViewAccessability() {
-        binding.apply {
-            btnStartGuide.textSize = getAccessibleButtonTextSize()
-            btnSkip.textSize = getAccessibleButtonTextSize()
-            tvIntroTitle.textSize = getAccessibleTitleTextSize()
-            tvIntroBody.textSize = getAccessibleBodyTextSize()
-        }
-    }
 }

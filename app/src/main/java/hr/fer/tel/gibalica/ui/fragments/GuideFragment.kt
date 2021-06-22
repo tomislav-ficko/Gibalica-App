@@ -42,10 +42,6 @@ class GuideFragment : BaseFragment() {
         defineListener()
     }
 
-    override fun improveViewAccessability() {
-        binding.btnNext.textSize = getAccessibleButtonTextSize()
-    }
-
     private fun setupIllustrations() {
         binding.imageSlider.setSliderAdapter(SliderAdapter(viewModel))
         binding.btnNext.setOnClickListener {

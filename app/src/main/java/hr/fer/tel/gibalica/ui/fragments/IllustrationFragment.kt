@@ -1,4 +1,4 @@
-package hr.fer.tel.gibalica.viewModel
+package hr.fer.tel.gibalica.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -53,10 +53,6 @@ class IllustrationFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun improveViewAccessability() {
-        binding.btnStart.textSize = getAccessibleButtonTextSize()
     }
 
     private fun navigateToTrainingSelectionFragment() {

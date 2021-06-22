@@ -21,6 +21,7 @@
     <string name="message_t_pose">Make T pose!</string>
     <string name="response_positive">Well done!</string>
     <string name="response_negative">Try again!</string>
+    <string name="response_negative_competition_day_night">Wrong!</string>
     <string name="message_permissions_not_granted">Camera permission not granted.</string>
 
     <string name="training_selection_title">Choose a position</string>
@@ -46,7 +47,6 @@
     <string name="settings_language">Language</string>
     <string name="settings_sound">Sound</string>
     <string name="settings_voice_control">Voice control</string>
-    <string name="settings_accessibility">Accessibility</string>
     <string name="settings_language_croatian">Croatian</string>
     <string name="settings_language_english">English</string>
     <string name="settings_button_guide">Show Guide</string>
@@ -59,13 +59,13 @@
     <string name="comp_btn_medium">Medium</string>
     <string name="comp_btn_medium_value">5 seconds</string>
     <string name="comp_btn_hard">Hard</string>
-    <string name="comp_btn_hard_value">2 seconds</string>
+    <string name="comp_btn_hard_value">3 seconds</string>
     <string name="comp_length">Competition length (minutes)</string>
     <string name="comp_btn_format_specifier" translatable="false">%1$s\n%2$s</string>
 
-    <string name="day_night_btn_easy_value">4 seconds</string>
-    <string name="day_night_btn_medium_value">3 seconds</string>
-    <string name="day_night_btn_hard_value">2 seconds</string>
+    <string name="day_night_btn_easy_value">5 seconds</string>
+    <string name="day_night_btn_medium_value">4 seconds</string>
+    <string name="day_night_btn_hard_value">3 seconds</string>
     <string name="day_message">DAY</string>
     <string name="night_message">NIGHT</string>
 </resources>

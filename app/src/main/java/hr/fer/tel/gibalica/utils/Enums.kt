@@ -1,6 +1,7 @@
 package hr.fer.tel.gibalica.utils
 
 import java.io.Serializable
+import kotlin.random.Random
 
 enum class GibalicaPose {
     LEFT_HAND_RAISED,
@@ -11,7 +12,26 @@ enum class GibalicaPose {
     UPRIGHT,
     STARTING_POSE,
     ALL_JOINTS_VISIBLE,
-    NONE
+    NONE;
+
+    companion object {
+        fun getRandomDayNightPose(): GibalicaPose {
+            return when (Random.nextInt(2)) {
+                0 -> SQUAT
+                else -> UPRIGHT
+            }
+        }
+
+        fun getRandomGeneralPose(): GibalicaPose {
+            return when (Random.nextInt(5)) {
+                0 -> LEFT_HAND_RAISED
+                1 -> RIGHT_HAND_RAISED
+                2 -> BOTH_HANDS_RAISED
+                3 -> SQUAT
+                else -> T_POSE
+            }
+        }
+    }
 }
 
 enum class TrainingType : Serializable {
@@ -42,6 +62,7 @@ enum class CounterCause {
     WAIT_BEFORE_DETECTING_STARTING_POSE,
     HIDE_NEGATIVE_RESULT,
     SWITCHING_TO_NEW_POSE,
+    WAIT_BEFORE_NEW_POSE,
     FINISH_DETECTION
 }
 
@@ -58,7 +79,6 @@ enum class Setting {
     LANGUAGE,
     SOUND,
     VOICE_CONTROL,
-    ACCESSIBILITY,
     FIRST_START
 }
 

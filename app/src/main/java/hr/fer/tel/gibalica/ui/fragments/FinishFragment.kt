@@ -42,14 +42,6 @@ class FinishFragment : BaseFragment() {
         setData()
     }
 
-    override fun improveViewAccessability() {
-        binding.apply {
-            tvTitle.textSize = getAccessibleTitleTextSize()
-            tvDescription.textSize = getAccessibleBodyTextSize()
-            btnFinish.textSize = getAccessibleButtonTextSize()
-        }
-    }
-
     private fun setData() {
         binding.apply {
             when (args.detectionUseCase) {

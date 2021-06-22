@@ -9,15 +9,6 @@ import java.util.*
 
 abstract class BaseFragment : Fragment() {
 
-    override fun onResume() {
-        super.onResume()
-        if (SharedPrefsUtils.isAccessibilityEnabled(requireContext())) {
-            improveViewAccessability()
-        }
-    }
-
-    protected abstract fun improveViewAccessability()
-
     /**
      * Used to change from which strings.xml file will the resources be retrieved.
      */
@@ -35,8 +26,4 @@ abstract class BaseFragment : Fragment() {
     protected fun getApplicationLanguage() = SharedPrefsUtils.getApplicationLanguage(requireContext())
 
     protected fun isSoundEnabled() = SharedPrefsUtils.isSoundEnabled(requireContext())
-
-    protected fun getAccessibleButtonTextSize() = resources.getDimension(R.dimen.size_button_accessible)
-    protected fun getAccessibleTitleTextSize() = resources.getDimension(R.dimen.size_title_accessible)
-    protected fun getAccessibleBodyTextSize() = resources.getDimension(R.dimen.size_body_accessible)
 }

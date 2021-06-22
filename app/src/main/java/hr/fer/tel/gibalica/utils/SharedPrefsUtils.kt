@@ -16,11 +16,6 @@ class SharedPrefsUtils {
             return sharedPrefs.getBoolean(Setting.SOUND.name, false)
         }
 
-        fun isAccessibilityEnabled(context: Context): Boolean {
-            val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
-            return sharedPrefs.getBoolean(Setting.ACCESSIBILITY.name, false)
-        }
-
         fun getApplicationLanguage(context: Context): Language {
             val sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context)
             return when (sharedPrefs.getString(Setting.LANGUAGE.name, null)) {
