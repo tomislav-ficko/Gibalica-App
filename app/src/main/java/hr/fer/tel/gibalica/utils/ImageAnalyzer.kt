@@ -44,6 +44,10 @@ class ImageAnalyzer() : ImageAnalysis.Analyzer {
         poseToBeDetected = newPose
     }
 
+    fun getCurrentPose(): GibalicaPose {
+        return poseToBeDetected
+    }
+
     fun stopDetection() {
         detectionEnded = true
     }
