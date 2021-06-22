@@ -105,6 +105,9 @@
         app:layout_constraintTop_toBottomOf="@id/btn_hard"
         app:thumbRadius="8dp"
         app:tickColor="@color/black"
+        app:trackColorInactive="@color/settings_slider_track"
+        app:trackColorActive="@color/settings_slider_thumb"
+        app:thumbColor="@color/settings_slider_thumb"
         app:tickVisible="true"
         app:trackHeight="16dp" />
 

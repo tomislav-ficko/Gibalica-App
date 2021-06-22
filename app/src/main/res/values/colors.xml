@@ -15,4 +15,7 @@
 
     <color name="slider_selected">#5A5A5A</color>
     <color name="slider_unselected">@color/white</color>
+
+    <color name="settings_slider_track">#F79B9A</color>
+    <color name="settings_slider_thumb">#D84141</color>
 </resources>
