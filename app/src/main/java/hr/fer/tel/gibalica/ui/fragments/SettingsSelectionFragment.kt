@@ -39,6 +39,7 @@ class SettingsSelectionFragment : BaseFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         setData()
         defineActions()
+        requestPermission()
     }
 
     override fun onDestroyView() {

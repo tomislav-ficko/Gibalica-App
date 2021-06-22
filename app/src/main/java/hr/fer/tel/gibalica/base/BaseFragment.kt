@@ -1,5 +1,10 @@
 package hr.fer.tel.gibalica.base
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import hr.fer.tel.gibalica.R
 import hr.fer.tel.gibalica.utils.Language
@@ -26,4 +31,23 @@ abstract class BaseFragment : Fragment() {
     protected fun getApplicationLanguage() = SharedPrefsUtils.getApplicationLanguage(requireContext())
 
     protected fun isSoundEnabled() = SharedPrefsUtils.isSoundEnabled(requireContext())
+
+    protected fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.CAMERA),
+            REQUEST_CODE_PERMISSIONS
+        )
+    }
+
+    protected fun permissionsGranted(): Boolean = ContextCompat.checkSelfPermission(
+        requireContext(),
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
+
+    protected fun showPermissionErrorToast() = Toast.makeText(
+        requireContext(),
+        getString(R.string.message_permissions_not_granted),
+        Toast.LENGTH_SHORT
+    ).show()
 }

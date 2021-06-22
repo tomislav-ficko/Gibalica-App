@@ -31,6 +31,7 @@ class TrainingSelectionFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requestPermission()
         binding.apply {
             ivBack.setOnClickListener { returnToMainFragment() }
             btnLeftHand.setOnClickListener { navigateToIllustrationFragment(TrainingType.LEFT_HAND) }

@@ -85,7 +85,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             if (permissionsGranted())
                 initializeAndStartCamera(binding!!.txvViewFinder, analyzer)
             else {
-                showErrorToast()
+                showPermissionErrorToast()
                 returnToMainFragment()
             }
         }
