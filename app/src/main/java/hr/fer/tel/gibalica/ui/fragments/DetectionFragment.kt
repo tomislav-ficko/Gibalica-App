@@ -34,14 +34,11 @@ import kotlin.random.Random
 
 class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListener {
 
-    var _binding: FragmentDetectionBinding? = null
-    private val binding: FragmentDetectionBinding
-        get() = _binding!!
-
     private val args: DetectionFragmentArgs by navArgs()
     private val viewModel by viewModels<MainViewModel>()
 
     private lateinit var analyzer: ImageAnalyzer
+    private var binding: FragmentDetectionBinding? = null
     private var textToSpeech: TextToSpeech? = null
     private var currentPose = GibalicaPose.ALL_JOINTS_VISIBLE
     private var detectionInProgress = false
@@ -60,21 +57,21 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDetectionBinding.inflate(inflater, container, false)
+        binding = FragmentDetectionBinding.inflate(inflater, container, false)
         Timber.d("Inflated!")
-        return binding.root
+        return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnClose.setOnClickListener { returnToMainFragment() }
+        binding!!.btnClose.setOnClickListener { returnToMainFragment() }
         when (args.detectionUseCase) {
             DetectionUseCase.TRAINING -> initializeDataForTraining()
             else -> initializeDataForCompetitionAndDayNight()
         }
         defineCounterLogic()
-        initializeAndStartCamera(binding.txvViewFinder, analyzer)
+        initializeAndStartCamera(binding!!.txvViewFinder, analyzer)
         updatePoseInAnalyzer()
         setupTextToSpeech()
         viewModel.startCounter(CounterCause.WAIT_FOR_COMPONENTS_TO_INITIALIZE, 1)
@@ -82,7 +79,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
         textToSpeech?.stop()
         textToSpeech?.shutdown()
     }
@@ -95,7 +92,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (permissionsGranted())
-                initializeAndStartCamera(binding.txvViewFinder, analyzer)
+                initializeAndStartCamera(binding!!.txvViewFinder, analyzer)
             else {
                 showErrorToast()
                 returnToMainFragment()
@@ -104,7 +101,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-        initializeAndStartCamera(binding.txvViewFinder, analyzer)
+        initializeAndStartCamera(binding!!.txvViewFinder, analyzer)
     }
 
     override fun onPoseDetected(detectedPose: GibalicaPose) {
@@ -353,7 +350,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 Timber.d("Starting detection timer for $valueMinutes minutes.")
-                binding.tvTimer.visible()
+                binding?.tvTimer?.visible()
             }
             .subscribe(
                 { tick ->
@@ -365,7 +362,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         val minutes = TimeUnit.SECONDS.toMinutes(remainingSeconds)
                         val seconds = remainingSeconds - TimeUnit.MINUTES.toSeconds(minutes)
                         if (args.detectionUseCase == DetectionUseCase.COMPETITION)
-                            binding.tvTimer.text = String.format("%02d:%02d", minutes, seconds)
+                            binding?.tvTimer?.text = String.format("%02d:%02d", minutes, seconds)
                     }
                 },
                 {}
@@ -424,16 +421,16 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun showPoseNotDetectedResponse() = showResponse(R.string.response_negative)
 
-    private fun showResponse(resId: Int) = binding.apply {
+    private fun showResponse(resId: Int) = binding?.apply {
         tvResponse.setText(resId)
         cvResponse.visible()
     }
 
-    private fun hideResponse() = binding.apply { cvResponse.invisible() }
+    private fun hideResponse() = binding?.apply { cvResponse.invisible() }
 
-    private fun hideMessage() = binding.apply { tvMessage.invisible() }
+    private fun hideMessage() = binding?.apply { tvMessage.invisible() }
 
-    private fun showMessageForCurrentPose() = binding.apply {
+    private fun showMessageForCurrentPose() = binding?.apply {
         val message = getMessageForCurrentPose()
         tvMessage.text = message
         tvMessage.visible()
