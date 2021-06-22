@@ -21,6 +21,7 @@
     <string name="message_t_pose">Napravi T pozu!</string>
     <string name="response_positive">Bravo!</string>
     <string name="response_negative">Pokušaj opet!</string>
+    <string name="response_negative_competition_day_night">Krivo!</string>
     <string name="message_permissions_not_granted">Dopuštenje za korištenje kamere nije dobiveno.</string>
 
     <string name="training_selection_title">Odaberi položaj</string>

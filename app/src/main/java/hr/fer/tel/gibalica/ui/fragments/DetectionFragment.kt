@@ -395,7 +395,10 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun showPoseDetectedResponse() = showResponse(R.string.response_positive)
 
-    private fun showPoseNotDetectedResponse() = showResponse(R.string.response_negative)
+    private fun showPoseNotDetectedResponse() {
+        if (isCompetition() or isDayNight()) showResponse(R.string.response_negative_competition_day_night)
+        else showResponse(R.string.response_negative)
+    }
 
     private fun showResponse(resId: Int) = binding?.apply {
         tvResponse.setText(resId)
