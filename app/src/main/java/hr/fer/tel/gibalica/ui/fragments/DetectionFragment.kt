@@ -99,6 +99,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     override fun onPoseDetected(detectedPose: GibalicaPose) {
         if (detectionInProgress) {
             detectionInProgress = false
+            intervalTimerDisposable?.dispose()
             Timber.d("${detectedPose.name} detected.")
 
             when (detectedPose) {
@@ -177,7 +178,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         hideMessage()
         showPoseDetectedResponse()
         if (isRandomDetection()) {
-            intervalTimerDisposable?.dispose()
             updatePoseCompletionData(poseDetected = true)
             updatePoseInAnalyzer(getRandomPose())
             viewModel.startCounter(CounterCause.SWITCHING_TO_NEW_POSE, 1)
@@ -254,9 +254,14 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                             hideResponse()
                             updateAndShowMessageForCurrentPose(analyzer.getCurrentPose())
                             speakPoseMessage(analyzer.getCurrentPose())
-                            restartTimerIfCompetitionOrDayNightUseCase()
+                            viewModel.startCounter(CounterCause.WAIT_BEFORE_NEW_POSE, 1)
                         }
-                        CounterCause.FINISH_DETECTION -> endDetection()
+                        CounterCause.WAIT_BEFORE_NEW_POSE -> {
+                            Timber.d("Counter finished, starting detection of new pose.")
+                            startIntervalTimerIfCompetitionOrDayNightUseCase()
+                            detectionInProgress = true
+                        }
+                        CounterCause.FINISH_DETECTION -> navigateToFinishFragment()
                         else -> Timber.d("Timer was trigger for ${event.cause}.")
                     }
                 }
@@ -264,14 +269,12 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun startTimersIfCompetitionOrDayNightUseCase() {
-        if (isCompetition() or isDayNight()) {
+    private fun startDetectionTimerIfCompetitionOrDayNightUseCase() {
+        if (isCompetition() or isDayNight())
             startDetectionTimer(args.detectionLengthMinutes)
-            startIntervalTimer()
-        }
     }
 
-    private fun restartTimerIfCompetitionOrDayNightUseCase() {
+    private fun startIntervalTimerIfCompetitionOrDayNightUseCase() {
         if (isCompetition() or isDayNight())
             startIntervalTimer()
     }
@@ -283,6 +286,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun poseNotDetectedMoveToNext() {
         detectionInProgress = false
+        intervalTimerDisposable?.dispose()
         Timber.d("Pose not detected in given interval.")
         showPoseNotDetectedResponse()
         updatePoseCompletionData(poseDetected = false)
@@ -331,6 +335,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                 { tick ->
                     val valueSeconds = valueMinutes * 60
                     if (tick == valueSeconds) {
+                        intervalTimerDisposable?.dispose()
                         navigateToFinishFragment()
                     } else {
                         val remainingSeconds = valueSeconds - tick
@@ -357,7 +362,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         if (timerValueMillis >= detectionIntervalMillis!!) {
                             Timber.d("Stopping interval timer.")
                             poseNotDetectedMoveToNext()
-                            intervalTimerDisposable?.dispose()
                         }
                     },
                     {}
@@ -372,8 +376,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     private fun isCompetition() = args.detectionUseCase == DetectionUseCase.COMPETITION
 
     private fun isDayNight() = args.detectionUseCase == DetectionUseCase.DAY_NIGHT
-
-    private fun endDetection() = navigateToFinishFragment()
 
     private fun returnToMainFragment() {
         findNavController().navigate(
