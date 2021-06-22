@@ -132,24 +132,18 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         when (args.difficulty) {
             Difficulty.EASY -> {
                 detectionIntervalMillis =
-                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
-                        DETECTION_INTERVAL_COMPETITION_MILLIS_EASY
-                    else
-                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
+                    if (isCompetition()) DETECTION_INTERVAL_COMPETITION_MILLIS_EASY
+                    else DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
             }
             Difficulty.MEDIUM -> {
                 detectionIntervalMillis =
-                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
-                        DETECTION_INTERVAL_COMPETITION_MILLIS_MEDIUM
-                    else
-                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
+                    if (isCompetition()) DETECTION_INTERVAL_COMPETITION_MILLIS_MEDIUM
+                    else DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
             }
             Difficulty.HARD -> {
                 detectionIntervalMillis =
-                    if (args.detectionUseCase == DetectionUseCase.COMPETITION)
-                        DETECTION_INTERVAL_COMPETITION_MILLIS_HARD
-                    else
-                        DETECTION_INTERVAL_DAY_NIGHT_MILLIS_HARD
+                    if (isCompetition()) DETECTION_INTERVAL_COMPETITION_MILLIS_HARD
+                    else DETECTION_INTERVAL_DAY_NIGHT_MILLIS_HARD
             }
             Difficulty.NONE ->
                 Timber.e("Detection was started without difficulty value.")
@@ -339,7 +333,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         val remainingSeconds = valueSeconds - tick
                         val minutes = TimeUnit.SECONDS.toMinutes(remainingSeconds)
                         val seconds = remainingSeconds - TimeUnit.MINUTES.toSeconds(minutes)
-                        if (args.detectionUseCase == DetectionUseCase.COMPETITION)
+                        if (isCompetition())
                             binding?.tvTimer?.text = String.format("%02d:%02d", minutes, seconds)
                     }
                 },
@@ -419,10 +413,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
 
     private fun getMessageForPose(pose: GibalicaPose): String {
         val resId = when {
-            args.detectionUseCase == DetectionUseCase.DAY_NIGHT
-                    && pose == GibalicaPose.UPRIGHT -> R.string.day_message
-            args.detectionUseCase == DetectionUseCase.DAY_NIGHT
-                    && pose == GibalicaPose.SQUAT -> R.string.night_message
+            isDayNight() && pose == GibalicaPose.UPRIGHT -> R.string.day_message
+            isDayNight() && pose == GibalicaPose.SQUAT -> R.string.night_message
             else -> pose.getPoseMessage()
         }
 
