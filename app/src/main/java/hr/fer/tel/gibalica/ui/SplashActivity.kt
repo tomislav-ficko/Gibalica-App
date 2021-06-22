@@ -26,7 +26,6 @@ class SplashActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         inflateLayout()
         setupObservable()
-        saveCroatianAsStartupLanguage()
         viewModel.startCounter(CounterCause.SPLASH_SCREEN, TIMER_VALUE_IN_SECONDS)
     }
 
@@ -39,6 +38,7 @@ class SplashActivity : ComponentActivity() {
     private fun setupObservable() {
         viewModel.notificationLiveData.observe(this) {
             if (SharedPrefsUtils.isFirstApplicationStart(baseContext)) {
+                saveCroatianAsStartupLanguage()
                 disableIntroOnStartup()
                 startIntro()
             } else
