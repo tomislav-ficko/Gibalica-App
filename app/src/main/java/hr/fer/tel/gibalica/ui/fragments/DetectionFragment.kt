@@ -20,10 +20,6 @@ import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_COMPETITION_MILLIS
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_HARD
 import hr.fer.tel.gibalica.utils.Constants.DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_DEFAULT
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_EASY
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_HARD
-import hr.fer.tel.gibalica.utils.Constants.DETECTION_TIMEOUT_MILLIS_MEDIUM
 import hr.fer.tel.gibalica.viewModel.MainViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Flowable
@@ -66,10 +62,7 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         super.onViewCreated(view, savedInstanceState)
 
         binding!!.btnClose.setOnClickListener { returnToMainFragment() }
-        when (args.detectionUseCase) {
-            DetectionUseCase.TRAINING -> initializeDataForTraining()
-            else -> initializeDataForCompetitionAndDayNight()
-        }
+        initializeData()
         defineCounterLogic()
         initializeAndStartCamera(binding!!.txvViewFinder, analyzer)
         updatePoseInAnalyzer()
@@ -128,18 +121,13 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         }
     }
 
-    private fun initializeDataForTraining() {
+    private fun initializeData() {
+        Timber.d("Starting ${args.detectionUseCase.name}.")
         val trainingType = args.trainingType
         Timber.d("Starting training for type ${trainingType.name}.")
-        setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_DEFAULT)
-    }
-
-    private fun initializeDataForCompetitionAndDayNight() {
-        Timber.d("Starting ${args.detectionUseCase.name}.")
-
+        setupImageAnalyzer()
         when (args.difficulty) {
             Difficulty.EASY -> {
-                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_EASY)
                 detectionIntervalMillis =
                     if (args.detectionUseCase == DetectionUseCase.COMPETITION)
                         DETECTION_INTERVAL_COMPETITION_MILLIS_EASY
@@ -147,7 +135,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         DETECTION_INTERVAL_DAY_NIGHT_MILLIS_EASY
             }
             Difficulty.MEDIUM -> {
-                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_MEDIUM)
                 detectionIntervalMillis =
                     if (args.detectionUseCase == DetectionUseCase.COMPETITION)
                         DETECTION_INTERVAL_COMPETITION_MILLIS_MEDIUM
@@ -155,7 +142,6 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
                         DETECTION_INTERVAL_DAY_NIGHT_MILLIS_MEDIUM
             }
             Difficulty.HARD -> {
-                setupImageAnalyzer(DETECTION_TIMEOUT_MILLIS_HARD)
                 detectionIntervalMillis =
                     if (args.detectionUseCase == DetectionUseCase.COMPETITION)
                         DETECTION_INTERVAL_COMPETITION_MILLIS_HARD
@@ -207,8 +193,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
         viewModel.startCounter(CounterCause.HIDE_NEGATIVE_RESULT, 2)
     }
 
-    private fun setupImageAnalyzer(detectionTimeoutMillis: Long) {
-        analyzer = ImageAnalyzer(detectionTimeoutMillis)
+    private fun setupImageAnalyzer() {
+        analyzer = ImageAnalyzer()
         analyzer.setListener(this)
     }
 
@@ -407,7 +393,8 @@ class DetectionFragment : BaseDetectionFragment(), ImageAnalyzer.AnalyzerListene
     }
 
     private fun navigateToFinishFragment() {
-        Timber.d("Finishing training.")
+        Timber.d("Finishing detection.")
+        analyzer.stopDetection()
         findNavController().navigate(
             DetectionFragmentDirections.actionDetectionFragmentToFinishFragment(
                 detectionUseCase = args.detectionUseCase,

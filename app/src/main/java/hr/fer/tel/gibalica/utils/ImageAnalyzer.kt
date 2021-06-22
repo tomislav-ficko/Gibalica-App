@@ -18,7 +18,7 @@ import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isStartingPoseDetected
 import hr.fer.tel.gibalica.utils.PoseDetector.Companion.isTPosePerformed
 import timber.log.Timber
 
-class ImageAnalyzer(private val detectionTimeoutMillis: Long) : ImageAnalysis.Analyzer {
+class ImageAnalyzer() : ImageAnalysis.Analyzer {
 
     interface AnalyzerListener {
         fun onPoseDetected(detectedPose: GibalicaPose)
@@ -27,6 +27,7 @@ class ImageAnalyzer(private val detectionTimeoutMillis: Long) : ImageAnalysis.An
 
     private var lastAnalyzedTimestamp = 0L
     private var listener: AnalyzerListener? = null
+    private var detectionEnded = false
     private lateinit var poseToBeDetected: GibalicaPose
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -43,31 +44,39 @@ class ImageAnalyzer(private val detectionTimeoutMillis: Long) : ImageAnalysis.An
         poseToBeDetected = newPose
     }
 
+    fun stopDetection() {
+        detectionEnded = true
+    }
+
     @SuppressLint("UnsafeExperimentalUsageError")
     private fun analyzeImageUsingPoseDetector(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image!!
         val currentTimestamp = System.currentTimeMillis()
-        if (enoughTimePassed(currentTimestamp)) {
-            val image =
-                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            val poseDetector = preparePoseDetector()
-            poseDetector.process(image)
-                .addOnSuccessListener { it?.let { detectPose(it) } }
-                .addOnFailureListener { Timber.d("Detection failed: $it") }
-                .addOnCompleteListener {
-                    mediaImage.close()
-                    imageProxy.close()
-                    lastAnalyzedTimestamp = currentTimestamp
-                }
+        if (detectionEnded) {
+            Timber.d("Detection ended, doing nothing.")
         } else {
-            Timber.v("Not analyzing, not enough time passed ($currentTimestamp).")
-            mediaImage.close()
-            imageProxy.close()
+            if (enoughTimePassed(currentTimestamp)) {
+                val image =
+                    InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                val poseDetector = preparePoseDetector()
+                poseDetector.process(image)
+                    .addOnSuccessListener { it?.let { detectPose(it) } }
+                    .addOnFailureListener { Timber.d("Detection failed: $it") }
+                    .addOnCompleteListener {
+                        mediaImage.close()
+                        imageProxy.close()
+                        lastAnalyzedTimestamp = currentTimestamp
+                    }
+            } else {
+                Timber.v("Not analyzing, not enough time passed ($currentTimestamp).")
+                mediaImage.close()
+                imageProxy.close()
+            }
         }
     }
 
     private fun enoughTimePassed(currentTimestamp: Long) =
-        currentTimestamp - lastAnalyzedTimestamp >= detectionTimeoutMillis
+        currentTimestamp - lastAnalyzedTimestamp >= Constants.DETECTION_TIMEOUT_MILLIS_DEFAULT
 
     private fun detectPose(pose: Pose) {
         Timber.d("${poseToBeDetected.name} detection in progress.")
